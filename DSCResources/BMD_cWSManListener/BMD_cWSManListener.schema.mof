@@ -1,0 +1,17 @@
+[ClassVersion("1.0.0.0"), FriendlyName("cWSManListener")]
+class BMD_cWSManListener : OMI_BaseResource
+{
+    [Key, Description("The port the WS-Man Listener should use. Usually 5985 for HTTP and 5986 for HTTPS listeners.")] uint16 Port;
+    [Required, Description("The transport type of WS-Man Listener."), ValueMap{"HTTP","HTTPS"}, Values{"HTTP","HTTPS"}] String Transport;
+    [Required, Description("Specifies whether the WS-Man Listener should exist."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The Issuer of the certificate to use for the HTTPS WS-Man Listener.")] String Issuer;
+    [Write, Description("The format used to match the certificate subject to use for an HTTPS WS-Man Listener."), ValueMap{"Both","FQDNOnly","NameOnly"}, Values{"Both","FQDNOnly","NameOnly"}] String SubjectFormat;
+    [Write, Description("Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man Listener.")] Boolean MatchAlternate;
+    [Read] String HostName;
+    [Read] Boolean Enabled;
+    [Read] String Address;
+    [Read] String URLPrefix;
+    [Read] String CertificateThumbprint;
+};
+
+
