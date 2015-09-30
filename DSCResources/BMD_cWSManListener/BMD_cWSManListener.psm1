@@ -85,7 +85,7 @@ function Set-TargetResource
 
         [ValidateSet('Both','FQDNOnly','NameOnly')]
         [String]
-        $SubjectFormat,
+        $SubjectFormat = 'Both',
 
         [Boolean]
         $MatchAlternate
@@ -114,7 +114,7 @@ function Set-TargetResource
                     ) -join '' )
                 Remove-WSManInstance `
                     -ResourceURI winrm/config/Listener `
-                    -SelectorSet { Port=$Port }
+                    -SelectorSet @{ Port=$Port }
             } else {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
@@ -131,14 +131,14 @@ function Set-TargetResource
                     if ($MatchAlternate) {
                         $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                                 ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
-                                ($_.IssuerName.Name -eq $Issuer) -and
+                                ($_.Issuer -eq $Issuer) -and
                                 ($HostName -in $_.DNSNameList.Unicode) -and
                                 ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                             ).Thumbprint
                     } else {
                         $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                                 ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
-                                ($_.IssuerName.Name -eq $Issuer) -and
+                                ($_.Issuer -eq $Issuer) -and
                                 ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                             ).Thumbprint    
                     } # if
@@ -149,14 +149,14 @@ function Set-TargetResource
                     if ($MatchAlternate) {
                         $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                                 ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
-                                ($_.IssuerName.Name -eq $Issuer) -and
+                                ($_.Issuer -eq $Issuer) -and
                                 ($HostName -in $_.DNSNameList.Unicode) -and
                                 ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                             ).Thumbprint
                     } else {
                         $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                                 ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
-                                ($_.IssuerName.Name -eq $Issuer) -and
+                                ($_.Issuer -eq $Issuer) -and
                                 ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                             ).Thumbprint    
                     } # if
@@ -203,7 +203,7 @@ function Set-TargetResource
                     ) -join '' )
                 Remove-WSManInstance `
                     -ResourceURI winrm/config/Listener `
-                    -SelectorSet { Port=$Port }                
+                    -SelectorSet @{ Port=$Port }                
             }
         } # if
     } catch {
@@ -244,7 +244,7 @@ function Test-TargetResource
 
         [ValidateSet('Both','FQDNOnly','NameOnly')]
         [String]
-        $SubjectFormat,
+        $SubjectFormat = 'Both',
 
         [Boolean]
         $MatchAlternate
@@ -271,12 +271,21 @@ function Test-TargetResource
                     "Listener on $Port exists."
                     ) -join '' )
                 # Check it is setup as per parameters
-
+                if ($Listeners.Transport -ne $Transport) {
+                    Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        "Listener on $Port is $($Listeners.Transport), should be $Transport. "
+                        'Change required.'
+                        ) -join '' )
+                    $requiresChanges = $true
+                
+                }
             } else {
                 # Ths listener doesn't exist but should
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "Listener on $Port does not exist but should. Change required."
+                    "Listener on $Port does not exist but should."
+                    'Change required.'
                     ) -join '' )
                 $requiresChanges = $true
             }
@@ -286,14 +295,16 @@ function Test-TargetResource
                 # The listener exists but should not
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "Listener on $Port exists but should not. Change required."
+                    "Listener on $Port exists but should not."
+                    'Change required.'
                     ) -join '' )
                 $requiresChanges = $true
             } else {
                 # The listener does not exist and should not
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "Listener on $Port does not exist and should not. Change not required."
+                    "Listener on $Port does not exist and should not."
+                    'Change not required.'
                     ) -join '' )
             }
         } # if
@@ -324,7 +335,6 @@ function Get-Listener
         -ResourceURI winrm/config/Listener `
         -Enumerate
     if ($Listeners) {
-        Write-Host $Listeners
         return $Listeners.Where( {$_.Port -eq $Port } )
     }
 

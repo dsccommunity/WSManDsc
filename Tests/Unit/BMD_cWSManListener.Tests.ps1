@@ -44,6 +44,14 @@ InModuleScope $DSCResourceName {
     # Create the Mock Objects that will be used for running tests
     $Global:MockFQDN = 'SERVER1.CONTOSO.COM'
     $Global:MockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
+    $Global:MockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
+    $Global:MockCertificate = [PSObject]@{
+        Thumbprint = $Global:MockCertificateThumbprint
+        Subject = "CN=$([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)"
+        Issuer = $Global:MockIssuer
+        Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+        DNSNameList = @{ Unicode = "$([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)" }
+    }
     $Global:MockListenerHTTP = [PSObject]@{
         cfg = 'http://schemas.microsoft.com/wbem/wsman/1/config/listener'
         xsi = 'http://www.w3.org/2001/XMLSchema-instance'
@@ -75,7 +83,7 @@ InModuleScope $DSCResourceName {
 
         Context 'No listeners exist' {
             
-            Mock Get-WSManInstance  -MockWith { }
+            Mock Get-WSManInstance -MockWith { }
 
             It 'should return absent listener' {
                 $Result = Get-TargetResource -Port 5985 -Transport HTTP -Ensure Present
@@ -88,7 +96,7 @@ InModuleScope $DSCResourceName {
 
         Context 'Requested listener does not exist' {
             
-            Mock Get-WSManInstance  -MockWith { return @($Global:MockListenerHTTP) }
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTP) }
 
             It 'should return absent listener' {
                 $Result = Get-TargetResource `
@@ -129,12 +137,189 @@ InModuleScope $DSCResourceName {
 
     Describe 'Set-TargetResource' {
 
+        Context 'Listener does not exist but HTTP should' {
+            
+            Mock Get-WSManInstance -MockWith { }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+
+            It 'should not throw error' {
+                { Set-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTP.Transport `
+                    -Ensure 'Present' } | Should Not Throw
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Remove-WSManInstance -Exactly 0
+                Assert-MockCalled -commandName New-WSManInstance -Exactly 1
+            }
+        }
+        Context 'Listener does not exist but HTTPS should' {
+            
+            Mock Get-WSManInstance -MockWith { }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+            Mock Get-ChildItem -MockWith { $Global:MockCertificate }
+
+            It 'should not throw error' {
+                { Set-TargetResource `
+                    -Port $Global:MockListenerHTTPS.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer } | Should Not Throw
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Remove-WSManInstance -Exactly 0
+                Assert-MockCalled -commandName New-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+            }
+        }
+
+        Context 'Listener exists but should not' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTP) }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+
+            It 'should not throw error' {
+                { Set-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTP.Transport `
+                    -Ensure 'Absent' } | Should Not Throw
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName New-WSManInstance -Exactly 0
+            }
+        }
+
+        Context 'HTTP Listener exists but should be HTTPS' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTP) }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+            Mock Get-ChildItem -MockWith { $Global:MockCertificate }
+
+            It 'should not throw error' {
+                { Set-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer } | Should Not Throw
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName New-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+            }
+        }
+
+        Context 'HTTPS Listener exists and should' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTPS) }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+            Mock Get-ChildItem -MockWith { $Global:MockCertificate }
+
+            It 'should not throw error' {
+                { Set-TargetResource `
+                    -Port $Global:MockListenerHTTPS.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer } | Should Not Throw
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName New-WSManInstance -Exactly 1
+                Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+            }
+        }
     }
 
 ######################################################################################
 
     Describe 'Test-TargetResource' {
+        Context 'Listener does not exist but HTTP should' {
+            
+            Mock Get-WSManInstance -MockWith { }
 
+            It 'should return false' {
+                Test-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTP.Transport `
+                    -Ensure 'Present' | Should Be $False
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+            }
+        }
+        Context 'Listener does not exist but HTTPS should' {
+            
+            Mock Get-WSManInstance -MockWith { }
+
+            It 'should return false' {
+                Test-TargetResource `
+                    -Port $Global:MockListenerHTTPS.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer | Should Be $False
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+            }
+        }
+
+        Context 'Listener exists but should not' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTP) }
+
+            It 'should return false' {
+                Test-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTP.Transport `
+                    -Ensure 'Absent' | Should Be $False
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+            }
+        }
+
+        Context 'HTTP Listener exists but should be HTTPS' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTP) }
+
+            It 'should return false' {
+                Test-TargetResource `
+                    -Port $Global:MockListenerHTTP.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer | Should Be $False
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+            }
+        }
+
+        Context 'HTTPS Listener exists and should' {
+            
+            Mock Get-WSManInstance -MockWith { return @($Global:MockListenerHTTPS) }
+
+            It 'should return true' {
+                Test-TargetResource `
+                    -Port $Global:MockListenerHTTPS.Port `
+                    -Transport $Global:MockListenerHTTPS.Transport `
+                    -Ensure 'Present' `
+                    -Issuer $Global:MockIssuer | Should Be $True
+            }
+            It 'should call expected Mocks' {
+                Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+            }
+        }
     }
 
 ######################################################################################
