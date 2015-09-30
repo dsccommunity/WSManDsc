@@ -11,7 +11,6 @@ install:
   - ps: Import-Module .\TestHelper.psm1 -force
   - ps: Pop-Location
   - ps: Get-PackageProvider -name nuget -ForceBootStrap -Force
-  - ps: install-windowsfeature fs-resource-manager
 
 #---------------------------------# 
 #      build configuration        # 
