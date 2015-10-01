@@ -251,7 +251,7 @@ function Test-TargetResource
     )
 
     # Flag to signal whether settings are correct
-    [Boolean]$requiresChanges = $false
+    [Boolean] $desiredConfigurationMatch = $true
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
@@ -277,7 +277,7 @@ function Test-TargetResource
                         "Listener on $Port is $($Listeners.Transport), should be $Transport. "
                         'Change required.'
                         ) -join '' )
-                    $requiresChanges = $true
+                    $desiredConfigurationMatch = $false
                 
                 }
             } else {
@@ -287,7 +287,7 @@ function Test-TargetResource
                     "Listener on $Port does not exist but should."
                     'Change required.'
                     ) -join '' )
-                $requiresChanges = $true
+                $desiredConfigurationMatch = $false
             }
         } else {
             # The listener should not exist
@@ -298,7 +298,7 @@ function Test-TargetResource
                     "Listener on $Port exists but should not."
                     'Change required.'
                     ) -join '' )
-                $requiresChanges = $true
+                $desiredConfigurationMatch = $false
             } else {
                 # The listener does not exist and should not
                 Write-Verbose -Message ( @(
@@ -315,7 +315,7 @@ function Test-TargetResource
             "$_"
             ) -join '' )
     }
-    return -not $requiresChanges
+    return $desiredConfigurationMatch
 } # Test-TargetResource
 
 ######################################################################################
