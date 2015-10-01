@@ -6,7 +6,7 @@ configuration Sample_cWSManListener_HTTPS
     {
         cWSManListener HTTP
         {
-            Type = 'HTTPS'
+            Transport = 'HTTPS'
             Ensure = 'Present'
             Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
         } # End of cWSManListener Resource

@@ -35,7 +35,7 @@ configuration Sample_cWSManListener_HTTP
     {
         cWSManListener HTTP
         {
-            Type = 'HTTP'
+            Transport = 'HTTP'
             Ensure = 'Present'
         } # End of cWSManListener Resource
     } # End of Node
@@ -52,7 +52,7 @@ configuration Sample_cWSManListener_HTTPS
     {
         cWSManListener HTTP
         {
-            Type = 'HTTPS'
+            Transport = 'HTTPS'
             Ensure = 'Present'
             Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
         } # End of cWSManListener Resource
