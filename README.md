@@ -63,7 +63,7 @@ configuration Sample_cWSManListener_HTTPS
 
 ## Versions
 
-### 0.1.0.0
+### 1.0.0.0
 
 * Initial release containing cWSManListener resource.
 
