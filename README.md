@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/6up9pfdj5u1f4jaw/branch/master?svg=true)](https://ci.appveyor.com/project/PlagueHO/cWSManListener/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/cw3o6pnn7l26m1h5/branch/master?svg=true)](https://ci.appveyor.com/project/PlagueHO/cwsman/branch/master)
 
 # cWSMan
 
