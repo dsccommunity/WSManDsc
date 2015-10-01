@@ -12,9 +12,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ### cWSManListener
 
 #### Parameters
-* **Port**: The port of the listener. This should usually be set to 5968 for an HTTPS listener or 5985 for an HTTP listener. This parameter is required.
-* **Ensure**: Required.
 * **Transport**: The transport type of the WS-Man listener. Can be HTTP or HTTPS. Defaults to HTTPS.
+* **Ensure**: Ensures that Listener is either Absent or Present. Required.
+* **Port**: The port of the listener. This optional parameter defaults to 5985 for HTTP listeners and 5986 for HTTPS listeners.
+* **Address**: The address the listener is bound to. This optional parameter defaults to * (any address).
 *The following parameters are only required is Transport is HTTPS:*
 * **Issuer**: The full name of the certificate issuer to use for the HTTPS WS-Man Listener.
 * **SubjectFormat**: The format of the computer name that will be matched against the certificate subjects to identify the certificate to use for an SSL Listener. Only required if SSL is true. Defaults to Both. Must be one of the following values:
@@ -28,15 +29,14 @@ Create an HTTP Listener on port 5985:
 ```powershell
 configuration Sample_cWSManListener_HTTP
 {
-    Import-DscResource -Module cWSManListener
+    Import-DscResource -Module cWSMan
 
     Node $NodeName
     {
         cWSManListener HTTP
         {
-            Port = 5985
-            Ensure = 'Present'
             Type = 'HTTP'
+            Ensure = 'Present'
         } # End of cWSManListener Resource
     } # End of Node
 } # End of Configuration
@@ -46,15 +46,14 @@ Create an HTTPS Listener with a certificate issued by 'CN=CONTOSO.COM Issuing CA
 ```powershell
 configuration Sample_cWSManListener_HTTPS
 {
-    Import-DscResource -Module cWSManListener
+    Import-DscResource -Module cWSMan
 
     Node $NodeName
     {
         cWSManListener HTTP
         {
-            Port = 5986
-            Ensure = 'Present'
             Type = 'HTTPS'
+            Ensure = 'Present'
             Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
         } # End of cWSManListener Resource
     } # End of Node

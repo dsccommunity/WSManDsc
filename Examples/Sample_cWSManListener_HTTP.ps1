@@ -1,14 +1,13 @@
 configuration Sample_cWSManListener_HTTP
 {
-    Import-DscResource -Module cWSManListener
+    Import-DscResource -Module cWSMan
 
     Node $NodeName
     {
         cWSManListener HTTP
         {
-            Port = 5985
+            Transport = 'HTTP'
             Ensure = 'Present'
-            Type = 'HTTP'
         } # End of cWSManListener Resource
     } # End of Node
 } # End of Configuration
