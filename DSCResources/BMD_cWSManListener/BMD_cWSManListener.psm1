@@ -3,6 +3,28 @@
 #  specified port.
 #######################################################################################
  
+data LocalizedData
+{
+    # culture="en-US"
+    ConvertFrom-StringData -StringData @'
+GettingListenerMessage=Getting Listener.
+ListenerExistsMessage={0} Listener exists.
+ListenerDoesNotExistMessage={0} Listener does not exist.
+SettingListenerMessage=Setting Listener.
+EnsureListenerExistsMessage=Ensuring {0} Listener on port {1} exists.
+EnsureListenerDoesNotExistMessage=Ensuring {0} Listener on port {1} does not exist.
+ListenerExistsRemoveMessage={0} Listener on port {1} exists. Removing.
+ListenerOnPortDoesNotExistMessage={0} Listener on port {1} does not exist.
+CreatingListenerMessage=Creating {0} Listener on port {1}.
+ListenerCreateFailNoCertError=Failed to create {0} Listener on port {1} because a applicable certificate could not be found.
+TestingListenerMessage=Testing Listener.
+ListenerOnWrongPortMessage={0} Listener is on port {1}, should be on {2}. Change required.
+ListenerOnWrongAddressMessage={0} Listener is bound to {1}, should be {2}. Change required.
+ListenerDoesNotExistButShouldMessage={0} Listener does not exist but should. Change required.
+ListenerExistsButShouldNotMessage={0} Listener exists but should not. Change required.
+ListenerDoesNotExistAndShouldNotMessage={0} Listener does not exist and should not. Change not required.
+'@
+}
 
 
 ######################################################################################
@@ -27,7 +49,7 @@ function Get-TargetResource
     
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        'Getting Listener.'
+        $($LocalizedData.GettingListenerMessage)
         ) -join '' )
 
     $returnValue = @{
@@ -39,7 +61,7 @@ function Get-TargetResource
     if ($Listeners) {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            "$Transport Listener exists."
+            $($LocalizedData.ListenerExistsMessage) -f $Transport
             ) -join '' )
         $returnValue += @{
             Ensure = 'Present'
@@ -53,7 +75,7 @@ function Get-TargetResource
     } Else {       
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            "$Transport Listener does not exist."
+            $($LocalizedData.ListenerDoesNotExistMessage) -f $Transport
             ) -join '' )
         $returnValue += @{ Ensure = 'Absent' }
     }
@@ -98,7 +120,7 @@ function Set-TargetResource
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        'Setting Listener.'
+        $($LocalizedData.SettingListenerMessage)
         ) -join '' )
 
     # Lookup the existing Listener
@@ -111,13 +133,13 @@ function Set-TargetResource
         # The listener should exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            "Ensuring $Transport Listener on $Port exists."
+            $($LocalizedData.EnsureListenerExistsMessage) -f $Transport,$Port
             ) -join '' )
         if ($Listeners) {
             # The Listener exists already - delete it
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener on $Port exists. Removing."
+                $($LocalizedData.ListenerExistsRemoveMessage) -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
@@ -125,7 +147,7 @@ function Set-TargetResource
         } else {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener on $Port does not exist."
+                $($LocalizedData.ListenerOnPortDoesNotExistMessage) -f $Transport,$Port
                 ) -join '' )
             # Ths listener doesn't exist - do nothing
         }
@@ -172,7 +194,7 @@ function Set-TargetResource
                 # A certificate was found, so use it to enable the HTTPS WinRM listener
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "Creating $Transport Listener on $Port."
+                    $($LocalizedData.CreatingListenerMessage) -f $Transport,$Port
                     ) -join '' )
                 New-WSManInstance `
                     -ResourceURI winrm/config/Listener `
@@ -182,14 +204,13 @@ function Set-TargetResource
             } else {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "Failed to create $Transport Listener on $Port because a "
-                    'usable certificate could not be found.'
+                    $($LocalizedData.ListenerCreateFailNoCertError) -f $Transport,$Port
                     ) -join '' )
             } # if
         } else {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "Creating $Transport Listener on $Port."
+                $($LocalizedData.CreatingListenerMessage) -f $Transport,$Port
                 ) -join '' )
             New-WSManInstance `
                 -ResourceURI winrm/config/Listener `
@@ -201,12 +222,12 @@ function Set-TargetResource
         # The listener should not exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            "Ensuring Listener on $Port does not exist."
+            $($LocalizedData.EnsureListenerDoesNotExistMessage) -f $Transport,$Port
             ) -join '' )
         if ($Listeners) {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "Listener on $Port exists. Removing."
+                $($LocalizedData.ListenerExistsRemoveMessage) -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
@@ -257,7 +278,7 @@ function Test-TargetResource
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        'Testing Listener.'
+        $($LocalizedData.TestingListenerMessage)
         ) -join '' )
 
     # Lookup the existing Listener
@@ -272,22 +293,20 @@ function Test-TargetResource
             # The Listener exists already
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener exists."
+                $($LocalizedData.ListenerExistsMessage)
                 ) -join '' )
             # Check it is setup as per parameters
             if ($Listeners.Port -ne $Port) {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "$Transport Listener is on Port $($Listeners.Port), should be on $Port. "
-                    'Change required.'
+                    $($LocalizedData.ListenerOnWrongPortMessage) -f $Transport,$Listeners.Port,$Port
                     ) -join '' )
                 $desiredConfigurationMatch = $false                
             }
             if ($Listeners.Address -ne $Address) {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    "$Transport Listener is bound to $($Listeners.Address), should be $Address. "
-                    'Change required.'
+                    $($LocalizedData.ListenerOnWrongAddressMessage) -f $Transport,$Listeners.Address,$Address
                     ) -join '' )
                 $desiredConfigurationMatch = $false                
             }
@@ -295,8 +314,7 @@ function Test-TargetResource
             # Ths listener doesn't exist but should
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener does not exist but should."
-                'Change required.'
+                 $($LocalizedData.ListenerDoesNotExistButShouldMessage) -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
         }
@@ -306,16 +324,14 @@ function Test-TargetResource
             # The listener exists but should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener exists but should not."
-                'Change required.'
+                 $($LocalizedData.ListenerExistsButShouldNotMessage) -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
         } else {
             # The listener does not exist and should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                "$Transport Listener does not exist and should not."
-                'Change not required.'
+                $($LocalizedData.ListenerDoesNotExistAndShouldNotMessage) -f $Transport
                 ) -join '' )
         }
     } # if
