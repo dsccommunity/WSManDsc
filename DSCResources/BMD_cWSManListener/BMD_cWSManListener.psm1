@@ -352,10 +352,11 @@ function Get-Listener
         $Transport
     )
     
-    $Listeners = Get-WSManInstance `
+    $Listeners = @(Get-WSManInstance `
         -ResourceURI winrm/config/Listener `
-        -Enumerate
+        -Enumerate)
     if ($Listeners) {
+        
         return $Listeners.Where( {$_.Transport -eq $Transport } )
     }
 
