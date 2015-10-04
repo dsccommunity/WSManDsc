@@ -2,8 +2,21 @@
 
 # cWSMan
 
-The **cWSMan** module contains a DSC resources for configuring WS-Management and PowerShell Remoting. It currently only contains a single resource - cWSManListener - for creating WS-Management HTTP/HTTPS listeners, but other resources may be added. 
+The **cWSMan** module contains DSC resources for configuring WS-Management and PowerShell Remoting. It currently only contains a single resource - cWSManListener - for creating WS-Management HTTP/HTTPS listeners, but other resources may be added. 
 
+## Installation
+### Installation if WMF5.0 is Installed
+```powershell	
+Install-Module -Name cWSMan -MinimumVersion 1.0.0.0
+```
+
+### Installation if WMF5.0 is Not Installed
+
+    Unzip the content under $env:ProgramFiles\WindowsPowerShell\Modules folder 
+
+To confirm installation:
+
+    Run Get-DSCResource to see that cWSManListener is among the DSC Resources listed 
 
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
