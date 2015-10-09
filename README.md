@@ -80,4 +80,5 @@ configuration Sample_cWSManListener_HTTPS
 * Initial release containing cWSManListener resource.
 
 
-
+* **[GitHub Repo](https://github.com/PlagueHO/cWSMan)**: Raise any issues, requests or PRs here.
+* **[My Blog](https://dscottraynsford.wordpress.com)**: See my PowerShell and Programming Blog.
