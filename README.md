@@ -75,6 +75,10 @@ configuration Sample_cWSManListener_HTTPS
 
 ## Versions
 
+### 1.0.1.0
+
+* Documentation and Module Manifest Update only.
+
 ### 1.0.0.0
 
 * Initial release containing cWSManListener resource.

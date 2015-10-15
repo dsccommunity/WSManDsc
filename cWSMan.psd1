@@ -28,4 +28,29 @@ FunctionsToExport = '*'
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
+
+# Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
+PrivateData = @{
+
+    PSData = @{
+
+        # Tags applied to this module. These help with module discovery in online galleries.
+        # Tags = @('DSC','Desired State Configuration','DSC Resource','WS-Management','WS-Man')
+
+        # A URL to the license for this module.
+        # LicenseUri = 'https://github.com/PlagueHO/cWSMan/blob/master/LICENSE'
+
+        # A URL to the main website for this project.
+        # ProjectUri = 'https://github.com/PlagueHO/cWSMan'
+
+        # A URL to an icon representing this module.
+        # IconUri = ''
+
+        # ReleaseNotes of this module
+        # ReleaseNotes = ''
+
+    } # End of PSData hashtable
+
+} # End of PrivateData hashtable
+
 }
