@@ -1,7 +1,7 @@
 #---------------------------------# 
 #      environment configuration  # 
 #---------------------------------# 
-os: Windows Server 2012 R2
+os: Unstable
 version: 1.0.1.{build}
 install: 
   - cinst -y pester
