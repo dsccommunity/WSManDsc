@@ -5,7 +5,7 @@ os: Windows Server 2012 R2
 version: 1.0.1.{build}
 install: 
   - cinst -y pester
-  - git clone https://github.com/PlagueHO/DscResource.Tests
+  - git clone https://github.com/PowerShell/DscResource.Tests
   - ps: Import-Module .\DscResource.Tests\TestHelper.psm1 -force
 
 #---------------------------------# 
