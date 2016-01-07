@@ -49,10 +49,12 @@ function Get-TargetResource
 
     # Lookup the existing Listener
     $Listeners = Get-Listener -Transport $Transport
-    if ($Listeners) {
+    if ($Listeners)
+    {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.ListenerExistsMessage) -f $Transport
+            $($LocalizedData.ListenerExistsMessage) `
+                -f $Transport
             ) -join '' )
         $returnValue += @{
             Ensure = 'Present'
@@ -63,10 +65,13 @@ function Get-TargetResource
             URLPrefix = $Listeners.URLPrefix
             CertificateThumbprint = $Listeners.CertificateThumbprint
             }
-    } Else {       
+    }
+    Else
+    {       
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.ListenerDoesNotExistMessage) -f $Transport
+            $($LocalizedData.ListenerDoesNotExistMessage) `
+                -f $Transport
             ) -join '' )
         $returnValue += @{ Ensure = 'Absent' }
     }
@@ -116,33 +121,42 @@ function Set-TargetResource
     # Get the default port for the transport if none was provided
     $Port = Get-DefaultPort -Transport $Transport -Port $Port
 
-    if ($Ensure -eq 'Present') {
+    if ($Ensure -eq 'Present')
+    {
         # The listener should exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.EnsureListenerExistsMessage) -f $Transport,$Port
+            $($LocalizedData.EnsureListenerExistsMessage) `
+                -f $Transport,$Port
             ) -join '' )
-        if ($Listeners) {
+        if ($Listeners)
+        {
             # The Listener exists already - delete it
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerExistsRemoveMessage) -f $Transport,$Port
+                $($LocalizedData.ListenerExistsRemoveMessage) `
+                    -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
                 -SelectorSet @{ Transport=$Listeners.Transport;Address=$Listeners.Address }
-        } else {
+        }
+        else
+        {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerOnPortDoesNotExistMessage) -f $Transport,$Port
+                $($LocalizedData.ListenerOnPortDoesNotExistMessage) `
+                    -f $Transport,$Port
                 ) -join '' )
             # Ths listener doesn't exist - do nothing
         }
         # Create the listener
-        if ($Transport -eq 'HTTPS') {
+        if ($Transport -eq 'HTTPS')
+        {
             [String] $Thumbprint = ''
             # First try and find a certificate that is used to the FQDN of the machine
-            if ($SubjectFormat -in 'Both','FQDNOnly') {
+            if ($SubjectFormat -in 'Both','FQDNOnly')
+            {
                 [String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
                 if ($MatchAlternate) {
                     $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
@@ -151,7 +165,9 @@ function Set-TargetResource
                             ($HostName -in $_.DNSNameList.Unicode) -and
                             ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                         ).Thumbprint
-                } else {
+                }
+                else
+                {
                     $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
@@ -159,17 +175,21 @@ function Set-TargetResource
                         ).Thumbprint    
                 } # if
             }
-            if (($SubjectFormat -in 'Both','NameOnly') -and -not $Thumbprint) {
+            if (($SubjectFormat -in 'Both','NameOnly') -and -not $Thumbprint)
+            {
                 # If could not find an FQDN cert, try for one issued to the computer name
                 [String] $HostName = $ENV:ComputerName
-                if ($MatchAlternate) {
+                if ($MatchAlternate)
+                {
                     $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($HostName -in $_.DNSNameList.Unicode) -and
                             ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
                         ).Thumbprint
-                } else {
+                }
+                else
+                {
                     $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
@@ -177,27 +197,35 @@ function Set-TargetResource
                         ).Thumbprint    
                 } # if
             } # if
-            if ($Thumbprint) {
+            if ($Thumbprint)
+            {
                 # A certificate was found, so use it to enable the HTTPS WinRM listener
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.CreatingListenerMessage) -f $Transport,$Port
+                    $($LocalizedData.CreatingListenerMessage) `
+                        -f $Transport,$Port
                     ) -join '' )
                 New-WSManInstance `
                     -ResourceURI winrm/config/Listener `
                     -SelectorSet @{Address=$Address;Transport=$Transport} `
                     -ValueSet @{Hostname=$HostName;CertificateThumbprint=$Thumbprint;Port=$Port} `
                     -ErrorAction Stop
-            } else {
+            }
+            else
+            {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerCreateFailNoCertError) -f $Transport,$Port
+                    $($LocalizedData.ListenerCreateFailNoCertError) `
+                        -f $Transport,$Port
                     ) -join '' )
             } # if
-        } else {
+        }
+        else
+        {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.CreatingListenerMessage) -f $Transport,$Port
+                $($LocalizedData.CreatingListenerMessage) `
+                    -f $Transport,$Port
                 ) -join '' )
             New-WSManInstance `
                 -ResourceURI winrm/config/Listener `
@@ -205,16 +233,21 @@ function Set-TargetResource
                 -ValueSet @{Port=$Port} `
                 -ErrorAction Stop
         }
-    } else {
+    }
+    else
+    {
         # The listener should not exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.EnsureListenerDoesNotExistMessage) -f $Transport,$Port
+            $($LocalizedData.EnsureListenerDoesNotExistMessage) `
+                -f $Transport,$Port
             ) -join '' )
-        if ($Listeners) {
+        if ($Listeners)
+        {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerExistsRemoveMessage) -f $Transport,$Port
+                $($LocalizedData.ListenerExistsRemoveMessage) `
+                    -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
@@ -269,51 +302,67 @@ function Test-TargetResource
     # Get the default port for the transport if none was provided
     $Port = Get-DefaultPort -Transport $Transport -Port $Port
 
-    if ($Ensure -eq 'Present') {
+    if ($Ensure -eq 'Present')
+    {
         # The listener should exist
-        if ($Listeners) {
+        if ($Listeners)
+        {
             # The Listener exists already
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($LocalizedData.ListenerExistsMessage)
                 ) -join '' )
             # Check it is setup as per parameters
-            if ($Listeners.Port -ne $Port) {
+            if ($Listeners.Port -ne $Port)
+            {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerOnWrongPortMessage) -f $Transport,$Listeners.Port,$Port
+                    $($LocalizedData.ListenerOnWrongPortMessage) `
+                        -f $Transport,$Listeners.Port,$Port
                     ) -join '' )
                 $desiredConfigurationMatch = $false                
             }
-            if ($Listeners.Address -ne $Address) {
+            if ($Listeners.Address -ne $Address)
+            {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerOnWrongAddressMessage) -f $Transport,$Listeners.Address,$Address
+                    $($LocalizedData.ListenerOnWrongAddressMessage) `
+                        -f $Transport,$Listeners.Address,$Address
                     ) -join '' )
                 $desiredConfigurationMatch = $false                
             }
-        } else {
+        }
+        else
+        {
             # Ths listener doesn't exist but should
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                 $($LocalizedData.ListenerDoesNotExistButShouldMessage) -f $Transport
+                 $($LocalizedData.ListenerDoesNotExistButShouldMessage) `
+                    -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
         }
-    } else {
+    }
+    else
+    {
         # The listener should not exist
-        if ($Listeners) {
+        if ($Listeners)
+        {
             # The listener exists but should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                 $($LocalizedData.ListenerExistsButShouldNotMessage) -f $Transport
+                 $($LocalizedData.ListenerExistsButShouldNotMessage) `
+                    -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
-        } else {
+        }
+        else
+        {
             # The listener does not exist and should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerDoesNotExistAndShouldNotMessage) -f $Transport
+                $($LocalizedData.ListenerDoesNotExistAndShouldNotMessage) `
+                    -f $Transport
                 ) -join '' )
         }
     } # if
@@ -334,7 +383,8 @@ function Get-Listener
     $Listeners = @(Get-WSManInstance `
         -ResourceURI winrm/config/Listener `
         -Enumerate)
-    if ($Listeners) {
+    if ($Listeners)
+    {
         
         return $Listeners.Where( {$_.Transport -eq $Transport } )
     }
@@ -355,11 +405,15 @@ function Get-DefaultPort
         $Port
     )
 
-    if (-not $Port) {
+    if (-not $Port)
+    {
         # Set the default port because none was provided
-        if ($Transport -eq 'HTTP') {
+        if ($Transport -eq 'HTTP')
+        {
             $Port = 5985
-        } else {
+        }
+        else
+        {
             $Port = 5986
         }
     }

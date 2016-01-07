@@ -2,7 +2,7 @@
 
 # cWSMan
 
-The **cWSMan** module contains DSC resources for configuring WS-Management and PowerShell Remoting. It currently only contains a single resource - cWSManListener - for creating WS-Management HTTP/HTTPS listeners, but other resources may be added. 
+The **cWSMan** module contains DSC resources for configuring WS-Management and PowerShell Remoting. It only contains a single resource - cWSManListener - for creating WS-Management HTTP/HTTPS listeners, but other resources may be added. 
 
 ## Installation
 ### Installation if WMF5.0 is Installed
@@ -55,7 +55,7 @@ configuration Sample_cWSManListener_HTTP
 } # End of Configuration
 ```
 
-Create an HTTPS Listener with a certificate issued by 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986:
+Create an HTTPS Listener using a LocalMachine certificate that is installed and issued by 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986:
 ```powershell
 configuration Sample_cWSManListener_HTTPS
 {
