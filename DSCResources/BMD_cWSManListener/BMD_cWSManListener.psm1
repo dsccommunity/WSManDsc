@@ -1,8 +1,3 @@
-#######################################################################################
-#  cWSManListener : DSC Resource that will set/test/get the WS-Man Listerner on a 
-#  specified port.
-#######################################################################################
- 
 data LocalizedData
 {
     # culture="en-US"
@@ -27,10 +22,6 @@ ListenerDoesNotExistAndShouldNotMessage={0} Listener does not exist and should n
 }
 
 
-######################################################################################
-# The Get-TargetResource cmdlet.
-# This function will return the details of a Listener on the specified Port.
-######################################################################################
 function Get-TargetResource
 {
     [OutputType([Hashtable])]
@@ -83,10 +74,6 @@ function Get-TargetResource
     $returnValue
 } # Get-TargetResource
 
-######################################################################################
-# The Set-TargetResource cmdlet.
-# This function will configure (or remove) a WS-Man Listener on the specified port
-######################################################################################
 function Set-TargetResource
 {
     param
@@ -236,11 +223,6 @@ function Set-TargetResource
     } # if
 } # Set-TargetResource
 
-######################################################################################
-# The Test-TargetResource cmdlet.
-# This function will detect if any changes need to be made on the listener on the
-# specified port.
-######################################################################################
 function Test-TargetResource
 {
     [OutputType([System.Boolean])]
@@ -338,9 +320,6 @@ function Test-TargetResource
     return $desiredConfigurationMatch
 } # Test-TargetResource
 
-######################################################################################
-# Helpers
-######################################################################################
 function Get-Listener
 {
     [OutputType([Hashtable])]
@@ -362,7 +341,6 @@ function Get-Listener
 
 } # Get-Listener
 
-######################################################################################
 function Get-DefaultPort
 {
     [OutputType([UInt16])]
@@ -388,5 +366,4 @@ function Get-DefaultPort
     return $Port
 }
 
-######################################################################################
 Export-ModuleMember -Function *-TargetResource
