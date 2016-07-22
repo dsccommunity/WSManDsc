@@ -5,10 +5,10 @@ $Listener = @{
     Address   = '*'
 }
 
-Configuration BMD_cWSManListener_Config {
-    Import-DscResource -ModuleName cWSMan
+Configuration MSFT_WSManListener_Config {
+    Import-DscResource -ModuleName WSManDsc
     node localhost {
-        cWSManListener Integration_Test {
+        WSManListener Integration_Test {
             Transport = $Listener.Transport
             Ensure    = $Listener.Ensure
             Port      = $Listener.Port

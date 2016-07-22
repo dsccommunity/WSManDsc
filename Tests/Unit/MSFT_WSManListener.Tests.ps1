@@ -1,30 +1,28 @@
-$Global:DSCModuleName   = 'cWSMan'
-$Global:DSCResourceName = 'BMD_cWSManListener'
+$Global:DSCModuleName   = 'WSManDsc'
+$Global:DSCResourceName = 'MSFT_WSManListener'
 
 #region HEADER
+# Unit Test Template Version: 1.1.0
 [String] $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
 if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
     & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
-else
-{
-    & git @('-C',(Join-Path -Path $moduleRoot -ChildPath '\DSCResource.Tests\'),'pull')
-}
+
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $Global:DSCModuleName `
     -DSCResourceName $Global:DSCResourceName `
-    -TestType Unit 
-#endregion
+    -TestType Unit
+#endregion HEADER
 
 # Begin Testing
 try
 {
     #region Pester Tests
     InModuleScope $DSCResourceName {
-    
+
         # Create the Mock Objects that will be used for running tests
         $MockFQDN = 'SERVER1.CONTOSO.COM'
         $MockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
@@ -64,7 +62,7 @@ try
         Describe "$($Global:DSCResourceName)\Get-TargetResource" {
 
             Context 'No listeners exist' {
-                
+
                 Mock Get-WSManInstance -MockWith { }
 
                 It 'should return absent listener' {
@@ -79,7 +77,7 @@ try
             }
 
             Context 'Requested listener does not exist' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
                 It 'should return absent listener' {
@@ -94,7 +92,7 @@ try
             }
 
             Context 'Requested listener does exist' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
                 It 'should return correct listener' {
@@ -118,7 +116,7 @@ try
         Describe "$($Global:DSCResourceName)\Set-TargetResource" {
 
             Context 'HTTP Listener does not exist but should' {
-                
+
                 Mock Get-WSManInstance -MockWith { }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -135,7 +133,7 @@ try
                 }
             }
             Context 'HTTPS Listener does not exist but should' {
-                
+
                 Mock Get-WSManInstance -MockWith { }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -156,7 +154,7 @@ try
             }
 
             Context 'HTTP Listener exists but should not' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -174,7 +172,7 @@ try
             }
 
             Context 'HTTP Listener exists and should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -195,7 +193,7 @@ try
             }
 
             Context 'HTTPS Listener exists and should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -216,7 +214,7 @@ try
             }
 
             Context 'Both Listeners exists and HTTPS should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
                 Mock Remove-WSManInstance -MockWith { }
                 Mock New-WSManInstance -MockWith { }
@@ -239,7 +237,7 @@ try
 
         Describe "$($Global:DSCResourceName)\Test-TargetResource" {
             Context 'HTTP Listener does not exist but should' {
-                
+
                 Mock Get-WSManInstance -MockWith { }
 
                 It 'should return false' {
@@ -252,7 +250,7 @@ try
                 }
             }
             Context 'HTTPS Listener does not exist but should' {
-                
+
                 Mock Get-WSManInstance -MockWith { }
 
                 It 'should return false' {
@@ -267,7 +265,7 @@ try
             }
 
             Context 'HTTP Listener exists but should not' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
                 It 'should return false' {
@@ -281,7 +279,7 @@ try
             }
 
             Context 'HTTPS Listener exists but should not' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
                 It 'should return false' {
@@ -295,7 +293,7 @@ try
             }
 
             Context 'HTTP Listener exists and should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
                 It 'should return true' {
@@ -309,7 +307,7 @@ try
             }
 
             Context 'HTTPS Listener exists and should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
                 It 'should return true' {
@@ -323,7 +321,7 @@ try
             }
 
             Context 'Both Listeners exists and HTTPS should' {
-                
+
                 Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
 
                 It 'should return true' {

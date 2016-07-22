@@ -4,19 +4,19 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.0.0.0'
+ModuleVersion = '2.0.0.0'
 
 # ID used to uniquely identify this module
-GUID = '1dfacc1c-7844-4a70-aa2f-fafb66b290aa'
+GUID = '15a87fbe-766b-4d2c-b856-645fd4a8d275'
 
 # Author of this module
-Author = 'Daniel Scott-Raynsford'
+Author = 'Microsoft Corporation'
 
 # Company or vendor of this module
-CompanyName = ''
+CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2015 Daniel Scott-Raynsford. All rights reserved.'
+Copyright = '(c) 2016 Microsoft Corporation. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'DSC Resource for configuring WS-Management Listeners.'
@@ -84,19 +84,19 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @( 'DSC','DesiredStateConfiguration','DSC Resource','WS-Management','WS-Man' )
+        Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource', 'WSMan')
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/PowerShell/DscResources/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/PowerShell/WSManDsc/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/PlagueHO/cWSMan'
+        ProjectUri = 'https://github.com/PowerShell/WSManDsc'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = ''
 
     } # End of PSData hashtable
 
