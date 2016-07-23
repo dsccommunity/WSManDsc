@@ -7,6 +7,7 @@ The **WSManDsc** module contains DSC resources for configuring WS-Management and
 ## Resources
 
 * **WSManListener** create, edit or remove WS-Management HTTP/HTTPS listeners.
+* **WSManServiceConfig** Configure the WS-Man Service.
 
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
@@ -23,7 +24,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
     * **Both**: Look for a certificate with a subject matching the computer FQDN. If one can't be found the flat computer name will be used. If neither can be found then the listener will not be created.
     * **FQDN**: Look for a certificate with a subject matching the computer FQDN only. If one can't be found then the listener will not be created.
     * **ComputerName**: Look for a certificate with a subject matching the computer FQDN only. If one can't be found then the listener will not be created.
-* **MatchAlternate**: Also match the certificate alternate subject name. Defaults to False.
+* **MatchAlternate**: Also match the certificate alternate subject name. { True | _False_ }
 
 #### Examples
 Create an HTTP Listener on port 5985:
@@ -67,9 +68,51 @@ Sample_WSManListener_HTTPS
 Start-DscConfiguration -Path Sample_WSManListener_HTTPS -Wait -Verbose -Force
 ```
 
+### WSManServiceConfig
+#### Parameters
+* **RootSDDL**: Specifies the security descriptor that controls remote access to the listener. Default _"O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;ER)S:P(AU;FA;GA;;;WD)(AU;SA;GWGX;;;WD)"_.
+* **MaxConnections**: Specifies the maximum number of active requests that the service can process simultaneously. Default _300_.
+* **MaxConcurrentOperationsPerUser**: Specifies the maximum number of concurrent operations that any user can remotely open on the same system. Default _1500_.
+* **EnumerationTimeoutms**: Specifies the idle time-out in milliseconds between Pull messages. Default _60000_.
+* **MaxPacketRetrievalTimeSeconds**: Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet. Default _120_.
+* **AllowUnencrypted**: Allows the client computer to request unencrypted traffic. { True | _False_ }
+* **AuthBasic**: Allows the WinRM service to use Basic authentication. { True | _False_ }
+* **AuthKerberos**: Allows the WinRM service to use Kerberos authentication. { _True_ | False }
+* **AuthNegotiate**: Allows the WinRM service to use Negotiate authentication. { _True_ | False }
+* **AuthCertificate**: Allows the WinRM service to use client certificate-based authentication. { True | _False_ }
+* **AuthCredSSP**: Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication. { True | _False_ }
+* **AuthCbtHardeningLevel**: Sets the policy for channel-binding token requirements in authentication requests. { Strict | _Relaxed_ | None }
+* **EnableCompatibilityHttpListener**: Specifies whether the compatibility HTTP listener is enabled. { True | _False_ }
+* **EnableCompatibilityHttpsListener**: Specifies whether the compatibility HTTPS listener is enabled. { True | _False_ }
+
+#### Examples
+Configure the WS-Man Service:
+```powershell
+configuration Sample_WSManServiceConfig
+{
+    Import-DscResource -Module WSManDsc
+
+    Node $NodeName
+    {
+        WSManServiceConfig ServiceConfig
+        {
+            MaxConnections                   = 100
+            AllowUnencrypted                 = $False
+            AuthCredSSP                      = $True
+            EnableCompatibilityHttpListener  = $True
+            EnableCompatibilityHttpsListener = $True
+        } # End of WSManServiceConfig Resource
+    } # End of Node
+} # End of Configuration
+
+Sample_WSManServiceConfig
+Start-DscConfiguration -Path Sample_WSManServiceConfig -Wait -Verbose -Force
+```
+
 ## Versions
 
 ### Unreleased
+* Added WSManServiceConfig resource.
 * Prepare module for moving over to DSC community resources.
 
 ### 1.0.1.0
