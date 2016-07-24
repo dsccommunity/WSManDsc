@@ -53,18 +53,9 @@ try
     # Set the Service Config to default settings
     foreach ($parameter in $ParameterList)
     {
-        if ($parameter.Path)
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath "$($parameter.Path)\$($parameter.Name)"
-        }
-        else
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath $($parameter.Name)
-        } # if
+        $ParameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\Service\' `
+            -ChildPath $parameter.Pame
         Set-Item -Path $ParameterPath -Value $($parameter.Default) -Force
     } # foreach
 
@@ -90,21 +81,10 @@ try
             # Get the Rule details
             foreach ($parameter in $ParameterList)
             {
-                if ($parameter.Path)
-                {
-                    $ParameterPath = Join-Path `
-                        -Path 'WSMan:\Localhost\Service\' `
-                        -ChildPath "$($parameter.Path)\$($parameter.Name)"
-                    $ParameterName = "$($parameter.Path)$($parameter.Name)"
-                }
-                else
-                {
-                    $ParameterPath = Join-Path `
-                        -Path 'WSMan:\Localhost\Service\' `
-                        -ChildPath $($parameter.Name)
-                    $ParameterName = $($parameter.Name)
-                } # if
-                (Get-Item -Path $ParameterPath).Value | Should Be $WSManServiceConfigNew.$ParameterName
+                $ParameterPath = Join-Path `
+                    -Path 'WSMan:\Localhost\Service\' `
+                    -ChildPath $parameter.Path
+                (Get-Item -Path $ParameterPath).Value | Should Be $WSManServiceConfigNew.$($Parameter.Name)
             } # foreach
         }
     }
@@ -115,22 +95,10 @@ finally
     # Clean up by restoring all parameters
     foreach ($parameter in $ParameterList)
     {
-
-        if ($parameter.Path)
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath "$($parameter.Path)\$($parameter.Name)"
-            $ParameterName = "$($parameter.Path)$($parameter.Name)"
-        }
-        else
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath $($parameter.Name)
-            $ParameterName = $($parameter.Name)
-        } # if
-        Set-Item -Path $ParameterPath -Value $CurrentWsManServiceConfig.$ParameterName -Force
+        $ParameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\Service\' `
+            -ChildPath $parameter.Path
+        Set-Item -Path $ParameterPath -Value $CurrentWsManServiceConfig.$($parameter.Name) -Force
     } # foreach
 
     #region FOOTER

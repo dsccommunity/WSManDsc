@@ -18,26 +18,96 @@ else
 
 <#
     This is an array of all the parameters used by this resource.
-    The default value is only used by unit/integration tests but is stored here so that a duplicate
-    table does not have to be created.
+    The default and testval properties are only used by unit/integration tests
+    but is stored here so that a duplicate table does not have to be created.
 #>
 data ParameterList
 {
     @(
-        @{ Name = 'RootSDDL';                         Type = 'String';                 Default = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GXGW;;;WD)' },
-        @{ Name = 'MaxConnections';                   Type = 'Uint32';                 Default = 300                                                                      },
-        @{ Name = 'MaxConcurrentOperationsPerUser';   Type = 'Uint32';                 Default = 1500                                                                     },
-        @{ Name = 'EnumerationTimeoutms';             Type = 'Uint32';                 Default = 240000                                                                   },
-        @{ Name = 'MaxPacketRetrievalTimeSeconds';    Type = 'Uint32';                 Default = 120                                                                      },
-        @{ Name = 'AllowUnencrypted';                 Type = 'Boolean';                Default = $false                                                                   },
-        @{ Name = 'Basic';                            Type = 'Boolean'; Path = 'Auth'; Default = $false                                                                   },
-        @{ Name = 'Kerberos';                         Type = 'Boolean'; Path = 'Auth'; Default = $true                                                                    },
-        @{ Name = 'Negotiate';                        Type = 'Boolean'; Path = 'Auth'; Default = $true                                                                    },
-        @{ Name = 'Certificate';                      Type = 'Boolean'; Path = 'Auth'; Default = $false                                                                   },
-        @{ Name = 'CredSSP';                          Type = 'Boolean'; Path = 'Auth'; Default = $false                                                                   },
-        @{ Name = 'CbtHardeningLevel';                Type = 'String';  Path = 'Auth'; Default = 'relaxed'                                                                },
-        @{ Name = 'EnableCompatibilityHttpListener';  Type = 'Boolean';                Default = $false                                                                   },
-        @{ Name = 'EnableCompatibilityHttpsListener'; Type = 'Boolean';                Default = $false                                                                   }
+        @{ Name    = 'RootSDDL';
+           Path    = 'RootSDDL';
+           Type    = 'String';
+           Default = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GXGW;;;WD)';
+           TestVal = 'O:BAG:SYD:PAI(D;OICI;FA;;;BG)(A;OICI;FA;;;BA)(A;OICIIO;FA;;;CO)(A;OICI;FA;;;SY)(A;OICI;FA;;;BU)S:AI(AU;OICINPFA;RPDTSDWD;;;BU)(AU;OICINPSA;CCSWRPDTLOSD;;;BU)';
+        },
+        @{ Name    = 'MaxConnections';
+           Path    = 'MaxConnections';
+           Type    = 'Uint32';
+           Default = 300;
+           TestVal = 301;
+        },
+        @{ Name    = 'MaxConcurrentOperationsPerUser';
+           Path    = 'MaxConcurrentOperationsPerUser';
+           Type    = 'Uint32';
+           Default = 1500;
+           TestVal = 1501;
+        },
+        @{ Name    = 'EnumerationTimeoutms';
+           Path    = 'EnumerationTimeoutms';
+           Type    = 'Uint32';
+           Default = 240000;
+           TestVal = 240001;
+        },
+        @{ Name    = 'MaxPacketRetrievalTimeSeconds';
+           Path    = 'MaxPacketRetrievalTimeSeconds';
+           Type    = 'Uint32';
+           Default = 120;
+           TestVal = 121;
+        },
+        @{ Name    = 'AllowUnencrypted';
+           Path    = 'AllowUnencrypted';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        },
+        @{ Name    = 'AuthBasic';
+           Path    = 'Auth\Basic';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        },
+        @{ Name    = 'AuthKerberos';
+           Path    = 'Auth\Kerberos';
+           Type    = 'Boolean';
+           Default = $true;
+           TestVal = $false;
+        },
+        @{ Name    = 'AuthNegotiate';
+           Path    = 'Auth\Negotiate';
+           Type    = 'Boolean';
+           Default = $true;
+           TestVal = $false;
+        },
+        @{ Name    = 'AuthCertificate';
+           Path    = 'Auth\Certificate';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        },
+        @{ Name    = 'AuthCredSSP';
+           Path    = 'Auth\CredSSP';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        },
+        @{ Name    = 'AuthCbtHardeningLevel';
+           Path    = 'Auth\CbtHardeningLevel';
+           Type    = 'String';
+           Default = 'relaxed';
+           TestVal = 'strict';
+        },
+        @{ Name    = 'EnableCompatibilityHttpListener';
+           Path    = 'EnableCompatibilityHttpListener';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        },
+        @{ Name    = 'EnableCompatibilityHttpsListener';
+           Path    = 'EnableCompatibilityHttpsListener';
+           Type    = 'Boolean';
+           Default = $false;
+           TestVal = $true;
+        }
     )
 }
 
@@ -64,22 +134,10 @@ function Get-TargetResource
     }
     foreach ($parameter in $ParameterList)
     {
-        if ($parameter.Path)
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath "$($parameter.Path)\$($parameter.Name)"
-            $ParameterName = "$($parameter.Path)$($parameter.Name)"
-        }
-        else
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath $($parameter.Path)
-            $ParameterName = $($parameter.Name)
-        } # if
-
-        $ReturnValue += @{ $parameterName = (Get-Item -Path $ParameterPath).Value }
+        $ParameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\Service\' `
+            -ChildPath $($parameter.Path)
+        $ReturnValue += @{ $($parameter.Name) = (Get-Item -Path $ParameterPath).Value }
     } # foreach
 
     return $ReturnValue
@@ -144,40 +202,24 @@ function Set-TargetResource
             $($LocalizedData.SettingWSManServiceConfigMessage)
         ) -join '' )
 
-    # Get the current Dns Client Global Settings
-    $WSManServiceConfig = Get-WSManServiceConfig `
-        -ErrorAction Stop
-
     # Step through each parameter and update any that differ
     foreach ($parameter in $ParameterList)
     {
-        if ($parameter.Path)
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath "$($parameter.Path)\$($parameter.Name)"
-            $ParameterName = "$($parameter.Path)$($parameter.Name)"
-            $ParameterNew = (Invoke-Expression -Command "`$$ParameterName")
-        }
-        else
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath $($parameter.Name)
-            $ParameterName = $($parameter.Name)
-            $ParameterNew = (Invoke-Expression -Command "`$$ParameterName")
-        } # if
+        $ParameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\Service\' `
+            -ChildPath $parameter.Path
 
         $ParameterCurrent = (Get-Item -Path $ParameterPath).Value
+        $ParameterNew = (Invoke-Expression -Command "`$$($Parameter.Name)")
 
-        if ($PSBoundParameters.ContainsKey($ParameterName) `
-            -and ($ParameterSource -ne $ParameterNew))
+        if ($PSBoundParameters.ContainsKey($Parameter.Name) `
+            -and ($ParameterCurrent -ne $ParameterNew))
         {
             Set-Item -Path $ParameterPath -Value $ParameterNew -Force
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($LocalizedData.WSManServiceConfigUpdateParameterMessage) `
-                    -f $parameterName,$ParameterNew
+                    -f $parameter.Name,$ParameterCurrent,$ParameterNew
                 ) -join '' )
         } # if
     } # foreach
@@ -250,32 +292,20 @@ function Test-TargetResource
     # Check each parameter
     foreach ($parameter in $ParameterList)
     {
-        if ($parameter.Path)
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath "$($parameter.Path)\$($parameter.Name)"
-            $ParameterName = "$($parameter.Path)$($parameter.Name)"
-            $ParameterNew = (Invoke-Expression -Command "`$$ParameterName")
-        }
-        else
-        {
-            $ParameterPath = Join-Path `
-                -Path 'WSMan:\Localhost\Service\' `
-                -ChildPath $($parameter.Name)
-            $ParameterName = $($parameter.Name)
-            $ParameterNew = (Invoke-Expression -Command "`$$ParameterName")
-        } # if
+        $ParameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\Service\' `
+            -ChildPath $parameter.Path
 
         $ParameterCurrent = (Get-Item -Path $ParameterPath).Value
+        $ParameterNew = (Invoke-Expression -Command "`$$($Parameter.Name)")
 
-        if ($PSBoundParameters.ContainsKey($ParameterName) `
+        if ($PSBoundParameters.ContainsKey($Parameter.Name) `
             -and ($ParameterCurrent -ne $ParameterNew))
         {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($LocalizedData.WSManServiceConfigParameterNeedsUpdateMessage) `
-                    -f $ParameterName,$ParameterCurrent,$ParameterNew
+                    -f $Parameter.Name,$ParameterCurrent,$ParameterNew
                 ) -join '' )
             $desiredConfigurationMatch = $false
         } # if

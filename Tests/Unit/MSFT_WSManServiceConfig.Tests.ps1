@@ -33,141 +33,154 @@ try
     InModuleScope $Global:DSCResourceName {
 
         # Create the Mock Objects that will be used for running tests
-        $DnsClientGlobalSettings = [PSObject]@{
-            SuffixSearchList             = 'contoso.com'
-            DevolutionLevel              = 1
-            UseDevolution                = $True
-        }
-        $DnsClientGlobalSettingsSplat = [PSObject]@{
+        $WsManServiceConfigSettings = [PSObject]@{}
+        $WsManServiceConfigSplat = [PSObject]@{
             IsSingleInstance             = 'Yes'
-            SuffixSearchList             = $DnsClientGlobalSettings.SuffixSearchList
-            DevolutionLevel              = $DnsClientGlobalSettings.DevolutionLevel
-            UseDevolution                = $DnsClientGlobalSettings.UseDevolution
+        }
+        foreach ($parameter in $ParameterList)
+        {
+            $WSManServiceConfigSettings += [PSObject] @{ $($parameter.Name) = $parameter.default }
+            $WSManServiceConfigSplat += [PSObject] @{ $($parameter.Name) = $parameter.default }
         }
 
         Describe "$($Global:DSCResourceName)\Get-TargetResource" {
 
-            Context 'DNS Client Global Settings Exists' {
+            Context 'WS-Man Service Config Exists' {
 
-                Mock Get-DnsClientGlobalSetting -MockWith { $DnsClientGlobalSettings }
+                # Set up Mocks
+                foreach ($parameter in $ParameterList)
+                {
+                    $ParameterPath = Join-Path `
+                        -Path 'WSMan:\Localhost\Service\' `
+                        -ChildPath $parameter.Path
+                    Mock -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -MockWith { @{ Value = $Parameter.Default } }
+                }
 
-                It 'should return correct DNS Client Global Settings values' {
+                It 'should return current WS-Man Service Config values' {
                     $Result = Get-TargetResource -IsSingleInstance 'Yes'
-                    $Result.SuffixSearchList          | Should Be $DnsClientGlobalSettings.SuffixSearchList
-                    $Result.DevolutionLevel           | Should Be $DnsClientGlobalSettings.DevolutionLevel
-                    $Result.UseDevolution             | Should Be $DnsClientGlobalSettings.UseDevolution
+                    foreach ($parameter in $ParameterList)
+                    {
+                        $Result.$($parameter.Name) | Should Be $WSManServiceConfigSettings.$($parameter.Name)
+                    }
                 }
                 It 'should call the expected mocks' {
-                    Assert-MockCalled -CommandName Get-DnsClientGlobalSetting -Exactly 1
+                    foreach ($parameter in $ParameterList)
+                    {
+                        $ParameterPath = Join-Path `
+                            -Path 'WSMan:\Localhost\Service\' `
+                            -ChildPath $parameter.Path
+                        Assert-MockCalled -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                    }
                 }
             }
         }
 
         Describe "$($Global:DSCResourceName)\Set-TargetResource" {
 
-            Mock Get-DnsClientGlobalSetting -MockWith { $DnsClientGlobalSettings }
-            Mock Set-DnsClientGlobalSetting
+            # Set up Mocks
+            foreach ($parameter in $ParameterList)
+            {
+                $ParameterPath = Join-Path `
+                    -Path 'WSMan:\Localhost\Service\' `
+                    -ChildPath $parameter.Path
+                Mock -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -MockWith { @{ Value = $Parameter.Default } }
+                Mock -CommandName Set-Item -ParameterFilter { $Path -eq $ParameterPath }
+            }
 
-            Context 'DNS Client Global Settings all parameters are the same' {
+            Context 'WS-Man Service Config all parameters are the same' {
                 It 'should not throw error' {
                     {
-                        $Splat = $DnsClientGlobalSettingsSplat.Clone()
+                        $Splat = $WSManServiceConfigSplat.Clone()
                         Set-TargetResource @Splat
                     } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                    Assert-MockCalled -commandName Set-DnsClientGlobalSetting -Exactly 0
+                    foreach ($parameter in $ParameterList)
+                    {
+                        $ParameterPath = Join-Path `
+                            -Path 'WSMan:\Localhost\Service\' `
+                            -ChildPath $parameter.Path
+                        Assert-MockCalled -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                        Assert-MockCalled -CommandName Set-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 0
+                    }
                 }
             }
 
-            Context 'DNS Client Global Settings SuffixSearchList is different' {
-                It 'should not throw error' {
-                    {
-                        $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                        $Splat.SuffixSearchList = 'fabrikam.com'
-                        Set-TargetResource @Splat
-                    } | Should Not Throw
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                    Assert-MockCalled -commandName Set-DnsClientGlobalSetting -Exactly 1
-                }
-            }
-
-            Context 'DNS Client Global Settings DevolutionLevel is different' {
-                It 'should not throw error' {
-                    {
-                        $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                        $Splat.DevolutionLevel = $Splat.DevolutionLevel + 1
-                        Set-TargetResource @Splat
-                    } | Should Not Throw
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                    Assert-MockCalled -commandName Set-DnsClientGlobalSetting -Exactly 1
-                }
-            }
-
-            Context 'DNS Client Global Settings UseDevolution is different' {
-                It 'should not throw error' {
-                    {
-                        $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                        $Splat.UseDevolution = -not $Splat.UseDevolution
-                        Set-TargetResource @Splat
-                    } | Should Not Throw
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                    Assert-MockCalled -commandName Set-DnsClientGlobalSetting -Exactly 1
+            foreach ($parameter in $ParameterList)
+            {
+                Context "WS-Man Service Config $($Parameter.Name) is different" {
+                    It 'should not throw error' {
+                        {
+                            $Splat = $WSManServiceConfigSplat.Clone()
+                            $Splat.$($parameter.Name) = $parameter.TestVal
+                            Set-TargetResource @Splat
+                        } | Should Not Throw
+                    }
+                    It 'should call expected Mocks' {
+                        foreach ($parameter1 in $ParameterList)
+                        {
+                            $ParameterPath = Join-Path `
+                                -Path 'WSMan:\Localhost\Service\' `
+                                -ChildPath $parameter1.Path
+                            Assert-MockCalled -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                            if ($parameter.Name -eq $parameter1.Name)
+                            {
+                                Assert-MockCalled -CommandName Set-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                            }
+                            else
+                            {
+                                Assert-MockCalled -CommandName Set-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 0
+                            }
+                        }
+                    }
                 }
             }
         }
 
         Describe "$($Global:DSCResourceName)\Test-TargetResource" {
 
-            Mock Get-DnsClientGlobalSetting -MockWith { $DnsClientGlobalSettings }
+            # Set up Mocks
+            foreach ($parameter in $ParameterList)
+            {
+                $ParameterPath = Join-Path `
+                    -Path 'WSMan:\Localhost\Service\' `
+                    -ChildPath $parameter.Path
+                Mock -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -MockWith { @{ Value = $Parameter.Default } }
+            }
 
-            Context 'DNS Client Global Settings all parameters are the same' {
+            Context 'WS-Man Service Config all parameters are the same' {
                 It 'should return true' {
-                    $Splat = $DnsClientGlobalSettingsSplat.Clone()
+                    $Splat = $WSManServiceConfigSplat.Clone()
                     Test-TargetResource @Splat | Should Be $True
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
+                    foreach ($parameter in $ParameterList)
+                    {
+                        $ParameterPath = Join-Path `
+                            -Path 'WSMan:\Localhost\Service\' `
+                            -ChildPath $parameter.Path
+                        Assert-MockCalled -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                    }
                 }
             }
 
-            Context 'DNS Client Global Settings SuffixSearchList is different' {
-                It 'should return false' {
-                    $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                    $Splat.SuffixSearchList = 'fabrikam.com'
-                    Test-TargetResource @Splat | Should Be $False
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                }
-            }
-
-            Context 'DNS Client Global Settings DevolutionLevel is different' {
-                It 'should return false' {
-                    $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                    $Splat.DevolutionLevel = $Splat.DevolutionLevel + 1
-                    Test-TargetResource @Splat | Should Be $False
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
-                }
-            }
-
-            Context 'DNS Client Global Settings UseDevolution is different' {
-                It 'should return false' {
-                    $Splat = $DnsClientGlobalSettingsSplat.Clone()
-                    $Splat.UseDevolution = -not $Splat.UseDevolution
-                    Test-TargetResource @Splat | Should Be $False
-                }
-                It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-DnsClientGlobalSetting -Exactly 1
+            foreach ($parameter in $ParameterList)
+            {
+                Context "WS-Man Service Config $($Parameter.Name) is different" {
+                    It 'should return false' {
+                        $Splat = $WSManServiceConfigSplat.Clone()
+                        $Splat.$($parameter.Name) = $parameter.TestVal
+                        Test-TargetResource @Splat | Should Be $False
+                    }
+                    It 'should call expected Mocks' {
+                        foreach ($parameter in $ParameterList)
+                        {
+                            $ParameterPath = Join-Path `
+                                -Path 'WSMan:\Localhost\Service\' `
+                                -ChildPath $parameter.Path
+                            Assert-MockCalled -CommandName Get-Item -ParameterFilter { $Path -eq $ParameterPath } -Exactly 1
+                        }
+                    }
                 }
             }
         }

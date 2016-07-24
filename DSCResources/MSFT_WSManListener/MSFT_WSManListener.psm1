@@ -37,7 +37,7 @@ function Get-TargetResource
         [String]
         $Ensure
     )
-    
+
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
         $($LocalizedData.GettingListenerMessage)
@@ -67,7 +67,7 @@ function Get-TargetResource
             }
     }
     Else
-    {       
+    {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
             $($LocalizedData.ListenerDoesNotExistMessage) `
@@ -159,7 +159,7 @@ function Set-TargetResource
             {
                 [String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
                 if ($MatchAlternate) {
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
+                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($HostName -in $_.DNSNameList.Unicode) -and
@@ -168,11 +168,11 @@ function Set-TargetResource
                 }
                 else
                 {
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
+                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
-                        ).Thumbprint    
+                        ).Thumbprint
                 } # if
             }
             if (($SubjectFormat -in 'Both','NameOnly') -and -not $Thumbprint)
@@ -181,7 +181,7 @@ function Set-TargetResource
                 [String] $HostName = $ENV:ComputerName
                 if ($MatchAlternate)
                 {
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
+                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($HostName -in $_.DNSNameList.Unicode) -and
@@ -190,11 +190,11 @@ function Set-TargetResource
                 }
                 else
                 {
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object { 
+                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                             ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
-                        ).Thumbprint    
+                        ).Thumbprint
                 } # if
             } # if
             if ($Thumbprint)
@@ -298,7 +298,7 @@ function Test-TargetResource
 
     # Lookup the existing Listener
     $Listeners = Get-Listener -Transport $Transport
-    
+
     # Get the default port for the transport if none was provided
     $Port = Get-DefaultPort -Transport $Transport -Port $Port
 
@@ -320,7 +320,7 @@ function Test-TargetResource
                     $($LocalizedData.ListenerOnWrongPortMessage) `
                         -f $Transport,$Listeners.Port,$Port
                     ) -join '' )
-                $desiredConfigurationMatch = $false                
+                $desiredConfigurationMatch = $false
             }
             if ($Listeners.Address -ne $Address)
             {
@@ -329,7 +329,7 @@ function Test-TargetResource
                     $($LocalizedData.ListenerOnWrongAddressMessage) `
                         -f $Transport,$Listeners.Address,$Address
                     ) -join '' )
-                $desiredConfigurationMatch = $false                
+                $desiredConfigurationMatch = $false
             }
         }
         else
@@ -379,13 +379,13 @@ function Get-Listener
         [String]
         $Transport
     )
-    
+
     $Listeners = @(Get-WSManInstance `
         -ResourceURI winrm/config/Listener `
         -Enumerate)
     if ($Listeners)
     {
-        
+
         return $Listeners.Where( {$_.Transport -eq $Transport } )
     }
 
