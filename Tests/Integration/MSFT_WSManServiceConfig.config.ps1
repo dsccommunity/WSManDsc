@@ -4,7 +4,7 @@ $WSManServiceConfigNew = [PSObject] @{}
 # Build the arrays using the ParameterList from the module itself
 foreach ($parameter in $ParameterList)
 {
-    $WSManServiceConfigNew += [PSObject] @{ $($parameter.Name) = $parameter.testval }
+    $WSManServiceConfigNew += [PSObject] @{ $($parameter.Name) = $($parameter.TestVal) }
 } # foreach
 
 Configuration MSFT_WSManServiceConfig_Config {
@@ -13,6 +13,7 @@ Configuration MSFT_WSManServiceConfig_Config {
         WSManServiceConfig Integration_Test {
             IsSingleInstance                 = 'Yes'
             RootSDDL                         = $WSManServiceConfigNew.RootSDDL
+<#
             MaxConnections                   = $WSManServiceConfigNew.MaxConnections
             MaxConcurrentOperationsPerUser   = $WSManServiceConfigNew.MaxConcurrentOperationsPerUser
             EnumerationTimeoutms             = $WSManServiceConfigNew.EnumerationTimeoutms
@@ -26,6 +27,7 @@ Configuration MSFT_WSManServiceConfig_Config {
             AuthCbtHardeningLevel            = $WSManServiceConfigNew.AuthCbtHardeningLevel
             EnableCompatibilityHttpListener  = $WSManServiceConfigNew.EnableCompatibilityHttpListener
             EnableCompatibilityHttpsListener = $WSManServiceConfigNew.EnableCompatibilityHttpsListener
+#>
         }
     }
 }
