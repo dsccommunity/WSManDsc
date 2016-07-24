@@ -20,6 +20,15 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Begin Testing
 try
 {
+    # Make sure WS-Man is senabled
+    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    {
+        $null = Enable-PSRemoting `
+            -SkipNetworkProfileCheck `
+            -Force `
+            -ErrorAction Stop
+    } # if
+
     #region Pester Tests
     InModuleScope $DSCResourceName {
 

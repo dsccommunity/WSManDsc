@@ -20,6 +20,15 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
+    # Make sure WS-Man is senabled
+    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    {
+        $null = Enable-PSRemoting `
+            -SkipNetworkProfileCheck `
+            -Force `
+            -ErrorAction Stop
+    } # if
+
     #region Integration Tests
     $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($Global:DSCResourceName).config.ps1"
     . $ConfigFile

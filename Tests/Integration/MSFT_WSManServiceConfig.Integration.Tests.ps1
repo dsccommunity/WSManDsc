@@ -41,6 +41,15 @@ foreach ($parameter in $ParameterList)
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
+    # Make sure WS-Man is senabled
+    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    {
+        $null = Enable-PSRemoting `
+            -SkipNetworkProfileCheck `
+            -Force `
+            -ErrorAction Stop
+    } # if
+
     # Set the Service Config to default settings
     foreach ($parameter in $ParameterList)
     {
