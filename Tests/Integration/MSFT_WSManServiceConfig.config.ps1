@@ -13,7 +13,6 @@ Configuration MSFT_WSManServiceConfig_Config {
         WSManServiceConfig Integration_Test {
             IsSingleInstance                 = 'Yes'
             RootSDDL                         = $WSManServiceConfigNew.RootSDDL
-<#
             MaxConnections                   = $WSManServiceConfigNew.MaxConnections
             MaxConcurrentOperationsPerUser   = $WSManServiceConfigNew.MaxConcurrentOperationsPerUser
             EnumerationTimeoutms             = $WSManServiceConfigNew.EnumerationTimeoutms
@@ -27,7 +26,6 @@ Configuration MSFT_WSManServiceConfig_Config {
             AuthCbtHardeningLevel            = $WSManServiceConfigNew.AuthCbtHardeningLevel
             EnableCompatibilityHttpListener  = $WSManServiceConfigNew.EnableCompatibilityHttpListener
             EnableCompatibilityHttpsListener = $WSManServiceConfigNew.EnableCompatibilityHttpsListener
-#>
         }
     }
 }

@@ -21,21 +21,10 @@ $TestEnvironment = Initialize-TestEnvironment `
 $CurrentWsManServiceConfig = @{}
 foreach ($parameter in $ParameterList)
 {
-    if ($parameter.Path)
-    {
-        $ParameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\Service\' `
-            -ChildPath "$($parameter.Path)\$($parameter.Name)"
-        $ParameterName = "$($parameter.Path)$($parameter.Name)"
-    }
-    else
-    {
-        $ParameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\Service\' `
-            -ChildPath $($parameter.Name)
-        $ParameterName = $($parameter.Name)
-    } # if
-    $CurrentWsManServiceConfig += @{ $ParameterName = (Get-Item -Path $ParameterPath).Value }
+    $ParameterPath = Join-Path `
+        -Path 'WSMan:\Localhost\Service\' `
+        -ChildPath $parameter.Path
+    $CurrentWsManServiceConfig += @{ $($Parameter.Name) = (Get-Item -Path $ParameterPath).Value }
 } # foreach
 
 # Using try/finally to always cleanup even if something awful happens.
@@ -84,7 +73,7 @@ try
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
                     -ChildPath $parameter.Path
-                (Get-Item -Path $ParameterPath).Value | Should Be $WSManServiceConfigNew.$($Parameter.Name)
+                (Get-Item -Path $ParameterPath).Value | Should Be $WSManServiceConfigNew.$($parameter.Name)
             } # foreach
         }
     }
