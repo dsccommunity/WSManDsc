@@ -1,13 +1,19 @@
-# These are the new values that the integration tests will set
-$WSManServiceConfigNew = [PSObject] @{}
-
-# Build the arrays using the ParameterList from the module itself
-foreach ($parameter in $ParameterList)
-{
-    $WSManServiceConfigNew += [PSObject] @{ $($parameter.Name) = $($parameter.TestVal) }
-} # foreach
-
 Configuration MSFT_WSManServiceConfig_Config {
+    # Load the parameter List from the data file
+    $ParameterListPath = Join-Path `
+        -Path "$PSScriptRoot\..\..\DscResources\MSFT_WSManServiceConfig\" `
+        -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
+    $ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+
+    # These are the new values that the integration tests will set
+    $WSManServiceConfigNew = @{}
+
+    # Build the arrays using the ParameterList from the module itself
+    foreach ($parameter in $ParameterList)
+    {
+        $WSManServiceConfigNew += @{ $($parameter.Name) = $($parameter.TestVal) }
+    } # foreach
+
     Import-DscResource -ModuleName WSManDsc
     node localhost {
         WSManServiceConfig Integration_Test {
