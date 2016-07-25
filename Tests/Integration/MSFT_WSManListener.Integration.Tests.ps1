@@ -60,11 +60,6 @@ try
             $NewListener.Port               | Should Be $Listener.Port
             $NewListener.Address            | Should Be $Listener.Address
         }
-
-        # Clean up
-        Remove-WSManInstance `
-            -ResourceURI winrm/config/Listener `
-            -SelectorSet @{ Transport=$Listener.Transport;Address=$Listener.Address }
     }
     #endregion
 }
