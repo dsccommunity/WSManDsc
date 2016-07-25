@@ -20,6 +20,9 @@ else
     This is an array of all the parameters used by this resource.
     The default and testval properties are only used by unit/integration tests
     but is stored here so that a duplicate table does not have to be created.
+    The IntTests controls whether or not this parameter should be tested using
+    integration tests. This prevents integration tests from preventing the WS-Man
+    Service from being completely locked out.
 #>
 data ParameterList
 {
@@ -29,84 +32,98 @@ data ParameterList
            Type    = 'String';
            Default = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GXGW;;;WD)';
            TestVal = 'O:BAG:SYD:PAI(D;OICI;FA;;;BG)(A;OICI;FA;;;BA)(A;OICIIO;FA;;;CO)(A;OICI;FA;;;SY)(A;OICI;FA;;;BU)S:AI(AU;OICINPFA;RPDTSDWD;;;BU)(AU;OICINPSA;CCSWRPDTLOSD;;;BU)';
+           IntTest = $false;
         },
         @{ Name    = 'MaxConnections';
            Path    = 'MaxConnections';
            Type    = 'Uint32';
            Default = 300;
            TestVal = 301;
+           IntTest = $false;
         },
         @{ Name    = 'MaxConcurrentOperationsPerUser';
            Path    = 'MaxConcurrentOperationsPerUser';
            Type    = 'Uint32';
            Default = 1500;
            TestVal = 1501;
+           IntTest = $false;
         },
         @{ Name    = 'EnumerationTimeoutms';
            Path    = 'EnumerationTimeoutms';
            Type    = 'Uint32';
            Default = 240000;
            TestVal = 240001;
+           IntTest = $false;
         },
         @{ Name    = 'MaxPacketRetrievalTimeSeconds';
            Path    = 'MaxPacketRetrievalTimeSeconds';
            Type    = 'Uint32';
            Default = 120;
            TestVal = 121;
+           IntTest = $false;
         },
         @{ Name    = 'AllowUnencrypted';
            Path    = 'AllowUnencrypted';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $false;
         },
         @{ Name    = 'AuthBasic';
            Path    = 'Auth\Basic';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $false;
         },
         @{ Name    = 'AuthKerberos';
            Path    = 'Auth\Kerberos';
            Type    = 'Boolean';
            Default = $true;
            TestVal = $false;
+           IntTest = $false;
         },
         @{ Name    = 'AuthNegotiate';
            Path    = 'Auth\Negotiate';
            Type    = 'Boolean';
            Default = $true;
            TestVal = $false;
+           IntTest = $false;
         },
         @{ Name    = 'AuthCertificate';
            Path    = 'Auth\Certificate';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $false;
         },
         @{ Name    = 'AuthCredSSP';
            Path    = 'Auth\CredSSP';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $false;
         },
         @{ Name    = 'AuthCbtHardeningLevel';
            Path    = 'Auth\CbtHardeningLevel';
            Type    = 'String';
            Default = 'relaxed';
            TestVal = 'strict';
+           IntTest = $false;
         },
         @{ Name    = 'EnableCompatibilityHttpListener';
            Path    = 'EnableCompatibilityHttpListener';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $true;
         },
         @{ Name    = 'EnableCompatibilityHttpsListener';
            Path    = 'EnableCompatibilityHttpsListener';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
+           IntTest = $true;
         }
     )
 }

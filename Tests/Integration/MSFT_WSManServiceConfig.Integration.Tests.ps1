@@ -19,7 +19,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 # Backup the existing settings
 $CurrentWsManServiceConfig = @{}
-foreach ($parameter in $ParameterList)
+foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
 {
     $ParameterPath = Join-Path `
         -Path 'WSMan:\Localhost\Service\' `
@@ -40,7 +40,7 @@ try
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in $ParameterList)
+    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -68,7 +68,7 @@ try
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
-            foreach ($parameter in $ParameterList)
+            foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
             {
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -82,7 +82,7 @@ try
 finally
 {
     # Clean up by restoring all parameters
-    foreach ($parameter in $ParameterList)
+    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
