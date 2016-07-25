@@ -44,7 +44,7 @@ try
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
-            -ChildPath $parameter.Pame
+            -ChildPath $parameter.Path
         Set-Item -Path $ParameterPath -Value $($parameter.Default) -Force
     } # foreach
 

@@ -31,43 +31,43 @@ data ParameterList
            Path    = 'RootSDDL';
            Type    = 'String';
            Default = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GXGW;;;WD)';
-           TestVal = 'O:BAG:SYD:PAI(D;OICI;FA;;;BG)(A;OICI;FA;;;BA)(A;OICIIO;FA;;;CO)(A;OICI;FA;;;SY)(A;OICI;FA;;;BU)S:AI(AU;OICINPFA;RPDTSDWD;;;BU)(AU;OICINPSA;CCSWRPDTLOSD;;;BU)';
-           IntTest = $false;
+           TestVal = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GA;;;WD)';
+           IntTest = $true;
         },
         @{ Name    = 'MaxConnections';
            Path    = 'MaxConnections';
            Type    = 'Uint32';
            Default = 300;
            TestVal = 301;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'MaxConcurrentOperationsPerUser';
            Path    = 'MaxConcurrentOperationsPerUser';
            Type    = 'Uint32';
            Default = 1500;
            TestVal = 1501;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'EnumerationTimeoutms';
            Path    = 'EnumerationTimeoutms';
            Type    = 'Uint32';
            Default = 240000;
            TestVal = 240001;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'MaxPacketRetrievalTimeSeconds';
            Path    = 'MaxPacketRetrievalTimeSeconds';
            Type    = 'Uint32';
            Default = 120;
            TestVal = 121;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'AllowUnencrypted';
            Path    = 'AllowUnencrypted';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'AuthBasic';
            Path    = 'Auth\Basic';
@@ -95,21 +95,21 @@ data ParameterList
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'AuthCredSSP';
            Path    = 'Auth\CredSSP';
            Type    = 'Boolean';
            Default = $false;
            TestVal = $true;
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'AuthCbtHardeningLevel';
            Path    = 'Auth\CbtHardeningLevel';
            Type    = 'String';
            Default = 'relaxed';
            TestVal = 'strict';
-           IntTest = $false;
+           IntTest = $true;
         },
         @{ Name    = 'EnableCompatibilityHttpListener';
            Path    = 'EnableCompatibilityHttpListener';
