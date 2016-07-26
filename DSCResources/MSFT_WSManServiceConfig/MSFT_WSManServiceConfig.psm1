@@ -256,4 +256,4 @@ function New-TerminatingError
     $PSCmdlet.ThrowTerminatingError($errorRecord)
 }
 
-Export-ModuleMember -Function *-TargetResource -Variable ParameterList
+Export-ModuleMember -Function *-TargetResource

@@ -17,6 +17,12 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion HEADER
 
+# Load the parameter List from the data file
+$ParameterListPath = Join-Path `
+    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
+    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
+$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+
 # Begin Testing
 try
 {

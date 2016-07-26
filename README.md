@@ -114,6 +114,7 @@ Start-DscConfiguration -Path Sample_WSManServiceConfig -Wait -Verbose -Force
 ### Unreleased
 * Added WSManServiceConfig resource.
 * Prepare module for moving over to DSC community resources.
+* Fixes WSManListener when Compatibility Listeners are enabled.
 
 ### 1.0.1.0
 * Documentation and Module Manifest Update only.

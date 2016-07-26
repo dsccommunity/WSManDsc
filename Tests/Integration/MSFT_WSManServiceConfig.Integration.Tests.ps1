@@ -17,14 +17,20 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Integration
 #endregion
 
+# Load the parameter List from the data file
+$ParameterListPath = Join-Path `
+    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
+    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
+$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+
 # Backup the existing settings
-$CurrentWsManServiceConfig = @{}
+$CurrentWsManServiceConfig = [PSObject] @{}
 foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
 {
     $ParameterPath = Join-Path `
         -Path 'WSMan:\Localhost\Service\' `
         -ChildPath $parameter.Path
-    $CurrentWsManServiceConfig += @{ $($Parameter.Name) = (Get-Item -Path $ParameterPath).Value }
+    $CurrentWsManServiceConfig.$($Parameter.Name) = (Get-Item -Path $ParameterPath).Value
 } # foreach
 
 # Using try/finally to always cleanup even if something awful happens.
