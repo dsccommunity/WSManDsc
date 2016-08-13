@@ -1,5 +1,5 @@
-$Global:DSCModuleName   = 'WSManDsc'
-$Global:DSCResourceName = 'MSFT_WsManServiceConfig'
+$script:DSCModuleName   = 'WSManDsc'
+$script:DSCResourceName = 'MSFT_WsManServiceConfig'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -12,8 +12,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource
 
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 #endregion HEADER
 
@@ -36,7 +36,7 @@ try
     } # if
 
     #region Pester Tests
-    InModuleScope $Global:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
 
         # Create the Mock Objects that will be used for running tests
         $WsManServiceConfigSettings = [PSObject]@{}
@@ -49,7 +49,7 @@ try
             $WSManServiceConfigSplat += [PSObject] @{ $($parameter.Name) = $parameter.default }
         }
 
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
             Context 'WS-Man Service Config Exists' {
 
@@ -81,7 +81,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
             # Set up Mocks
             foreach ($parameter in $ParameterList)
@@ -143,7 +143,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe "$($script:DSCResourceName)\Test-TargetResource" {
 
             # Set up Mocks
             foreach ($parameter in $ParameterList)
@@ -191,7 +191,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\New-TerminatingError" {
+        Describe "$($script:DSCResourceName)\New-TerminatingError" {
 
             Context 'Create a TestError Exception' {
 

@@ -1,3 +1,4 @@
+# Create an HTTP Listener on port 5985
 configuration Sample_WSManListener_HTTP
 {
     Import-DscResource -Module WSManDsc

@@ -89,7 +89,7 @@ Start-DscConfiguration -Path Sample_WSManListener_HTTPS -Wait -Verbose -Force
 * **EnableCompatibilityHttpsListener**: Specifies whether the compatibility HTTPS listener is enabled. { True | _False_ }
 
 #### Examples
-Configure the WS-Man Service:
+Enable compatibility HTTP and HTTPS listeners, set maximum connections to 100, allow CredSSP (not recommended) and allow unecrypted WS-Man Sessions (not recommended):
 ```powershell
 configuration Sample_WSManServiceConfig
 {

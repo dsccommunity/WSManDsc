@@ -25,11 +25,13 @@ Configuration MSFT_WSManServiceConfig_Config {
             EnumerationTimeoutms             = $WSManServiceConfigNew.EnumerationTimeoutms
             MaxPacketRetrievalTimeSeconds    = $WSManServiceConfigNew.MaxPacketRetrievalTimeSeconds
             AllowUnencrypted                 = $WSManServiceConfigNew.AllowUnencrypted
-# Integration testing these values can result in difficult to reverse damage to the test server.
-# So these tests are disabled. Only perform them on a disposable test server.
-#            AuthBasic                        = $WSManServiceConfigNew.AuthBasic
-#            AuthKerberos                     = $WSManServiceConfigNew.AuthKerberos
-#            AuthNegotiate                    = $WSManServiceConfigNew.AuthNegotiate
+<#
+Integration testing these values can result in difficult to reverse damage to the test server.
+So these tests are disabled. Only perform them on a disposable test server.
+            AuthBasic                        = $WSManServiceConfigNew.AuthBasic
+            AuthKerberos                     = $WSManServiceConfigNew.AuthKerberos
+            AuthNegotiate                    = $WSManServiceConfigNew.AuthNegotiate
+#>
             AuthCertificate                  = $WSManServiceConfigNew.AuthCertificate
             AuthCredSSP                      = $WSManServiceConfigNew.AuthCredSSP
             AuthCbtHardeningLevel            = $WSManServiceConfigNew.AuthCbtHardeningLevel

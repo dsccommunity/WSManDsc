@@ -1,5 +1,5 @@
-$Global:DSCModuleName   = 'WSManDsc'
-$Global:DSCResourceName = 'MSFT_WSManListener'
+$script:DSCModuleName   = 'WSManDsc'
+$script:DSCResourceName = 'MSFT_WSManListener'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -12,8 +12,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource
 
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 #endregion HEADER
 
@@ -68,7 +68,7 @@ try
             CertificateThumbprint = $MockCertificateThumbprint
         }
 
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
             Context 'No listeners exist' {
 
@@ -122,7 +122,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
             Context 'HTTP Listener does not exist but should' {
 
@@ -244,7 +244,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe "$($script:DSCResourceName)\Test-TargetResource" {
             Context 'HTTP Listener does not exist but should' {
 
                 Mock Get-WSManInstance -MockWith { }
