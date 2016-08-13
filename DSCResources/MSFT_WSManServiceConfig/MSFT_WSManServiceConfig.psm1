@@ -21,14 +21,20 @@ else
     The default and testval properties are only used by unit/integration tests
     but is stored here so that a duplicate table does not have to be created.
     The IntTests controls whether or not this parameter should be tested using
-    integration tests. This prevents integration tests from preventing the WS-Man
-    Service from being completely locked out.
+    integration tests. This prevents integration tests from completely locking
+    out the WS-Man service and doing difficult to reverse damage to the OS config.
 #>
-$ParameterListPath = Join-Path `
+$parameterListPath = Join-Path `
     -Path $PSScriptRoot `
     -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+$parameterList = Invoke-Expression "DATA { $(Get-Content -Path $parameterListPath -Raw) }"
 
+<#
+    .SYNOPSIS
+    Returns the WS-Man Service configuration.
+    .PARAMETER IsSingleInstance
+    Specifies the resource is a single instance, the value must be 'Yes'
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -47,20 +53,55 @@ function Get-TargetResource
         ) -join '' )
 
     # Generate the return object.
-    $ReturnValue = @{
+    $returnValue = @{
         IsSingleInstance = 'Yes'
     }
-    foreach ($parameter in $ParameterList)
+    foreach ($parameter in $parameterList)
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $($parameter.Path)
-        $ReturnValue += @{ $($parameter.Name) = (Get-Item -Path $ParameterPath).Value }
+        $returnValue += @{ $($parameter.Name) = (Get-Item -Path $ParameterPath).Value }
     } # foreach
 
-    return $ReturnValue
+    return $returnValue
 } # Get-TargetResource
 
+<#
+    .SYNOPSIS
+    Sets the current WS-Man Service configuration.
+    .PARAMETER IsSingleInstance
+    Specifies the resource is a single instance, the value must be 'Yes'
+    .PARAMETER RootSDDL
+    Specifies the security descriptor that controls remote access to the listener.
+    .PARAMETER MaxConnections
+    Specifies the maximum number of active requests that the service can process simultaneously.
+    .PARAMETER MaxConcurrentOperationsPerUser
+    Specifies the maximum number of concurrent operations that any user can remotely open on the
+    same system.
+    .PARAMETER EnumerationTimeoutms
+    Specifies the idle time-out in milliseconds between Pull messages.
+    .PARAMETER MaxPacketRetrievalTimeSeconds
+    Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
+    .PARAMETER AllowUnencrypted
+    Allows the client computer to request unencrypted traffic.
+    .PARAMETER AuthBasic
+    Allows the WinRM service to use Basic authentication.
+    .PARAMETER AuthKerberos
+    Allows the WinRM service to use Kerberos authentication.
+    .PARAMETER AuthNegotiate
+    Allows the WinRM service to use Negotiate authentication.
+    .PARAMETER AuthCertificate
+    Allows the WinRM service to use client certificate-based authentication.
+    .PARAMETER AuthCredSSP
+    Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
+    .PARAMETER AuthCbtHardeningLevel
+    Allows the client computer to request unencrypted traffic.
+    .PARAMETER EnableCompatibilityHttpListener
+    Specifies whether the compatibility HTTP listener is enabled.
+    .PARAMETER EnableCompatibilityHttpsListener
+    Specifies whether the compatibility HTTPS listener is enabled.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -121,33 +162,67 @@ function Set-TargetResource
         ) -join '' )
 
     # Step through each parameter and update any that differ
-    foreach ($parameter in $ParameterList)
+    foreach ($parameter in $parameterList)
     {
-        $ParameterPath = Join-Path `
+        $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $parameter.Path
 
-        $ParameterCurrent = (Get-Item -Path $ParameterPath).Value
-        $ParameterNew = (Invoke-Expression -Command "`$$($Parameter.Name)")
+        $parameterCurrent = (Get-Item -Path $parameterPath).Value
+        $parameterNew = (Invoke-Expression -Command "`$$($parameter.Name)")
 
-        if ($PSBoundParameters.ContainsKey($Parameter.Name) `
-            -and ($ParameterCurrent -ne $ParameterNew))
+        if ($PSBoundParameters.ContainsKey($parameter.Name) `
+            -and ($parameterCurrent -ne $parameterNew))
         {
-            Set-Item -Path $ParameterPath -Value $ParameterNew -Force
+            Set-Item -Path $parameterPath -Value $parameterNew -Force
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($LocalizedData.WSManServiceConfigUpdateParameterMessage) `
-                    -f $parameter.Name,$ParameterCurrent,$ParameterNew
+                    -f $parameter.Name,$parameterCurrent,$parameterNew
                 ) -join '' )
         } # if
     } # foreach
 } # Set-TargetResource
 
+<#
+    .SYNOPSIS
+    Tests the current WS-Man Service configuration to see if any changes need to be made.
+    .PARAMETER IsSingleInstance
+    Specifies the resource is a single instance, the value must be 'Yes'
+    .PARAMETER RootSDDL
+    Specifies the security descriptor that controls remote access to the listener.
+    .PARAMETER MaxConnections
+    Specifies the maximum number of active requests that the service can process simultaneously.
+    .PARAMETER MaxConcurrentOperationsPerUser
+    Specifies the maximum number of concurrent operations that any user can remotely open on the
+    same system.
+    .PARAMETER EnumerationTimeoutms
+    Specifies the idle time-out in milliseconds between Pull messages.
+    .PARAMETER MaxPacketRetrievalTimeSeconds
+    Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
+    .PARAMETER AllowUnencrypted
+    Allows the client computer to request unencrypted traffic.
+    .PARAMETER AuthBasic
+    Allows the WinRM service to use Basic authentication.
+    .PARAMETER AuthKerberos
+    Allows the WinRM service to use Kerberos authentication.
+    .PARAMETER AuthNegotiate
+    Allows the WinRM service to use Negotiate authentication.
+    .PARAMETER AuthCertificate
+    Allows the WinRM service to use client certificate-based authentication.
+    .PARAMETER AuthCredSSP
+    Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
+    .PARAMETER AuthCbtHardeningLevel
+    Allows the client computer to request unencrypted traffic.
+    .PARAMETER EnableCompatibilityHttpListener
+    Specifies whether the compatibility HTTP listener is enabled.
+    .PARAMETER EnableCompatibilityHttpsListener
+    Specifies whether the compatibility HTTPS listener is enabled.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    [CmdletBinding()]
     param
     (
         [parameter(Mandatory = $true)]
@@ -205,33 +280,44 @@ function Test-TargetResource
         ) -join '' )
 
     # Flag to signal whether settings are correct
-    [Boolean] $DesiredConfigurationMatch = $true
+    [Boolean] $desiredConfigurationMatch = $true
 
     # Check each parameter
-    foreach ($parameter in $ParameterList)
+    foreach ($parameter in $parameterList)
     {
-        $ParameterPath = Join-Path `
+        $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $parameter.Path
 
-        $ParameterCurrent = (Get-Item -Path $ParameterPath).Value
-        $ParameterNew = (Invoke-Expression -Command "`$$($Parameter.Name)")
+        $parameterCurrent = (Get-Item -Path $parameterPath).Value
+        $parameterNew = (Invoke-Expression -Command "`$$($parameter.Name)")
 
-        if ($PSBoundParameters.ContainsKey($Parameter.Name) `
-            -and ($ParameterCurrent -ne $ParameterNew))
+        if ($PSBoundParameters.ContainsKey($parameter.Name) `
+            -and ($parameterCurrent -ne $parameterNew))
         {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($LocalizedData.WSManServiceConfigParameterNeedsUpdateMessage) `
-                    -f $Parameter.Name,$ParameterCurrent,$ParameterNew
+                    -f $parameter.Name,$parameterCurrent,$parameterNew
                 ) -join '' )
             $desiredConfigurationMatch = $false
         } # if
     } # foreach
 
-    return $DesiredConfigurationMatch
+    return $desiredConfigurationMatch
 } # Test-TargetResource
 
+# Helper Functions
+<#
+    .SYNOPSIS
+    Throw a custome exception.
+    .PARAMETER ErrorId
+    The identifier representing the exception being thrown.
+    .PARAMETER ErrorMessage
+    The error message to be used for this exception.
+    .PARAMETER ErrorCategory
+    The exception error category.
+#>
 function New-TerminatingError
 {
     [CmdletBinding()]
