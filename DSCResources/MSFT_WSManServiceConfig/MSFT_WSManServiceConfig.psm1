@@ -24,10 +24,9 @@ else
     integration tests. This prevents integration tests from completely locking
     out the WS-Man service and doing difficult to reverse damage to the OS config.
 #>
-$parameterListPath = Join-Path `
-    -Path $PSScriptRoot `
-    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$parameterList = Invoke-Expression "DATA { $(Get-Content -Path $parameterListPath -Raw) }"
+$parameterList = Import-LocalizedData `
+    -BaseDirectory $PSScriptRoot `
+    -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 <#
     .SYNOPSIS
@@ -169,7 +168,7 @@ function Set-TargetResource
             -ChildPath $parameter.Path
 
         $parameterCurrent = (Get-Item -Path $parameterPath).Value
-        $parameterNew = (Invoke-Expression -Command "`$$($parameter.Name)")
+        $parameterNew = (Get-Variable -Name $parameter.Name).Value
 
         if ($PSBoundParameters.ContainsKey($parameter.Name) `
             -and ($parameterCurrent -ne $parameterNew))
@@ -290,7 +289,7 @@ function Test-TargetResource
             -ChildPath $parameter.Path
 
         $parameterCurrent = (Get-Item -Path $parameterPath).Value
-        $parameterNew = (Invoke-Expression -Command "`$$($parameter.Name)")
+        $parameterNew = (Get-Variable -Name $parameter.Name).Value
 
         if ($PSBoundParameters.ContainsKey($parameter.Name) `
             -and ($parameterCurrent -ne $parameterNew))

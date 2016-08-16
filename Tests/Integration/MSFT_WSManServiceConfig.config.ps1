@@ -1,15 +1,14 @@
 # Load the parameter List from the data file
 [String] $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
-$ParameterListPath = Join-Path `
-    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
-    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+$parameterList = Import-LocalizedData `
+    -BaseDirectory $PSScriptRoot `
+    -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # These are the new values that the integration tests will set
 $WSManServiceConfigNew = [PSObject] @{}
 
 # Build the arrays using the ParameterList from the module itself
-foreach ($parameter in $ParameterList)
+foreach ($parameter in $parameterList)
 {
     $WSManServiceConfigNew.$($parameter.Name) = $($parameter.TestVal)
 } # foreach

@@ -18,14 +18,13 @@ $TestEnvironment = Initialize-TestEnvironment `
 #endregion HEADER
 
 # Load the parameter List from the data file
-$ParameterListPath = Join-Path `
-    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
-    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+$parameterList = Import-LocalizedData `
+    -BaseDirectory $PSScriptRoot `
+    -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # Backup the existing settings
 $CurrentWsManServiceConfig = [PSObject] @{}
-foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
 {
     $ParameterPath = Join-Path `
         -Path 'WSMan:\Localhost\Service\' `
@@ -46,7 +45,7 @@ try
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -74,7 +73,7 @@ try
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
-            foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+            foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
             {
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -88,7 +87,7 @@ try
 finally
 {
     # Clean up by restoring all parameters
-    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
