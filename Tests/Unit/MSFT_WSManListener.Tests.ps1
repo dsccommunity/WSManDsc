@@ -20,7 +20,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Begin Testing
 try
 {
-    # Make sure WS-Man is senabled
+    # Make sure WS-Man is enabled
     if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -70,10 +70,9 @@ try
 
         Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
+            Mock Get-WSManInstance -MockWith { }
+
             Context 'No listeners exist' {
-
-                Mock Get-WSManInstance -MockWith { }
-
                 It 'should return absent listener' {
                     $Result = Get-TargetResource `
                         -Transport HTTP `
@@ -85,10 +84,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+
             Context 'Requested listener does not exist' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-
                 It 'should return absent listener' {
                     $Result = Get-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -101,9 +99,6 @@ try
             }
 
             Context 'Requested listener does exist' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-
                 It 'should return correct listener' {
                     $Result = Get-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -124,12 +119,11 @@ try
 
         Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
+            Mock Get-WSManInstance -MockWith { }
+            Mock Remove-WSManInstance -MockWith { }
+            Mock New-WSManInstance -MockWith { }
+
             Context 'HTTP Listener does not exist but should' {
-
-                Mock Get-WSManInstance -MockWith { }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -141,13 +135,10 @@ try
                     Assert-MockCalled -commandName New-WSManInstance -Exactly 1
                 }
             }
+
+            Mock Get-ChildItem -MockWith { $MockCertificate }
+
             Context 'HTTPS Listener does not exist but should' {
-
-                Mock Get-WSManInstance -MockWith { }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-                Mock Get-ChildItem -MockWith { $MockCertificate }
-
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -162,12 +153,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+
             Context 'HTTP Listener exists but should not' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -181,12 +169,6 @@ try
             }
 
             Context 'HTTP Listener exists and should' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-                Mock Get-ChildItem -MockWith { $MockCertificate }
-
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -201,13 +183,9 @@ try
                 }
             }
 
-            Context 'HTTPS Listener exists and should' {
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-                Mock Get-ChildItem -MockWith { $MockCertificate }
-
+            Context 'HTTPS Listener exists and HTTP is required' {
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -222,13 +200,9 @@ try
                 }
             }
 
-            Context 'Both Listeners exists and HTTPS should' {
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
 
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
-                Mock Remove-WSManInstance -MockWith { }
-                Mock New-WSManInstance -MockWith { }
-                Mock Get-ChildItem -MockWith { $MockCertificate }
-
+            Context 'Both Listeners exists and HTTPS is required' {
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -245,10 +219,9 @@ try
         }
 
         Describe "$($script:DSCResourceName)\Test-TargetResource" {
+            Mock Get-WSManInstance -MockWith { }
+
             Context 'HTTP Listener does not exist but should' {
-
-                Mock Get-WSManInstance -MockWith { }
-
                 It 'should return false' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -259,9 +232,6 @@ try
                 }
             }
             Context 'HTTPS Listener does not exist but should' {
-
-                Mock Get-WSManInstance -MockWith { }
-
                 It 'should return false' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -273,10 +243,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+
             Context 'HTTP Listener exists but should not' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-
                 It 'should return false' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -286,11 +255,10 @@ try
                     Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
                 }
             }
+
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
             Context 'HTTPS Listener exists but should not' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
-
                 It 'should return false' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -301,10 +269,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+
             Context 'HTTP Listener exists and should' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
-
                 It 'should return true' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTP.Transport `
@@ -315,10 +282,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
+
             Context 'HTTPS Listener exists and should' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
-
                 It 'should return true' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -329,10 +295,9 @@ try
                 }
             }
 
+            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
+
             Context 'Both Listeners exists and HTTPS should' {
-
-                Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
-
                 It 'should return true' {
                     Test-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `

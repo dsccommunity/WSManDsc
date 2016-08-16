@@ -26,7 +26,7 @@ $ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPat
 # Begin Testing
 try
 {
-    # Make sure WS-Man is senabled
+    # Make sure WS-Man is enabled
     if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -195,7 +195,7 @@ try
 
             Context 'Create a TestError Exception' {
 
-                It 'should throw an TestError exception' {
+                It 'should throw a TestError exception' {
                     $errorId = 'TestError'
                     $errorCategory = [System.Management.Automation.ErrorCategory]::InvalidArgument
                     $errorMessage = 'Test Error Message'

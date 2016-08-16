@@ -20,7 +20,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
-    # Make sure WS-Man is senabled
+    # Make sure WS-Man is enabled
     if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `

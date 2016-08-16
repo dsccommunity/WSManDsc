@@ -1,5 +1,5 @@
 # Enable compatibility HTTP and HTTPS listeners, set maximum connections to 100
-# allow CredSSP (not recommended) and allow unecrypted WS-Man Sessions (not recommended)
+# allow CredSSP (not recommended) and allow unecrypted WS-Man Sessions (not recommended).
 configuration Sample_WSManServiceConfig
 {
     Import-DscResource -Module WSManDsc
