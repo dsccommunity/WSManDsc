@@ -1,7 +1,7 @@
 # Load the parameter List from the data file
 [String] $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
 $parameterList = Import-LocalizedData `
-    -BaseDirectory $PSScriptRoot `
+    -BaseDirectory "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
     -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # These are the new values that the integration tests will set

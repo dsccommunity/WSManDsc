@@ -19,7 +19,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 # Load the parameter List from the data file
 $parameterList = Import-LocalizedData `
-    -BaseDirectory $PSScriptRoot `
+    -BaseDirectory "$moduleRoot\DscResources\$($script:DSCResourceName)\" `
     -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # Backup the existing settings
