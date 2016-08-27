@@ -21,7 +21,7 @@ Configuration MSFT_WSManServiceConfig_Config {
             RootSDDL                         = $WSManServiceConfigNew.RootSDDL
             MaxConnections                   = $WSManServiceConfigNew.MaxConnections
             MaxConcurrentOperationsPerUser   = $WSManServiceConfigNew.MaxConcurrentOperationsPerUser
-            EnumerationTimeoutms             = $WSManServiceConfigNew.EnumerationTimeoutms
+            EnumerationTimeoutMS             = $WSManServiceConfigNew.EnumerationTimeoutMS
             MaxPacketRetrievalTimeSeconds    = $WSManServiceConfigNew.MaxPacketRetrievalTimeSeconds
             AllowUnencrypted                 = $WSManServiceConfigNew.AllowUnencrypted
 <#

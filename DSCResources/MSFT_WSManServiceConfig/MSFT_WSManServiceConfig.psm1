@@ -78,7 +78,7 @@ function Get-TargetResource
     .PARAMETER MaxConcurrentOperationsPerUser
     Specifies the maximum number of concurrent operations that any user can remotely open on the
     same system.
-    .PARAMETER EnumerationTimeoutms
+    .PARAMETER EnumerationTimeoutMS
     Specifies the idle time-out in milliseconds between Pull messages.
     .PARAMETER MaxPacketRetrievalTimeSeconds
     Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
@@ -121,7 +121,7 @@ function Set-TargetResource
         $MaxConcurrentOperationsPerUser,
 
         [Uint32]
-        $EnumerationTimeoutms,
+        $EnumerationTimeoutMS,
 
         [Uint32]
         $MaxPacketRetrievalTimeSeconds,
@@ -195,7 +195,7 @@ function Set-TargetResource
     .PARAMETER MaxConcurrentOperationsPerUser
     Specifies the maximum number of concurrent operations that any user can remotely open on the
     same system.
-    .PARAMETER EnumerationTimeoutms
+    .PARAMETER EnumerationTimeoutMS
     Specifies the idle time-out in milliseconds between Pull messages.
     .PARAMETER MaxPacketRetrievalTimeSeconds
     Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
@@ -239,7 +239,7 @@ function Test-TargetResource
         $MaxConcurrentOperationsPerUser,
 
         [Uint32]
-        $EnumerationTimeoutms,
+        $EnumerationTimeoutMS,
 
         [Uint32]
         $MaxPacketRetrievalTimeSeconds,
