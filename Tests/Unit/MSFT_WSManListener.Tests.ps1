@@ -20,28 +20,56 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Begin Testing
 try
 {
-    # Make sure WS-Man is enabled
-    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
-    {
-        $null = Enable-PSRemoting `
-            -SkipNetworkProfileCheck `
-            -Force `
-            -ErrorAction Stop
-    } # if
-
     #region Pester Tests
-    InModuleScope $DSCResourceName {
+    InModuleScope $script:DSCResourceName {
+        $script:DSCResourceName = 'MSFT_WSManListener'
+        # Function to create a exception object for testing output exceptions
+        function Get-InvalidArguementException
+        {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [String]
+                $Message,
+
+                [Parameter(Mandatory = $true)]
+                [ValidateNotNullOrEmpty()]
+                [String]
+                $ArgumentName
+            )
+
+            $argumentException = New-Object -TypeName 'ArgumentException' -ArgumentList @( $Message,
+                $ArgumentName )
+            $newObjectParams = @{
+                TypeName = 'System.Management.Automation.ErrorRecord'
+                ArgumentList = @( $argumentException, $ArgumentName, 'InvalidArgument', $null )
+            }
+            $errorRecord = New-Object @newObjectParams
+
+            return $errorRecord
+        } # end function Get-InvalidArguementException
 
         # Create the Mock Objects that will be used for running tests
         $MockFQDN = 'SERVER1.CONTOSO.COM'
         $MockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
+        $MockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
         $MockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
+        $MockDN = 'O=Contoso Inc, ST=Pennsylvania, C=US'
         $MockCertificate = [PSObject]@{
             Thumbprint = $MockCertificateThumbprint
-            Subject = "CN=$([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)"
+            Subject = "CN=$MockHostName"
             Issuer = $MockIssuer
             Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
-            DNSNameList = @{ Unicode = "$([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)" }
+            DNSNameList = @{ Unicode = $MockHostname }
+        }
+        $MockCertificateDN = [PSObject]@{
+            Thumbprint = $MockCertificateThumbprint
+            Subject = "CN=$MockHostname,$MockDN"
+            Issuer = $MockIssuer
+            Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+            DNSNameList = @{ Unicode = $MockHostname }
         }
         $MockListenerHTTP = [PSObject]@{
             cfg = 'http://schemas.microsoft.com/wbem/wsman/1/config/listener'
@@ -70,7 +98,7 @@ try
 
         Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
-            Mock Get-WSManInstance -MockWith { }
+            Mock -CommandName Get-WSManInstance
 
             Context 'No listeners exist' {
                 It 'should return absent listener' {
@@ -80,11 +108,11 @@ try
                     $Result.Ensure | Should Be 'Absent'
                 }
                 It 'should call Get-WSManInstance once' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
             Context 'Requested listener does not exist' {
                 It 'should return absent listener' {
@@ -94,7 +122,7 @@ try
                     $Result.Ensure | Should Be 'Absent'
                 }
                 It 'should call Get-WSManInstance once' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
@@ -112,16 +140,17 @@ try
                     $Result.CertificateThumbprint | Should Be $MockListenerHTTP.CertificateThumbprint
                 }
                 It 'should call Get-WSManInstance once' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
         }
 
         Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
-            Mock Get-WSManInstance -MockWith { }
-            Mock Remove-WSManInstance -MockWith { }
-            Mock New-WSManInstance -MockWith { }
+            Mock -CommandName Get-WSManInstance
+            Mock -CommandName Remove-WSManInstance
+            Mock -CommandName New-WSManInstance
+            Mock -CommandName Find-Certificate
 
             Context 'HTTP Listener does not exist but should' {
                 It 'should not throw error' {
@@ -130,13 +159,14 @@ try
                         -Ensure 'Present' } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 0
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 0
                 }
             }
 
-            Mock Get-ChildItem -MockWith { $MockCertificate }
+            Mock -CommandName Find-Certificate -MockWith { return $MockCertificateThumbprint }
 
             Context 'HTTPS Listener does not exist but should' {
                 It 'should not throw error' {
@@ -146,14 +176,35 @@ try
                         -Issuer $MockIssuer } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 0
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Find-Certificate
+
+            Context 'HTTPS Listener does not exist but should but certificate missing' {
+                $errorRecord = Get-InvalidArguementException `
+                    -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
+                        $MockListenerHTTPS.Transport,'5986') `
+                    -ArgumentName 'Issuer'
+                It 'should throw error' {
+                    { Set-TargetResource `
+                        -Transport $MockListenerHTTPS.Transport `
+                        -Ensure 'Present' `
+                        -Issuer $MockIssuer } | Should Throw $errorRecord
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 1
+                }
+            }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Find-Certificate
 
             Context 'HTTP Listener exists but should not' {
                 It 'should not throw error' {
@@ -162,9 +213,10 @@ try
                         -Ensure 'Absent' } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 0
                 }
             }
 
@@ -176,33 +228,53 @@ try
                         -Issuer $MockIssuer } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Get-ChildItem -Exactly 0
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 0
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Find-Certificate -MockWith { return $MockCertificateThumbprint }
+
+            Context 'HTTP Listener exists and HTTPS is required' {
+                It 'should not throw error' {
+                    { Set-TargetResource `
+                        -Transport $MockListenerHTTPS.Transport `
+                        -Ensure 'Present' `
+                        -Issuer $MockIssuer } | Should Not Throw
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 1
+                }
+            }
+
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
+            Mock -CommandName Find-Certificate
 
             Context 'HTTPS Listener exists and HTTP is required' {
                 It 'should not throw error' {
                     { Set-TargetResource `
-                        -Transport $MockListenerHTTPS.Transport `
+                        -Transport $MockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $MockIssuer } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 0
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 0
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
+            Mock -CommandName Find-Certificate -MockWith { return $MockCertificateThumbprint }
 
-            Context 'Both Listeners exists and HTTPS is required' {
+            Context 'Both Listeners exist and HTTPS is required' {
                 It 'should not throw error' {
                     { Set-TargetResource `
                         -Transport $MockListenerHTTPS.Transport `
@@ -210,16 +282,34 @@ try
                         -Issuer $MockIssuer } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Remove-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName New-WSManInstance -Exactly 1
-                    Assert-MockCalled -commandName Get-ChildItem -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 1
+                }
+            }
+
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
+            Mock -CommandName Find-Certificate
+
+            Context 'Both Listeners exist and HTTP is required' {
+                It 'should not throw error' {
+                    { Set-TargetResource `
+                        -Transport $MockListenerHTTP.Transport `
+                        -Ensure 'Present' `
+                        -Issuer $MockIssuer } | Should Not Throw
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Remove-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName New-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Find-Certificate -Exactly 0
                 }
             }
         }
 
         Describe "$($script:DSCResourceName)\Test-TargetResource" {
-            Mock Get-WSManInstance -MockWith { }
+            Mock -CommandName Get-WSManInstance
 
             Context 'HTTP Listener does not exist but should' {
                 It 'should return false' {
@@ -228,7 +318,7 @@ try
                         -Ensure 'Present' | Should Be $False
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
             Context 'HTTPS Listener does not exist but should' {
@@ -239,11 +329,11 @@ try
                         -Issuer $MockIssuer | Should Be $False
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
             Context 'HTTP Listener exists but should not' {
                 It 'should return false' {
@@ -252,11 +342,11 @@ try
                         -Ensure 'Absent' | Should Be $False
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
             Context 'HTTPS Listener exists but should not' {
                 It 'should return false' {
@@ -265,11 +355,11 @@ try
                         -Ensure 'Absent' | Should Be $False
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP) }
 
             Context 'HTTP Listener exists and should' {
                 It 'should return true' {
@@ -278,11 +368,11 @@ try
                         -Ensure 'Present' | Should Be $True
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTPS) }
 
             Context 'HTTPS Listener exists and should' {
                 It 'should return true' {
@@ -291,11 +381,11 @@ try
                         -Ensure 'Present' | Should Be $True
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
                 }
             }
 
-            Mock Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
+            Mock -CommandName Get-WSManInstance -MockWith { return @($MockListenerHTTP,$MockListenerHTTPS) }
 
             Context 'Both Listeners exists and HTTPS should' {
                 It 'should return true' {
@@ -304,7 +394,115 @@ try
                         -Ensure 'Present' | Should Be $True
                 }
                 It 'should call expected Mocks' {
-                    Assert-MockCalled -commandName Get-WSManInstance -Exactly 1
+                    Assert-MockCalled -CommandName Get-WSManInstance -Exactly 1
+                }
+            }
+        }
+
+        Describe "$($script:DSCResourceName)\Find-Certificate" {
+
+            Mock -CommandName Get-ChildItem
+
+            Context 'SubjectFormat is Both, Certificate does not exist, DN passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True `
+                        -DN $MockDN } | Should Not Throw
+                }
+                It "should return empty" {
+                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 2
+                }
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith { $MockCertificateDN }
+
+            Context 'SubjectFormat is Both, Certificate with DN Exists, DN passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True `
+                        -DN $MockDN } | Should Not Throw
+                }
+                It "should return $MockCertificateThumbprint" {
+                    $script:ReturnedThumbprint | Should Be $MockCertificateThumbprint
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 1
+                }
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith { $MockCertificate }
+
+            Context 'SubjectFormat is Both, Certificate without DN Exists, DN passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True `
+                        -DN $MockDN } | Should Not Throw
+                }
+                It "should return empty" {
+                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 2
+                }
+            }
+
+            Mock -CommandName Get-ChildItem
+
+            Context 'SubjectFormat is Both, Certificate does not exist, DN not passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True } | Should Not Throw
+                }
+                It "should return empty" {
+                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 2
+                }
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith { $MockCertificateDN }
+
+            Context 'SubjectFormat is Both, Certificate with DN Exists, DN not passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True } | Should Not Throw
+                }
+                It "should return empty" {
+                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 2
+                }
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith { $MockCertificate }
+
+            Context 'SubjectFormat is Both, Certificate without DN Exists, DN not passed' {
+                It 'should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -Issuer $MockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True } | Should Not Throw
+                }
+                It "should return $MockCertificateThumbprint" {
+                    $script:ReturnedThumbprint | Should Be $MockCertificateThumbprint
+                }
+                It 'should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly 1
                 }
             }
         }

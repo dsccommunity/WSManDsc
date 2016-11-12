@@ -8,7 +8,7 @@ ConvertFrom-StringData @'
     ListenerExistsRemoveMessage = {0} Listener on port {1} exists. Removing.
     ListenerOnPortDoesNotExistMessage = {0} Listener on port {1} does not exist.
     CreatingListenerMessage = Creating {0} Listener on port {1}.
-    ListenerCreateFailNoCertError = Failed to create {0} Listener on port {1} because a applicable certificate could not be found.
+    ListenerCreateFailNoCertError = Failed to create {0} Listener on port {1} because an applicable certificate could not be found.
     TestingListenerMessage = Testing Listener.
     ListenerOnWrongPortMessage = {0} Listener is on port {1}, should be on {2}. Change required.
     ListenerOnWrongAddressMessage = {0} Listener is bound to {1}, should be {2}. Change required.

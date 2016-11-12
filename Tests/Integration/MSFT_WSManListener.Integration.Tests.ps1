@@ -67,6 +67,10 @@ try
             $NewListener.Address            | Should Be $Listener.Address
         }
     }
+
+    # Note: Removing the WS-Man listener will cause DSC to stop working.
+    # So there is no integration test defined that will remove the listener created
+    # above.
     #endregion
 }
 finally

@@ -1,20 +1,8 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_WSManServiceConfig.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    #fallback to en-US
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_WSManServiceConfig.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+# Localized messages for Write-Verbose statements in this resource
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_WSManServiceConfig'
 
 <#
     This is an array of all the parameters used by this resource.
@@ -48,7 +36,7 @@ function Get-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.GettingWSManServiceConfigMessage)
+            $($script:localizedData.GettingWSManServiceConfigMessage)
         ) -join '' )
 
     # Generate the return object.
@@ -157,7 +145,7 @@ function Set-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.SettingWSManServiceConfigMessage)
+            $($script:localizedData.SettingWSManServiceConfigMessage)
         ) -join '' )
 
     # Step through each parameter and update any that differ
@@ -176,7 +164,7 @@ function Set-TargetResource
             Set-Item -Path $parameterPath -Value $parameterNew -Force
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.WSManServiceConfigUpdateParameterMessage) `
+                $($script:localizedData.WSManServiceConfigUpdateParameterMessage) `
                     -f $parameter.Name,$parameterCurrent,$parameterNew
                 ) -join '' )
         } # if
@@ -275,7 +263,7 @@ function Test-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingWSManServiceConfigMessage)
+            $($script:localizedData.TestingWSManServiceConfigMessage)
         ) -join '' )
 
     # Flag to signal whether settings are correct
@@ -296,7 +284,7 @@ function Test-TargetResource
         {
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.WSManServiceConfigParameterNeedsUpdateMessage) `
+                $($script:localizedData.WSManServiceConfigParameterNeedsUpdateMessage) `
                     -f $parameter.Name,$parameterCurrent,$parameterNew
                 ) -join '' )
             $desiredConfigurationMatch = $false

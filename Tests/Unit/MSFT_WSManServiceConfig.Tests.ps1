@@ -36,6 +36,7 @@ try
 
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
+        $script:DSCResourceName = 'MSFT_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $WsManServiceConfigSettings = [PSObject]@{}

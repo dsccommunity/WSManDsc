@@ -1,20 +1,8 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_WSManListener.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    #fallback to en-US
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_WSManListener.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+# Localized messages for Write-Verbose statements in this resource
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_WSManListener'
 
 # Standard Transport Ports
 $Default_HTTP_Port  = 5985
@@ -47,7 +35,7 @@ function Get-TargetResource
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        $($LocalizedData.GettingListenerMessage)
+        $($script:localizedData.GettingListenerMessage)
         ) -join '' )
 
     $returnValue = @{
@@ -61,7 +49,7 @@ function Get-TargetResource
         # An existing listener matching the transport was found
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.ListenerExistsMessage) `
+            $($script:localizedData.ListenerExistsMessage) `
                 -f $Transport
             ) -join '' )
         $returnValue += @{
@@ -79,7 +67,7 @@ function Get-TargetResource
         # An existing listener matching the transport was not found
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.ListenerDoesNotExistMessage) `
+            $($script:localizedData.ListenerDoesNotExistMessage) `
                 -f $Transport
             ) -join '' )
         $returnValue += @{ Ensure = 'Absent' }
@@ -147,7 +135,7 @@ function Set-TargetResource
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        $($LocalizedData.SettingListenerMessage)
+        $($script:localizedData.SettingListenerMessage)
         ) -join '' )
 
     # Lookup the existing Listener
@@ -161,7 +149,7 @@ function Set-TargetResource
         # The listener should exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.EnsureListenerExistsMessage) `
+            $($script:localizedData.EnsureListenerExistsMessage) `
                 -f $Transport,$Port
             ) -join '' )
         if ($listener)
@@ -169,7 +157,7 @@ function Set-TargetResource
             # The Listener exists already - delete it
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerExistsRemoveMessage) `
+                $($script:localizedData.ListenerExistsRemoveMessage) `
                     -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
@@ -181,82 +169,25 @@ function Set-TargetResource
             # Ths listener doesn't exist - do nothing
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerOnPortDoesNotExistMessage) `
+                $($script:localizedData.ListenerOnPortDoesNotExistMessage) `
                     -f $Transport,$Port
                 ) -join '' )
         }
         # Create the listener
         if ($Transport -eq 'HTTPS')
         {
-            [String] $Thumbprint = ''
-            # First try and find a certificate that is used to the FQDN of the machine
-            if ($SubjectFormat -in 'Both','FQDNOnly')
-            {
-                # Lookup the certificate using the FQDN of the machine
-                [String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-                [String] $Subject = "CN=$HostName"
-                if ($PSBoundParameters.ContainsKey('DN'))
-                {
-                    $Subject = "$Subject,$DN"
-                } # if
-                if ($MatchAlternate) {
-                    # Try and lookup the certificate using the subject and the alternate name
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
-                            ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
-                            ($_.Issuer -eq $Issuer) -and
-                            ($HostName -in $_.DNSNameList.Unicode) -and
-                            ($_.Subject -eq $Subject) } | Select-Object -First 1
-                        ).Thumbprint
-                }
-                else
-                {
-                    # Try and lookup the certificate using the subject name
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
-                            ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
-                            ($_.Issuer -eq $Issuer) -and
-                            ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
-                        ).Thumbprint
-                } # if
-            }
-            if (($SubjectFormat -in 'Both','NameOnly') -and -not $Thumbprint)
-            {
-                # If could not find an FQDN cert, try for one issued to the computer name
-                [String] $HostName = $ENV:ComputerName
-                [String] $Subject = "CN=$HostName"
-                if ($PSBoundParameters.ContainsKey('DN'))
-                {
-                    $Subject = "$Subject,$DN"
-                } # if
-                if ($MatchAlternate)
-                {
-                    # Try and lookup the certificate using the subject and the alternate name
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
-                            ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
-                            ($_.Issuer -eq $Issuer) -and
-                            ($HostName -in $_.DNSNameList.Unicode) -and
-                            ($_.Subject -eq $Subject) } | Select-Object -First 1
-                        ).Thumbprint
-                }
-                else
-                {
-                    # Try and lookup the certificate using the subject name
-                    $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
-                            ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
-                            ($_.Issuer -eq $Issuer) -and
-                            ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
-                        ).Thumbprint
-                } # if
-            } # if
+            # Find the certificate to use for the HTTPS Listener
+            $null = $PSBoundParameters.Remove('Transport')
+            $null = $PSBoundParameters.Remove('Ensure')
+            $null = $PSBoundParameters.Remove('Port')
+            $null = $PSBoundParameters.Remove('Address')
+            [String] $Thumbprint = Find-Certificate @PSBoundParameters
             if ($Thumbprint)
             {
                 # A certificate was found, so use it to enable the HTTPS WinRM listener
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.CreatingListenerMessage) `
+                    $($script:localizedData.CreatingListenerMessage) `
                         -f $Transport,$Port
                     ) -join '' )
                 New-WSManInstance `
@@ -268,19 +199,18 @@ function Set-TargetResource
             else
             {
                 # A certificate could not be found to use for the HTTPS listener
-                Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerCreateFailNoCertError) `
-                        -f $Transport,$Port
-                    ) -join '' )
+                New-InvalidArgumentException `
+                    -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
+                        $Transport,$Port) `
+                    -Argument 'Issuer'
             } # if
         }
         else
         {
-            # Create a plain HTTPS listener
+            # Create a plain HTTP listener
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.CreatingListenerMessage) `
+                $($script:localizedData.CreatingListenerMessage) `
                     -f $Transport,$Port
                 ) -join '' )
             New-WSManInstance `
@@ -295,7 +225,7 @@ function Set-TargetResource
         # The listener should not exist
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.EnsureListenerDoesNotExistMessage) `
+            $($script:localizedData.EnsureListenerDoesNotExistMessage) `
                 -f $Transport,$Port
             ) -join '' )
         if ($listener)
@@ -303,7 +233,7 @@ function Set-TargetResource
             # The listener does exist - so delete it
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerExistsRemoveMessage) `
+                $($script:localizedData.ListenerExistsRemoveMessage) `
                     -f $Transport,$Port
                 ) -join '' )
             Remove-WSManInstance `
@@ -376,7 +306,7 @@ function Test-TargetResource
 
     Write-Verbose -Message ( @(
         "$($MyInvocation.MyCommand): "
-        $($LocalizedData.TestingListenerMessage)
+        $($script:localizedData.TestingListenerMessage)
         ) -join '' )
 
     # Lookup the existing Listener
@@ -393,7 +323,7 @@ function Test-TargetResource
             # The Listener exists already
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerExistsMessage) `
+                $($script:localizedData.ListenerExistsMessage) `
                     -f $Transport
                 ) -join '' )
             # Check it is setup as per parameters
@@ -401,7 +331,7 @@ function Test-TargetResource
             {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerOnWrongPortMessage) `
+                    $($script:localizedData.ListenerOnWrongPortMessage) `
                         -f $Transport,$listener.Port,$Port
                     ) -join '' )
                 $desiredConfigurationMatch = $false
@@ -410,7 +340,7 @@ function Test-TargetResource
             {
                 Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.ListenerOnWrongAddressMessage) `
+                    $($script:localizedData.ListenerOnWrongAddressMessage) `
                         -f $Transport,$listener.Address,$Address
                     ) -join '' )
                 $desiredConfigurationMatch = $false
@@ -421,7 +351,7 @@ function Test-TargetResource
             # Ths listener doesn't exist but should
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                 $($LocalizedData.ListenerDoesNotExistButShouldMessage) `
+                 $($script:localizedData.ListenerDoesNotExistButShouldMessage) `
                     -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
@@ -435,7 +365,7 @@ function Test-TargetResource
             # The listener exists but should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                 $($LocalizedData.ListenerExistsButShouldNotMessage) `
+                 $($script:localizedData.ListenerExistsButShouldNotMessage) `
                     -f $Transport
                 ) -join '' )
             $desiredConfigurationMatch = $false
@@ -445,7 +375,7 @@ function Test-TargetResource
             # The listener does not exist and should not
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
-                $($LocalizedData.ListenerDoesNotExistAndShouldNotMessage) `
+                $($script:localizedData.ListenerDoesNotExistAndShouldNotMessage) `
                     -f $Transport
                 ) -join '' )
         }
@@ -519,5 +449,105 @@ function Get-DefaultPort
     }
     return $Port
 }
+
+<#
+    .SYNOPSIS
+    Finds the certificate to use for the HTTPS WS-Man Listener
+    .PARAMETER Issuer
+    The Issuer of the certificate to use for the HTTPS WS-Man Listener.
+    .PARAMETER SubjectFormat
+    The format used to match the certificate subject to use for an HTTPS WS-Man Listener.
+    .PARAMETER MatchAlternate
+    Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
+    Listener.
+    .PARAMETER DN
+    This is a Distinguished Name component that will be used to identify the certificate to use
+    for the HTTPS WS-Man Listener.
+#>
+function Find-Certificate
+{
+    [CmdletBinding()]
+    param
+    (
+        [String]
+        $Issuer,
+
+        [ValidateSet('Both','FQDNOnly','NameOnly')]
+        [String]
+        $SubjectFormat = 'Both',
+
+        [Boolean]
+        $MatchAlternate,
+
+        [String]
+        $DN
+    )
+
+    [String] $Thumbprint = ''
+    # First try and find a certificate that is used to the FQDN of the machine
+    if ($SubjectFormat -in 'Both','FQDNOnly')
+    {
+        # Lookup the certificate using the FQDN of the machine
+        [String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+        [String] $Subject = "CN=$HostName"
+        if ($PSBoundParameters.ContainsKey('DN'))
+        {
+            $Subject = "$Subject,$DN"
+        } # if
+        if ($MatchAlternate) {
+            # Try and lookup the certificate using the subject and the alternate name
+            $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
+                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                        -contains 'Server Authentication') -and
+                    ($_.Issuer -eq $Issuer) -and
+                    ($HostName -in $_.DNSNameList.Unicode) -and
+                    ($_.Subject -eq $Subject) } | Select-Object -First 1
+                ).Thumbprint
+        }
+        else
+        {
+            # Try and lookup the certificate using the subject name
+            $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
+                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                        -contains 'Server Authentication') -and
+                    ($_.Issuer -eq $Issuer) -and
+                    ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                ).Thumbprint
+        } # if
+    }
+    if (-not $Thumbprint `
+        -and ($SubjectFormat -in 'Both','NameOnly'))
+    {
+        # If could not find an FQDN cert, try for one issued to the computer name
+        [String] $HostName = $ENV:ComputerName
+        [String] $Subject = "CN=$HostName"
+        if ($PSBoundParameters.ContainsKey('DN'))
+        {
+            $Subject = "$Subject,$DN"
+        } # if
+        if ($MatchAlternate)
+        {
+            # Try and lookup the certificate using the subject and the alternate name
+            $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
+                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                        -contains 'Server Authentication') -and
+                    ($_.Issuer -eq $Issuer) -and
+                    ($HostName -in $_.DNSNameList.Unicode) -and
+                    ($_.Subject -eq $Subject) } | Select-Object -First 1
+                ).Thumbprint
+        }
+        else
+        {
+            # Try and lookup the certificate using the subject name
+            $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
+                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                        -contains 'Server Authentication') -and
+                    ($_.Issuer -eq $Issuer) -and
+                    ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                ).Thumbprint
+        } # if
+    } # if
+    return $Thumbprint
+} # Set-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

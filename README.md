@@ -63,6 +63,10 @@ It must be one of the following:
 - Prepare module for moving over to DSC community resources.
 - Fixes WSManListener when Compatibility Listeners are enabled.
 - Updated readme.md to follow standard layout defined in DSCResources.
+- MSFT_WSManListener:
+  - Refactored to move certificate lookup to Find-Certificate cmdlet.
+  - Improved unit test coverage.
+  - Exception now thrown if certificate can't be found for HTTPS listener.
 
 ### 1.0.1.0
 
