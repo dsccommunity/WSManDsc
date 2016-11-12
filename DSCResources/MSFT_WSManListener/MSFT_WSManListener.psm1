@@ -106,6 +106,9 @@ function Get-TargetResource
     .PARAMETER MatchAlternate
     Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
     Listener.
+    .PARAMETER DN
+    This is a Distinguished Name component that will be used to identify the certificate to use
+    for the HTTPS WS-Man Listener.
 #>
 function Set-TargetResource
 {
@@ -136,7 +139,10 @@ function Set-TargetResource
         $SubjectFormat = 'Both',
 
         [Boolean]
-        $MatchAlternate
+        $MatchAlternate,
+
+        [String]
+        $DN
     )
 
     Write-Verbose -Message ( @(
@@ -188,6 +194,11 @@ function Set-TargetResource
             {
                 # Lookup the certificate using the FQDN of the machine
                 [String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+                [String] $Subject = "CN=$HostName"
+                if ($PSBoundParameters.ContainsKey('DN'))
+                {
+                    $Subject = "$Subject,$DN"
+                } # if
                 if ($MatchAlternate) {
                     # Try and lookup the certificate using the subject and the alternate name
                     $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
@@ -195,7 +206,7 @@ function Set-TargetResource
                                 -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($HostName -in $_.DNSNameList.Unicode) -and
-                            ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                            ($_.Subject -eq $Subject) } | Select-Object -First 1
                         ).Thumbprint
                 }
                 else
@@ -213,6 +224,11 @@ function Set-TargetResource
             {
                 # If could not find an FQDN cert, try for one issued to the computer name
                 [String] $HostName = $ENV:ComputerName
+                [String] $Subject = "CN=$HostName"
+                if ($PSBoundParameters.ContainsKey('DN'))
+                {
+                    $Subject = "$Subject,$DN"
+                } # if
                 if ($MatchAlternate)
                 {
                     # Try and lookup the certificate using the subject and the alternate name
@@ -221,7 +237,7 @@ function Set-TargetResource
                                 -contains 'Server Authentication') -and
                             ($_.Issuer -eq $Issuer) -and
                             ($HostName -in $_.DNSNameList.Unicode) -and
-                            ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                            ($_.Subject -eq $Subject) } | Select-Object -First 1
                         ).Thumbprint
                 }
                 else
@@ -315,6 +331,9 @@ function Set-TargetResource
     .PARAMETER MatchAlternate
     Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
     Listener.
+    .PARAMETER DN
+    This is a Distinguished Name component that will be used to identify the certificate to use
+    for the HTTPS WS-Man Listener.
 #>
 function Test-TargetResource
 {
@@ -346,7 +365,10 @@ function Test-TargetResource
         $SubjectFormat = 'Both',
 
         [Boolean]
-        $MatchAlternate
+        $MatchAlternate,
+
+        [String]
+        $DN
     )
 
     # Flag to signal whether settings are correct

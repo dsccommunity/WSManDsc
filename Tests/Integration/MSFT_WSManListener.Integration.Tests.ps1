@@ -30,15 +30,21 @@ try
     } # if
 
     #region Integration Tests
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTP.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:DSCResourceName)_Integration_Add_HTTP" {
         #region DEFAULT TESTS
         It 'Should compile without throwing' {
             {
-                & "$($script:DSCResourceName)_Config" -OutputPath $TestEnvironment.WorkingFolder
-                Start-DscConfiguration -Path $TestEnvironment.WorkingFolder -ComputerName localhost -Wait -Verbose -Force
+                & "$($script:DSCResourceName)_Config_Add_HTTP" `
+                    -OutputPath $TestEnvironment.WorkingFolder
+                Start-DscConfiguration `
+                    -Path $TestEnvironment.WorkingFolder `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force
             } | Should not throw
         }
 

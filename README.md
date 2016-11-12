@@ -26,6 +26,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 - **`[String]` Issuer** (_Write_): The full name of the certificate issuer to use for the HTTPS WS-Man Listener.
 - **`[String]` SubjectFormat** (_Write_): The format of the computer name that will be matched against the certificate subjects to identify the certificate to use for an SSL Listener. Only required if SSL is true. { _Both_ | FQDNOnly | NameOnly }. Defaults to Both.
 - **`[Boolean]` MatchAlternate** (_Write_): Also match the certificate alternate subject name. { True | _False_ }.
+- **`[String]` DN** (_Write_): This is a Distinguished Name component that will be used to identify the certificate to use for the HTTPS WS-Man Listener.
 
 #### SubjectFormat Parameter
 
@@ -120,7 +121,32 @@ Sample_WSManListener_HTTPS
 Start-DscConfiguration -Path Sample_WSManListener_HTTPS -Wait -Verbose -Force
 ```
 
-#### Example 3: Enable HTTP and HTTPS compatibility listeners
+#### Example 3: Create an HTTPS Listener with a Certificate containing a DN
+
+Create an HTTPS Listener using a LocalMachine certificate containing a DN that is installed and issued by 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986:
+
+```powershell
+configuration Sample_WSManListener_HTTPS_DN
+{
+    Import-DscResource -Module WSManDsc
+
+    Node $NodeName
+    {
+        WSManListener HTTPS
+        {
+            Transport = 'HTTPS'
+            Ensure    = 'Present'
+            Issuer    = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
+            DN        = 'O=Contoso Inc, ST=Pennsylvania, C=US'
+        } # End of WSManListener Resource
+    } # End of Node
+} # End of Configuration
+
+Sample_WSManListener_HTTPS_DN
+Start-DscConfiguration -Path Sample_WSManListener_HTTPS_DN -Wait -Verbose -Force
+```
+
+#### Example 4: Enable HTTP and HTTPS compatibility listeners
 
 Enable compatibility HTTP and HTTPS listeners, set maximum connections to 100, allow CredSSP (not recommended) and allow unecrypted WS-Man Sessions (not recommended):
 
