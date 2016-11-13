@@ -84,12 +84,42 @@ try
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
-    # Create the certificate
-    $Certificate = New-SelfSignedCertificate `
-        -CertstoreLocation 'Cert:\LocalMachine\My' `
-        -Subject $Listener.Issuer `
-        -DnsName $Listener.Hostname `
-        -FriendlyName $CertFriendlyName
+        # Create the certificate
+    if ([System.Environment]::OSVersion.Version.Major -ge 10)
+    {
+        # For Windows 10 or Windows Server 2016
+        $Certificate = New-SelfSignedCertificate `
+            -CertstoreLocation 'Cert:\LocalMachine\My' `
+            -Subject $Listener.Issuer `
+            -DnsName $Listener.Hostname `
+            -FriendlyName $CertFriendlyName
+    }
+    else
+    {
+        # New-SelfSignedCertificate in earlier OS versions will not make
+        # a certificate that can be used for WS-Man. So we will use the
+        # New-SelfSignedCertificateEx.ps1 script from the Script Center.
+        # A request has been made to the author of this script to make it
+        # available on PowerShellGallery.
+        $ScriptFile = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.ps1'
+        if (-not (Test-Path -Path $ScriptFile))
+        {
+            $ScriptZip = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.zip'
+            Invoke-WebRequest `
+                -Uri 'https://gallery.technet.microsoft.com/scriptcenter/Self-signed-certificate-5920a7c6/file/101251/2/New-SelfSignedCertificateEx.zip' `
+                -OutFile $ScriptZip
+            Expand-Archive -Path $ScriptZip -DestinationPath $ENV:Temp
+            Remove-Item -Path $ScriptZip -Force
+        } # If
+        . $ScriptFile
+
+        $Certificate = New-SelfSignedCertificateEx `
+            -storeLocation 'LocalMachine' `
+            -Subject $Listener.Issuer `
+            -SubjectAlternativeName $($Listener.Hostname) `
+            -FriendlyName $CertFriendlyName `
+            -EnhancedKeyUsage 'Server Authentication'
+    } # if
 
     Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
         #region DEFAULT TESTS
