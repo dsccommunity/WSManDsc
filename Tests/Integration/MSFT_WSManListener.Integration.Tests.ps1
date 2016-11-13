@@ -67,11 +67,108 @@ try
             $NewListener.Address            | Should Be $Listener.Address
         }
     }
+    #endregion
 
     # Note: Removing the WS-Man listener will cause DSC to stop working.
-    # So there is no integration test defined that will remove the listener created
-    # above.
+    # So there is no integration test defined that will remove the listener created above.
+
+    #region Integration Tests
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS.config.ps1"
+    . $ConfigFile
+
+    # Create a certificate to use for the HTTPS listener
+    $CertFriendlyName = 'WS-Man HTTPS Integration Test Cert'
+
+    # Remove the certificate if it already exists
+    Get-ChildItem -Path 'Cert:\LocalMachine\My' |
+        Where-Object -Property FriendlyName -EQ $CertFriendlyName |
+        Remove-Item -Force
+
+    # Create the certificate
+    $Certificate = New-SelfSignedCertificate `
+        -CertstoreLocation 'Cert:\LocalMachine\My' `
+        -Subject $Listener.Issuer `
+        -DnsName $Listener.Hostname `
+        -FriendlyName $CertFriendlyName
+
+    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
+        #region DEFAULT TESTS
+        It 'Should compile without throwing' {
+            {
+                & "$($script:DSCResourceName)_Config_Add_HTTPS" `
+                    -OutputPath $TestEnvironment.WorkingFolder
+                Start-DscConfiguration `
+                    -Path $TestEnvironment.WorkingFolder `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force
+            } | Should not throw
+        }
+
+        It 'should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+        }
+        #endregion
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                -ResourceURI winrm/config/Listener `
+                -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+            }
+            $NewListener                    | Should Not Be $null
+            $NewListener.Port               | Should Be $Listener.Port
+            $NewListener.Address            | Should Be $Listener.Address
+        }
+    }
     #endregion
+
+    #region Integration Tests
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    . $ConfigFile
+
+    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS" {
+        #region DEFAULT TESTS
+        It 'Should compile without throwing' {
+            {
+                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                    -OutputPath $TestEnvironment.WorkingFolder
+                Start-DscConfiguration `
+                    -Path $TestEnvironment.WorkingFolder `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force
+            } | Should not throw
+        }
+
+        It 'should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+        }
+        #endregion
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                -ResourceURI winrm/config/Listener `
+                -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+            }
+            $NewListener                    | Should BeNullOrEmpty
+        }
+    }
+    #endregion
+
+    # Remove the certificate if it already exists
+    Get-ChildItem -Path 'Cert:\LocalMachine\My' |
+        Where-Object -Property FriendlyName -EQ $CertFriendlyName |
+        Remove-Item -Force
 }
 finally
 {

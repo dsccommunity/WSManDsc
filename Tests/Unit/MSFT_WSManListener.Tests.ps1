@@ -56,7 +56,7 @@ try
         $MockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
         $MockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
         $MockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-        $MockDN = 'O=Contoso Inc, ST=Pennsylvania, C=US'
+        $MockDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
         $MockCertificate = [PSObject]@{
             Thumbprint = $MockCertificateThumbprint
             Subject = "CN=$MockHostName"
@@ -66,7 +66,7 @@ try
         }
         $MockCertificateDN = [PSObject]@{
             Thumbprint = $MockCertificateThumbprint
-            Subject = "CN=$MockHostname,$MockDN"
+            Subject = "CN=$MockHostname, $MockDN"
             Issuer = $MockIssuer
             Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
             DNSNameList = @{ Unicode = $MockHostname }

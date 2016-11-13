@@ -67,6 +67,8 @@ It must be one of the following:
   - Refactored to move certificate lookup to Find-Certificate cmdlet.
   - Improved unit test coverage.
   - Exception now thrown if certificate can't be found for HTTPS listener.
+  - Added integration tests for WS-Man HTTPS listener.
+  - Additional logging information added for certificate detection for HTTPS listener.
 
 ### 1.0.1.0
 
@@ -141,7 +143,7 @@ configuration Sample_WSManListener_HTTPS_DN
             Transport = 'HTTPS'
             Ensure    = 'Present'
             Issuer    = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-            DN        = 'O=Contoso Inc, ST=Pennsylvania, C=US'
+            DN        = 'O=Contoso Inc, S=Pennsylvania, C=US'
         } # End of WSManListener Resource
     } # End of Node
 } # End of Configuration

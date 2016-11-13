@@ -162,7 +162,10 @@ function Set-TargetResource
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
-                -SelectorSet @{ Transport=$listener.Transport;Address=$listener.Address }
+                -SelectorSet @{
+                    Transport = $listener.Transport
+                    Address = $listener.Address
+                }
         }
         else
         {
@@ -192,8 +195,15 @@ function Set-TargetResource
                     ) -join '' )
                 New-WSManInstance `
                     -ResourceURI winrm/config/Listener `
-                    -SelectorSet @{Address=$Address;Transport=$Transport} `
-                    -ValueSet @{Hostname=$HostName;CertificateThumbprint=$Thumbprint;Port=$Port} `
+                    -SelectorSet @{
+                        Address = $Address
+                        Transport = $Transport
+                    } `
+                    -ValueSet @{
+                        Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+                        CertificateThumbprint = $Thumbprint
+                        Port = $Port
+                    } `
                     -ErrorAction Stop
             }
             else
@@ -215,8 +225,13 @@ function Set-TargetResource
                 ) -join '' )
             New-WSManInstance `
                 -ResourceURI winrm/config/Listener `
-                -SelectorSet @{Address=$Address;Transport=$Transport} `
-                -ValueSet @{Port=$Port} `
+                -SelectorSet @{
+                    Address = $Address
+                    Transport = $Transport
+                } `
+                -ValueSet @{
+                    Port = $Port
+                } `
                 -ErrorAction Stop
         }
     }
@@ -238,7 +253,10 @@ function Set-TargetResource
                 ) -join '' )
             Remove-WSManInstance `
                 -ResourceURI winrm/config/Listener `
-                -SelectorSet @{ Transport=$listener.Transport;Address=$listener.Address }
+                -SelectorSet @{
+                    Transport=$listener.Transport
+                    Address=$listener.Address
+                }
         }
     } # if
 } # Set-TargetResource
@@ -492,10 +510,16 @@ function Find-Certificate
         [String] $Subject = "CN=$HostName"
         if ($PSBoundParameters.ContainsKey('DN'))
         {
-            $Subject = "$Subject,$DN"
+            $Subject = "$Subject, $DN"
         } # if
         if ($MatchAlternate) {
             # Try and lookup the certificate using the subject and the alternate name
+            Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                 $($script:localizedData.FindCertificateAlternateMessage) `
+                    -f $Issuer,$Subject,$HostName
+                ) -join '' )
+
             $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                         -contains 'Server Authentication') -and
@@ -507,11 +531,17 @@ function Find-Certificate
         else
         {
             # Try and lookup the certificate using the subject name
+            Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                 $($script:localizedData.FindCertificateMessage) `
+                    -f $Issuer,$Subject
+                ) -join '' )
+
             $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                         -contains 'Server Authentication') -and
                     ($_.Issuer -eq $Issuer) -and
-                    ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                    ($_.Subject -eq $Subject) } | Select-Object -First 1
                 ).Thumbprint
         } # if
     }
@@ -523,11 +553,17 @@ function Find-Certificate
         [String] $Subject = "CN=$HostName"
         if ($PSBoundParameters.ContainsKey('DN'))
         {
-            $Subject = "$Subject,$DN"
+            $Subject = "$Subject, $DN"
         } # if
         if ($MatchAlternate)
         {
             # Try and lookup the certificate using the subject and the alternate name
+            Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                 $($script:localizedData.FindCertificateAlternateMessage) `
+                    -f $Issuer,$Subject,$HostName
+                ) -join '' )
+
             $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                         -contains 'Server Authentication') -and
@@ -539,13 +575,27 @@ function Find-Certificate
         else
         {
             # Try and lookup the certificate using the subject name
+            Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                 $($script:localizedData.FindCertificateMessage) `
+                    -f $Issuer,$Subject
+                ) -join '' )
+
             $Thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                         -contains 'Server Authentication') -and
                     ($_.Issuer -eq $Issuer) -and
-                    ($_.Subject -eq "CN=$HostName") } | Select-Object -First 1
+                    ($_.Subject -eq $Subject) } | Select-Object -First 1
                 ).Thumbprint
         } # if
+    } # if
+    if (-not ([String]::IsNullOrEmpty($Thumbprint)))
+    {
+        Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+                $($script:localizedData.CertificateFoundMessage) `
+                -f $Thumbprint
+            ) -join '' )
     } # if
     return $Thumbprint
 } # Set-TargetResource
