@@ -40,9 +40,9 @@ try
         It 'Should compile without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Add_HTTP" `
-                    -OutputPath $TestEnvironment.WorkingFolder
+                    -OutputPath $TestDrive
                 Start-DscConfiguration `
-                    -Path $TestEnvironment.WorkingFolder `
+                    -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
@@ -50,7 +50,7 @@ try
             } | Should not throw
         }
 
-        It 'should be able to call Get-DscConfiguration without throwing' {
+        It 'Should compile and apply the MOF without throwing' {
             { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
         }
         #endregion
@@ -129,12 +129,12 @@ try
 
     Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
         #region DEFAULT TESTS
-        It 'Should compile without throwing' {
+        It 'Should compile and apply the MOF without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Add_HTTPS" `
-                    -OutputPath $TestEnvironment.WorkingFolder
+                    -OutputPath $TestDrive
                 Start-DscConfiguration `
-                    -Path $TestEnvironment.WorkingFolder `
+                    -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
@@ -142,7 +142,7 @@ try
             } | Should not throw
         }
 
-        It 'should be able to call Get-DscConfiguration without throwing' {
+        It 'Should be able to call Get-DscConfiguration without throwing' {
             { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
         }
         #endregion
@@ -169,12 +169,12 @@ try
 
     Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS" {
         #region DEFAULT TESTS
-        It 'Should compile without throwing' {
+        It 'Should compile and apply the MOF without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
-                    -OutputPath $TestEnvironment.WorkingFolder
+                    -OutputPath $TestDrive
                 Start-DscConfiguration `
-                    -Path $TestEnvironment.WorkingFolder `
+                    -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
@@ -182,7 +182,7 @@ try
             } | Should not throw
         }
 
-        It 'should be able to call Get-DscConfiguration without throwing' {
+        It 'Should be able to call Get-DscConfiguration without throwing' {
             { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
         }
         #endregion

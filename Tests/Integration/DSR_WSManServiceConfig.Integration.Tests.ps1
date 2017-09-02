@@ -20,13 +20,15 @@ $TestEnvironment = Initialize-TestEnvironment `
 #endregion
 
 # Load the parameter List from the data file
-$parameterList = Import-LocalizedData `
-    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\DSR_WSManServiceConfig\') `
+$resourceData = Import-LocalizedData `
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\DSR_WSManServiceConfig') `
     -FileName 'DSR_WSManServiceConfig.data.psd1'
+
+$script:parameterList = $resourceData.ParameterList
 
 # Backup the existing settings
 $currentWsManServiceConfig = [PSObject] @{}
-foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
+foreach ($parameter in ($script:parameterList | Where-Object -Property IntTest -eq $True))
 {
     $parameterPath = Join-Path `
         -Path 'WSMan:\Localhost\Service\' `
@@ -47,7 +49,7 @@ try
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($script:parameterList | Where-Object -Property IntTest -eq $True))
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -64,19 +66,19 @@ try
         #region DEFAULT TESTS
         It 'Should compile without throwing' {
             {
-                & "$($script:DSCResourceName)_Config" -OutputPath $TestEnvironment.WorkingFolder
-                Start-DscConfiguration -Path $TestEnvironment.WorkingFolder -ComputerName localhost -Wait -Verbose -Force
+                & "$($script:DSCResourceName)_Config" -OutputPath $TestDrive
+                Start-DscConfiguration -Path $TestDrive -ComputerName localhost -Wait -Verbose -Force
             } | Should not throw
         }
 
-        It 'should be able to call Get-DscConfiguration without throwing' {
+        It 'Should be able to call Get-DscConfiguration without throwing' {
             { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
         }
         #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
-            foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
+            foreach ($parameter in ($script:parameterList | Where-Object -Property IntTest -eq $True))
             {
                 $parameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -90,7 +92,7 @@ try
 finally
 {
     # Clean up by restoring all parameters
-    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($script:parameterList | Where-Object -Property IntTest -eq $True))
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
