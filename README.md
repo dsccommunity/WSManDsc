@@ -17,7 +17,7 @@ Module Guidelines](https://github.com/PowerShell/DscResources/blob/master/HighQu
 ## Documentation and Examples
 
 For a full list of resources in WSManDsc and examples on their use, check out
-the [iSCSIDsc wiki](https://github.com/PlagueHO/WSManDsc/wiki).
+the [WSManDsc wiki](https://github.com/PlagueHO/WSManDsc/wiki).
 
 ## Branches
 
