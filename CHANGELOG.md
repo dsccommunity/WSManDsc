@@ -1,6 +1,8 @@
-# Verions
+# Versions
 
 ## Unreleased
+
+## 2.0.0.0
 
 - Added WSManServiceConfig resource.
 - Prepare module for moving over to DSC community resources.
