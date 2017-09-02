@@ -1,5 +1,5 @@
-$Global:DSCModuleName   = 'WSManDsc'
-$Global:DSCResourceName = 'MSFT_WSManServiceConfig'
+$script:DSCModuleName   = 'WSManDsc'
+$script:DSCResourceName = 'MSFT_WSManServiceConfig'
 
 #region HEADER
 # Integration Test Template Version: 1.1.0
@@ -12,20 +12,19 @@ if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource
 
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Integration
-#endregion
+#endregion HEADER
 
 # Load the parameter List from the data file
-$ParameterListPath = Join-Path `
-    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
-    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+$parameterList = Import-LocalizedData `
+    -BaseDirectory "$moduleRoot\DscResources\$($script:DSCResourceName)\" `
+    -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # Backup the existing settings
 $CurrentWsManServiceConfig = [PSObject] @{}
-foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
 {
     $ParameterPath = Join-Path `
         -Path 'WSMan:\Localhost\Service\' `
@@ -36,7 +35,7 @@ foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $Tru
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
-    # Make sure WS-Man is senabled
+    # Make sure WS-Man is enabled
     if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -46,7 +45,7 @@ try
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -55,14 +54,14 @@ try
     } # foreach
 
     #region Integration Tests
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($Global:DSCResourceName).config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $ConfigFile
 
-    Describe "$($Global:DSCResourceName)_Integration" {
+    Describe "$($script:DSCResourceName)_Integration" {
         #region DEFAULT TESTS
         It 'Should compile without throwing' {
             {
-                Invoke-Expression -Command "$($Global:DSCResourceName)_Config -OutputPath `$TestEnvironment.WorkingFolder"
+                & "$($script:DSCResourceName)_Config" -OutputPath $TestEnvironment.WorkingFolder
                 Start-DscConfiguration -Path $TestEnvironment.WorkingFolder -ComputerName localhost -Wait -Verbose -Force
             } | Should not throw
         }
@@ -74,7 +73,7 @@ try
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
-            foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+            foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
             {
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -88,7 +87,7 @@ try
 finally
 {
     # Clean up by restoring all parameters
-    foreach ($parameter in ($ParameterList | Where-Object -Property IntTest -eq $True))
+    foreach ($parameter in ($parameterList | Where-Object -Property IntTest -eq $True))
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `

@@ -5,7 +5,7 @@ class MSFT_WSManServiceConfig : OMI_BaseResource
     [Write, Description("Specifies the security descriptor that controls remote access to the listener.")] String RootSDDL;
     [Write, Description("Specifies the maximum number of active requests that the service can process simultaneously.")] Uint32 MaxConnections;
     [Write, Description("Specifies the maximum number of concurrent operations that any user can remotely open on the same system.")] Uint32 MaxConcurrentOperationsPerUser;
-    [Write, Description("Specifies the idle time-out in milliseconds between Pull messages.")] Uint32 EnumerationTimeoutms;
+    [Write, Description("Specifies the idle time-out in milliseconds between Pull messages.")] Uint32 EnumerationTimeoutMS;
     [Write, Description("Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.")] Uint32 MaxPacketRetrievalTimeSeconds;
     [Write, Description("Allows the client computer to request unencrypted traffic.")] Boolean AllowUnencrypted;
     [Write, Description("Allows the WinRM service to use Basic authentication.")] Boolean AuthBasic;

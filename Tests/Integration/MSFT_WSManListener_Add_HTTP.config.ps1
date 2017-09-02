@@ -5,7 +5,7 @@ $Listener = @{
     Address   = '*'
 }
 
-Configuration MSFT_WSManListener_Config {
+Configuration MSFT_WSManListener_Config_Add_HTTP {
     Import-DscResource -ModuleName WSManDsc
     node localhost {
         WSManListener Integration_Test {

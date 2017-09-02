@@ -20,8 +20,8 @@
            TestVal = 1501;
            IntTest = $true;
         },
-        @{ Name    = 'EnumerationTimeoutms';
-           Path    = 'EnumerationTimeoutms';
+        @{ Name    = 'EnumerationTimeoutMS';
+           Path    = 'EnumerationTimeoutMS';
            Type    = 'Uint32';
            Default = 240000;
            TestVal = 240001;

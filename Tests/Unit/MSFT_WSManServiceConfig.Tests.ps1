@@ -1,5 +1,5 @@
-$Global:DSCModuleName   = 'WSManDsc'
-$Global:DSCResourceName = 'MSFT_WsManServiceConfig'
+$script:DSCModuleName   = 'WSManDsc'
+$script:DSCResourceName = 'MSFT_WsManServiceConfig'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -12,21 +12,20 @@ if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource
 
 Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 #endregion HEADER
 
 # Load the parameter List from the data file
-$ParameterListPath = Join-Path `
-    -Path "$moduleRoot\DscResources\MSFT_WSManServiceConfig\" `
-    -ChildPath 'MSFT_WSManServiceConfig.parameterlist.psd1'
-$ParameterList = Invoke-Expression "DATA { $(Get-Content -Path $ParameterListPath -Raw) }"
+$parameterList = Import-LocalizedData `
+    -BaseDirectory "$moduleRoot\DscResources\$($script:DSCResourceName)\" `
+    -FileName 'MSFT_WSManServiceConfig.parameterlist.psd1'
 
 # Begin Testing
 try
 {
-    # Make sure WS-Man is senabled
+    # Make sure WS-Man is enabled
     if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -36,25 +35,26 @@ try
     } # if
 
     #region Pester Tests
-    InModuleScope $Global:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
+        $script:DSCResourceName = 'MSFT_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $WsManServiceConfigSettings = [PSObject]@{}
         $WsManServiceConfigSplat = [PSObject]@{
             IsSingleInstance             = 'Yes'
         }
-        foreach ($parameter in $ParameterList)
+        foreach ($parameter in $parameterList)
         {
             $WSManServiceConfigSettings += [PSObject] @{ $($parameter.Name) = $parameter.default }
             $WSManServiceConfigSplat += [PSObject] @{ $($parameter.Name) = $parameter.default }
         }
 
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe "$($script:DSCResourceName)\Get-TargetResource" {
 
             Context 'WS-Man Service Config Exists' {
 
                 # Set up Mocks
-                foreach ($parameter in $ParameterList)
+                foreach ($parameter in $parameterList)
                 {
                     $ParameterPath = Join-Path `
                         -Path 'WSMan:\Localhost\Service\' `
@@ -64,13 +64,13 @@ try
 
                 It 'should return current WS-Man Service Config values' {
                     $Result = Get-TargetResource -IsSingleInstance 'Yes'
-                    foreach ($parameter in $ParameterList)
+                    foreach ($parameter in $parameterList)
                     {
                         $Result.$($parameter.Name) | Should Be $WSManServiceConfigSettings.$($parameter.Name)
                     }
                 }
                 It 'should call the expected mocks' {
-                    foreach ($parameter in $ParameterList)
+                    foreach ($parameter in $parameterList)
                     {
                         $ParameterPath = Join-Path `
                             -Path 'WSMan:\Localhost\Service\' `
@@ -81,10 +81,10 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe "$($script:DSCResourceName)\Set-TargetResource" {
 
             # Set up Mocks
-            foreach ($parameter in $ParameterList)
+            foreach ($parameter in $parameterList)
             {
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -101,7 +101,7 @@ try
                     } | Should Not Throw
                 }
                 It 'should call expected Mocks' {
-                    foreach ($parameter in $ParameterList)
+                    foreach ($parameter in $parameterList)
                     {
                         $ParameterPath = Join-Path `
                             -Path 'WSMan:\Localhost\Service\' `
@@ -112,7 +112,7 @@ try
                 }
             }
 
-            foreach ($parameter in $ParameterList)
+            foreach ($parameter in $parameterList)
             {
                 Context "WS-Man Service Config $($Parameter.Name) is different" {
                     It 'should not throw error' {
@@ -123,7 +123,7 @@ try
                         } | Should Not Throw
                     }
                     It 'should call expected Mocks' {
-                        foreach ($parameter1 in $ParameterList)
+                        foreach ($parameter1 in $parameterList)
                         {
                             $ParameterPath = Join-Path `
                                 -Path 'WSMan:\Localhost\Service\' `
@@ -143,10 +143,10 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe "$($script:DSCResourceName)\Test-TargetResource" {
 
             # Set up Mocks
-            foreach ($parameter in $ParameterList)
+            foreach ($parameter in $parameterList)
             {
                 $ParameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
@@ -160,7 +160,7 @@ try
                     Test-TargetResource @Splat | Should Be $True
                 }
                 It 'should call expected Mocks' {
-                    foreach ($parameter in $ParameterList)
+                    foreach ($parameter in $parameterList)
                     {
                         $ParameterPath = Join-Path `
                             -Path 'WSMan:\Localhost\Service\' `
@@ -170,7 +170,7 @@ try
                 }
             }
 
-            foreach ($parameter in $ParameterList)
+            foreach ($parameter in $parameterList)
             {
                 Context "WS-Man Service Config $($Parameter.Name) is different" {
                     It 'should return false' {
@@ -179,7 +179,7 @@ try
                         Test-TargetResource @Splat | Should Be $False
                     }
                     It 'should call expected Mocks' {
-                        foreach ($parameter in $ParameterList)
+                        foreach ($parameter in $parameterList)
                         {
                             $ParameterPath = Join-Path `
                                 -Path 'WSMan:\Localhost\Service\' `
@@ -191,11 +191,11 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\New-TerminatingError" {
+        Describe "$($script:DSCResourceName)\New-TerminatingError" {
 
             Context 'Create a TestError Exception' {
 
-                It 'should throw an TestError exception' {
+                It 'should throw a TestError exception' {
                     $errorId = 'TestError'
                     $errorCategory = [System.Management.Automation.ErrorCategory]::InvalidArgument
                     $errorMessage = 'Test Error Message'

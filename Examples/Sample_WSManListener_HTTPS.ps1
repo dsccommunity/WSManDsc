@@ -1,3 +1,5 @@
+# Create an HTTPS Listener using a LocalMachine certificate that is installed and issued
+# by 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986.
 configuration Sample_WSManListener_HTTPS
 {
     Import-DscResource -Module WSManDsc
