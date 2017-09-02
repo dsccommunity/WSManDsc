@@ -4,8 +4,8 @@
             Name    = 'RootSDDL'
             Path    = 'RootSDDL'
             Type    = 'String'
-            Default = 'O:NSG:BAD:P(AGABA)(AGRIU)S:P(AUFAGAWD)(AUSAGXGWWD)'
-            TestVal = 'O:NSG:BAD:P(AGABA)(AGRIU)S:P(AUFAGAWD)(AUSAGAWD)'
+            Default = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GXGW;;;WD)'
+            TestVal = 'O:NSG:BAD:P(A;;GA;;;BA)(A;;GR;;;IU)S:P(AU;FA;GA;;;WD)(AU;SA;GA;;;WD)'
             IntTest = $true
         },
         @{
