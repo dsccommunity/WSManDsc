@@ -68,11 +68,11 @@ try
             {
                 & "$($script:DSCResourceName)_Config" -OutputPath $TestDrive
                 Start-DscConfiguration -Path $TestDrive -ComputerName localhost -Wait -Verbose -Force
-            } | Should not throw
+            } | Should -not -throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
         }
         #endregion
 
@@ -83,7 +83,7 @@ try
                 $parameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
                     -ChildPath $parameter.Path
-                (Get-Item -Path $parameterPath).Value | Should Be $WSManServiceConfigNew.$($parameter.Name)
+                (Get-Item -Path $parameterPath).Value | Should -Be $WSManServiceConfigNew.$($parameter.Name)
             } # foreach
         }
     }

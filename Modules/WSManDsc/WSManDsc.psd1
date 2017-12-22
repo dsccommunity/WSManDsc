@@ -84,7 +84,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource', 'WSMan')
+        Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'WSMan')
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/PlagueHO/WSManDsc/blob/master/LICENSE'
