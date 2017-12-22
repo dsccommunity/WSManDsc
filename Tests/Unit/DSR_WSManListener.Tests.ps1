@@ -84,7 +84,7 @@ try
                         -Transport HTTP `
                         -Ensure Present `
                         -Verbose
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should call Get-WSManInstance once' {
@@ -103,7 +103,7 @@ try
                         -Ensure Present `
                         -Verbose
 
-                    $result.Ensure | Should Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should call Get-WSManInstance once' {
@@ -122,13 +122,13 @@ try
                         -Ensure Present `
                         -Verbose
 
-                    $result.Ensure | Should Be 'Present'
-                    $result.Port | Should Be $mockListenerHTTP.Port
-                    $result.Address | Should Be $mockListenerHTTP.Address
-                    $result.HostName | Should Be $mockListenerHTTP.HostName
-                    $result.Enabled | Should Be $mockListenerHTTP.Enabled
-                    $result.URLPrefix | Should Be $mockListenerHTTP.URLPrefix
-                    $result.CertificateThumbprint | Should Be $mockListenerHTTP.CertificateThumbprint
+                    $result.Ensure | Should -Be 'Present'
+                    $result.Port | Should -Be $mockListenerHTTP.Port
+                    $result.Address | Should -Be $mockListenerHTTP.Address
+                    $result.HostName | Should -Be $mockListenerHTTP.HostName
+                    $result.Enabled | Should -Be $mockListenerHTTP.Enabled
+                    $result.URLPrefix | Should -Be $mockListenerHTTP.URLPrefix
+                    $result.CertificateThumbprint | Should -Be $mockListenerHTTP.CertificateThumbprint
                 }
 
                 It 'Should call Get-WSManInstance once' {
@@ -148,7 +148,7 @@ try
                     { Set-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -172,7 +172,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -199,7 +199,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer `
-                        -Verbose } | Should Throw $errorRecord
+                        -Verbose } | Should -Throw $errorRecord
                 }
 
                 It 'Should call expected Mocks' {
@@ -222,7 +222,7 @@ try
                     { Set-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -246,7 +246,7 @@ try
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -272,7 +272,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -296,7 +296,7 @@ try
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -322,7 +322,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -346,7 +346,7 @@ try
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose} | Should Not Throw
+                        -Verbose} | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -366,7 +366,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should Be $False
+                        -Verbose | Should -Be $False
                 }
 
                 It 'Should call expected Mocks' {
@@ -382,7 +382,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose | Should Be $False
+                        -Verbose | Should -Be $False
                 }
 
                 It 'Should call expected Mocks' {
@@ -399,7 +399,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose | Should Be $False
+                        -Verbose | Should -Be $False
                 }
 
                 It 'Should call expected Mocks' {
@@ -416,7 +416,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose | Should Be $False
+                        -Verbose | Should -Be $False
                 }
 
                 It 'Should call expected Mocks' {
@@ -433,7 +433,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should Be $True
+                        -Verbose | Should -Be $True
                 }
 
                 It 'Should call expected Mocks' {
@@ -450,7 +450,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should Be $True
+                        -Verbose | Should -Be $True
                 }
 
                 It 'Should call expected Mocks' {
@@ -467,7 +467,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should Be $True
+                        -Verbose | Should -Be $True
                 }
 
                 It 'Should call expected Mocks' {
@@ -486,11 +486,11 @@ try
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return empty" {
-                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -509,11 +509,11 @@ try
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return $mockCertificateThumbprint" {
-                    $script:ReturnedThumbprint | Should Be $mockCertificateThumbprint
+                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
                 }
 
                 It 'Should call expected Mocks' {
@@ -532,11 +532,11 @@ try
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return empty" {
-                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -552,11 +552,11 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return empty" {
-                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -574,11 +574,11 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return empty" {
-                    $script:ReturnedThumbprint | Should BeNullOrEmpty
+                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -596,11 +596,11 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
-                        -Verbose } | Should Not Throw
+                        -Verbose } | Should -Not -Throw
                 }
 
                 It "Should return $mockCertificateThumbprint" {
-                    $script:ReturnedThumbprint | Should Be $mockCertificateThumbprint
+                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
                 }
 
                 It 'Should call expected Mocks' {

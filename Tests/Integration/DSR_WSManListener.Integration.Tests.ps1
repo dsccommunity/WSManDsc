@@ -47,11 +47,11 @@ try
                     -Wait `
                     -Verbose `
                     -Force
-            } | Should not throw
+            } | Should -not -throw
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
         }
         #endregion
 
@@ -64,9 +64,9 @@ try
             {
                 $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
             }
-            $NewListener                    | Should Not Be $null
-            $NewListener.Port               | Should Be $Listener.Port
-            $NewListener.Address            | Should Be $Listener.Address
+            $NewListener                    | Should -Not -Be $null
+            $NewListener.Port               | Should -Be $Listener.Port
+            $NewListener.Address            | Should -Be $Listener.Address
         }
     }
     #endregion
@@ -139,11 +139,11 @@ try
                     -Wait `
                     -Verbose `
                     -Force
-            } | Should not throw
+            } | Should -not -throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
         }
         #endregion
 
@@ -156,9 +156,9 @@ try
             {
                 $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
             }
-            $NewListener                    | Should Not Be $null
-            $NewListener.Port               | Should Be $Listener.Port
-            $NewListener.Address            | Should Be $Listener.Address
+            $NewListener                    | Should -Not -Be $null
+            $NewListener.Port               | Should -Be $Listener.Port
+            $NewListener.Address            | Should -Be $Listener.Address
         }
     }
     #endregion
@@ -179,11 +179,11 @@ try
                     -Wait `
                     -Verbose `
                     -Force
-            } | Should not throw
+            } | Should -not -throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
         }
         #endregion
 
@@ -196,7 +196,7 @@ try
             {
                 $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
             }
-            $NewListener                    | Should BeNullOrEmpty
+            $NewListener                    | Should -BeNullOrEmpty
         }
     }
     #endregion

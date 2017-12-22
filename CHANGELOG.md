@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Updated tests to meet Pester v4 standard.
+- Removed DSCResourceKit tag from manifest tags.
+
 ## 2.0.0.0
 
 - Added WSManServiceConfig resource.

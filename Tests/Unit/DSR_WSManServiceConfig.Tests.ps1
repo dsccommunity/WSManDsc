@@ -86,7 +86,7 @@ try
 
                     foreach ($parameter in $parameterList)
                     {
-                        $result.$($parameter.Name) | Should Be $wsManServiceConfigSettings.$($parameter.Name)
+                        $result.$($parameter.Name) | Should -Be $wsManServiceConfigSettings.$($parameter.Name)
                     }
                 }
 
@@ -138,7 +138,7 @@ try
                     {
                         $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
                         Set-TargetResource @setTargetResourceParameters
-                    } | Should Not Throw
+                    } | Should -Not -Throw
                 }
 
                 It 'Should call expected Mocks' {
@@ -192,7 +192,7 @@ try
                             $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
                             $setTargetResourceParameters.$($parameter.Name) = $parameter.TestVal
                             Set-TargetResource @setTargetResourceParameters
-                        } | Should Not Throw
+                        } | Should -Not -Throw
                     }
 
                     It 'Should call expected Mocks' {
@@ -253,7 +253,7 @@ try
             Context 'WS-Man Service Config all parameters are the same' {
                 It 'Should return true' {
                     $testTargetResourceParameters = $wsManServiceConfigSplat.Clone()
-                    Test-TargetResource @testTargetResourceParameters | Should Be $True
+                    Test-TargetResource @testTargetResourceParameters | Should -Be $True
                 }
 
                 It 'Should call expected Mocks' {
@@ -278,7 +278,7 @@ try
                     It 'Should return false' {
                         $testTargetResourceSplat = $wsManServiceConfigSplat.Clone()
                         $testTargetResourceSplat.$($parameter.Name) = $parameter.TestVal
-                        Test-TargetResource @testTargetResourceSplat | Should Be $False
+                        Test-TargetResource @testTargetResourceSplat | Should -Be $False
                     }
 
                     It 'Should call expected Mocks' {
