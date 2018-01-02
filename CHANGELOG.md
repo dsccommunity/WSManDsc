@@ -4,6 +4,7 @@
 
 - Updated tests to meet Pester v4 standard.
 - Removed DSCResourceKit tag from manifest tags.
+- Added support for selecting a certificate to use by Thumbprint.
 
 ## 2.0.0.0
 

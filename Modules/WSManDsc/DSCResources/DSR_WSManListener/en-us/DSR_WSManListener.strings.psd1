@@ -17,5 +17,6 @@ ConvertFrom-StringData @'
     ListenerDoesNotExistAndShouldNotMessage = {0} Listener does not exist and should not. Change not required.
     FindCertificateAlternateMessage = Looking for machine server certificate with subject '{0}' issued by '{1}' and DNS name '{2}'.
     FindCertificateMessage = Looking for machine server certificate with subject '{0}' issued by '{1}'.
+    FindCertificateByThumbprintMessage = Looking for machine server certificate with thumbprint '{0}'.
     CertificateFoundMessage = Certificate found with thumbprint '{0}' to use for HTTPS Listener.
 '@

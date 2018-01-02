@@ -1,4 +1,4 @@
-$script:DSCModuleName   = 'WSManDsc'
+$script:DSCModuleName = 'WSManDsc'
 $script:DSCResourceName = 'DSR_WSManListener'
 
 #region HEADER
@@ -6,9 +6,9 @@ $script:DSCResourceName = 'DSR_WSManListener'
 [System.String] $script:moduleRoot = Join-Path -Path $(Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))) -ChildPath 'Modules\WSManDsc'
 
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -39,34 +39,48 @@ try
         #region DEFAULT TESTS
         It 'Should compile without throwing' {
             {
+                $configData = @{
+                    AllNodes = @(
+                        @{
+                            Transport = 'HTTP'
+                            Ensure    = 'Present'
+                            Port      = 5985
+                            Address   = '*'
+                        }
+                    )
+                }
+
                 & "$($script:DSCResourceName)_Config_Add_HTTP" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
         #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -Not -Be $null
-            $NewListener.Port               | Should -Be $Listener.Port
-            $NewListener.Address            | Should -Be $Listener.Address
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
         }
     }
     #endregion
@@ -88,7 +102,7 @@ try
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
-        # Create the certificate
+    # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
     {
         # For Windows 10 or Windows Server 2016
@@ -131,34 +145,59 @@ try
         #region DEFAULT TESTS
         It 'Should compile and apply the MOF without throwing' {
             {
+                # This is to pass to the Config
+                $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+                $Issuer = "CN=$Hostname, $DN"
+
+                $configData = @{
+                    AllNodes = @(
+                        @{
+                            NodeName       = 'localhost'
+                            Transport      = 'HTTPS'
+                            Ensure         = 'Present'
+                            Port           = 5986
+                            Address        = '*'
+                            Issuer         = $Issuer
+                            SubjectFormat  = 'Both'
+                            MatchAlternate = $False
+                            DN             = $DN
+                            Hostname       = $Hostname
+                        }
+                    )
+                }
+
                 & "$($script:DSCResourceName)_Config_Add_HTTPS" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
         #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -Not -Be $null
-            $NewListener.Port               | Should -Be $Listener.Port
-            $NewListener.Address            | Should -Be $Listener.Address
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
         }
     }
     #endregion
@@ -171,30 +210,44 @@ try
         #region DEFAULT TESTS
         It 'Should compile and apply the MOF without throwing' {
             {
+                $configData = @{
+                    AllNodes = @(
+                        @{
+                            Transport      = 'HTTPS'
+                            Ensure         = 'Absent'
+                            Port           = 5986
+                            Address        = '*'
+                        }
+                    )
+                }
+
                 & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
         #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -BeNullOrEmpty
         }
