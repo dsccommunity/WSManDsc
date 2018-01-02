@@ -42,6 +42,7 @@ try
                 $configData = @{
                     AllNodes = @(
                         @{
+                            NodeName  = 'localhost'
                             Transport = 'HTTP'
                             Ensure    = 'Present'
                             Port      = 5985
@@ -213,10 +214,11 @@ try
                 $configData = @{
                     AllNodes = @(
                         @{
-                            Transport      = 'HTTPS'
-                            Ensure         = 'Absent'
-                            Port           = 5986
-                            Address        = '*'
+                            NodeName  = 'localhost'
+                            Transport = 'HTTPS'
+                            Ensure    = 'Absent'
+                            Port      = 5986
+                            Address   = '*'
                         }
                     )
                 }
