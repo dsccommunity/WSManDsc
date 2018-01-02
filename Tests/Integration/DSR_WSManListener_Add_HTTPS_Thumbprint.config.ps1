@@ -3,7 +3,6 @@ Configuration DSR_WSManListener_Config_Add_HTTPS_Thumbprint {
 
     node localhost {
         WSManListener Integration_Test {
-            Name                  = $Node.Name
             Transport             = $Node.Transport
             Ensure                = $Node.Ensure
             Port                  = $Node.Port

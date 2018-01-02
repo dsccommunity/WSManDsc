@@ -98,14 +98,18 @@ try
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
+    $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+    $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $Issuer = "CN=$Hostname, $DN"
+
     # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
     {
         # For Windows 10 or Windows Server 2016
         $Certificate = New-SelfSignedCertificate `
             -CertstoreLocation 'Cert:\LocalMachine\My' `
-            -Subject $Listener.Issuer `
-            -DnsName $Listener.Hostname `
+            -Subject $Issuer `
+            -DnsName $Hostname `
             -FriendlyName $CertFriendlyName
     }
     else
@@ -131,18 +135,14 @@ try
 
         $Certificate = New-SelfSignedCertificateEx `
             -storeLocation 'LocalMachine' `
-            -Subject $Listener.Issuer `
-            -SubjectAlternativeName $($Listener.Hostname) `
+            -Subject $Issuer `
+            -SubjectAlternativeName $($Hostname) `
             -FriendlyName $CertFriendlyName `
             -EnhancedKeyUsage 'Server Authentication'
     } # if
 
     Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
         # This is to pass to the Config
-        $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
-        $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
-        $Issuer = "CN=$Hostname, $DN"
-
         $configData = @{
             AllNodes = @(
                 @{
