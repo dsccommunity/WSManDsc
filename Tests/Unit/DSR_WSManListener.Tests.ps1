@@ -477,6 +477,44 @@ try
         }
 
         Describe "$($script:DSCResourceName)\Find-Certificate" {
+            Context 'CertificateThumbprint is passed but does not exist' {
+                Mock -CommandName Get-ChildItem
+
+                It 'Should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -CertificateThumbprint $mockCertificateThumbprint `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It "Should return empty" {
+                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'CertificateThumbprint is passed and does exist' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificateDN
+                }
+
+                It 'Should not throw error' {
+                    { $script:ReturnedThumbprint = Find-Certificate `
+                        -CertificateThumbprint $mockCertificateThumbprint `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It "Should return empty" {
+                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
             Context 'SubjectFormat is Both, Certificate does not exist, DN passed' {
                 Mock -CommandName Get-ChildItem
 

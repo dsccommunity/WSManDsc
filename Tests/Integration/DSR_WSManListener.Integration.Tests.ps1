@@ -1,4 +1,4 @@
-$script:DSCModuleName   = 'WSManDsc'
+$script:DSCModuleName = 'WSManDsc'
 $script:DSCResourceName = 'DSR_WSManListener'
 
 #region HEADER
@@ -6,9 +6,9 @@ $script:DSCResourceName = 'DSR_WSManListener'
 [System.String] $script:moduleRoot = Join-Path -Path $(Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))) -ChildPath 'Modules\WSManDsc'
 
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -31,52 +31,62 @@ try
             -ErrorAction Stop
     } # if
 
-    #region Integration Tests
     $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTP.config.ps1"
     . $ConfigFile
 
     Describe "$($script:DSCResourceName)_Integration_Add_HTTP" {
-        #region DEFAULT TESTS
+        $configData = @{
+            AllNodes = @(
+                @{
+                    NodeName  = 'localhost'
+                    Transport = 'HTTP'
+                    Ensure    = 'Present'
+                    Port      = 5985
+                    Address   = '*'
+                }
+            )
+        }
+
         It 'Should compile without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Add_HTTP" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
-        #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -Not -Be $null
-            $NewListener.Port               | Should -Be $Listener.Port
-            $NewListener.Address            | Should -Be $Listener.Address
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
         }
     }
-    #endregion
 
     <#
         Note: Removing the WS-Man listener will cause DSC to stop working.
         So there is no integration test defined that will remove the listener created above.
     #>
 
-    #region Integration Tests
     $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS.config.ps1"
     . $ConfigFile
 
@@ -88,14 +98,18 @@ try
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
-        # Create the certificate
+    $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+    $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $Issuer = "CN=$Hostname, $DN"
+
+    # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
     {
         # For Windows 10 or Windows Server 2016
         $Certificate = New-SelfSignedCertificate `
             -CertstoreLocation 'Cert:\LocalMachine\My' `
-            -Subject $Listener.Issuer `
-            -DnsName $Listener.Hostname `
+            -Subject $Issuer `
+            -DnsName $Hostname `
             -FriendlyName $CertFriendlyName
     }
     else
@@ -121,85 +135,215 @@ try
 
         $Certificate = New-SelfSignedCertificateEx `
             -storeLocation 'LocalMachine' `
-            -Subject $Listener.Issuer `
-            -SubjectAlternativeName $($Listener.Hostname) `
+            -Subject $Issuer `
+            -SubjectAlternativeName $($Hostname) `
             -FriendlyName $CertFriendlyName `
             -EnhancedKeyUsage 'Server Authentication'
     } # if
 
     Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
-        #region DEFAULT TESTS
+        # This is to pass to the Config
+        $configData = @{
+            AllNodes = @(
+                @{
+                    NodeName       = 'localhost'
+                    Transport      = 'HTTPS'
+                    Ensure         = 'Present'
+                    Port           = 5986
+                    Address        = '*'
+                    Issuer         = $Issuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $False
+                    DN             = $DN
+                    Hostname       = $Hostname
+                }
+            )
+        }
+
         It 'Should compile and apply the MOF without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Add_HTTPS" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
-        #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -Not -Be $null
-            $NewListener.Port               | Should -Be $Listener.Port
-            $NewListener.Address            | Should -Be $Listener.Address
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
         }
     }
-    #endregion
 
-    #region Integration Tests
     $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
     . $ConfigFile
 
     Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS" {
-        #region DEFAULT TESTS
+        $configData = @{
+            AllNodes = @(
+                @{
+                    NodeName  = 'localhost'
+                    Transport = 'HTTPS'
+                    Ensure    = 'Absent'
+                    Port      = 5986
+                    Address   = '*'
+                }
+            )
+        }
+
         It 'Should compile and apply the MOF without throwing' {
             {
                 & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
-                    -OutputPath $TestDrive
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
                 Start-DscConfiguration `
                     -Path $TestDrive `
                     -ComputerName localhost `
                     -Wait `
                     -Verbose `
-                    -Force
-            } | Should -not -throw
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -throw
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
         }
-        #endregion
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
             $Listeners = @(Get-WSManInstance `
-                -ResourceURI winrm/config/Listener `
-                -Enumerate)
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
             if ($Listeners)
             {
-                $NewListener = $Listeners.Where( {$_.Transport -eq $Listener.Transport } )
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
             }
             $NewListener                    | Should -BeNullOrEmpty
         }
     }
-    #endregion
+
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS_Thumbprint.config.ps1"
+    . $ConfigFile
+
+    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS_Thumbprint" {
+        $configData = @{
+            AllNodes = @(
+                @{
+                    NodeName              = 'localhost'
+                    Transport             = 'HTTPS'
+                    Ensure                = 'Present'
+                    Port                  = 5986
+                    Address               = '*'
+                    CertificateThumbprint = $Certificate.Thumbprint
+                }
+            )
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                & "$($script:DSCResourceName)_Config_Add_HTTPS_Thumbprint" `
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
+                Start-DscConfiguration `
+                    -Path $TestDrive `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
+            }
+            $NewListener                    | Should -Not -Be $null
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
+        }
+    }
+
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    . $ConfigFile
+
+    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS_Thumbprint" {
+        $configData = @{
+            AllNodes = @(
+                @{
+                    NodeName  = 'localhost'
+                    Transport = 'HTTPS'
+                    Ensure    = 'Absent'
+                    Port      = 5986
+                    Address   = '*'
+                }
+            )
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
+                Start-DscConfiguration `
+                    -Path $TestDrive `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
+            }
+            $NewListener                    | Should -BeNullOrEmpty
+        }
+    }
 
     # Remove the certificate if it already exists
     Get-ChildItem -Path 'Cert:\LocalMachine\My' |
