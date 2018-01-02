@@ -244,6 +244,9 @@ try
         }
     }
 
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS_Thumbprint.config.ps1"
+    . $ConfigFile
+
     Describe "$($script:DSCResourceName)_Integration_Add_HTTPS_Thumbprint" {
         $configData = @{
             AllNodes = @(
