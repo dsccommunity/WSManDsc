@@ -256,6 +256,111 @@ try
     }
     #endregion
 
+    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS_Thumbprint" {
+        #region DEFAULT TESTS
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configData = @{
+                    AllNodes = @(
+                        @{
+                            NodeName              = 'localhost'
+                            Transport             = 'HTTPS'
+                            Ensure                = 'Present'
+                            Port                  = 5986
+                            Address               = '*'
+                            CertificateThumbprint = $Certificate.Thumbprint
+                        }
+                    )
+                }
+
+                & "$($script:DSCResourceName)_Config_Add_HTTPS_Thumbprint" `
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
+                Start-DscConfiguration `
+                    -Path $TestDrive `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+        }
+        #endregion
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
+            }
+            $NewListener                    | Should -Not -Be $null
+            $NewListener.Port               | Should -Be $configData.AllNodes[0].Port
+            $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
+        }
+    }
+    #endregion
+
+    #region Integration Tests
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    . $ConfigFile
+
+    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS_Thumbprint" {
+        #region DEFAULT TESTS
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configData = @{
+                    AllNodes = @(
+                        @{
+                            NodeName  = 'localhost'
+                            Transport = 'HTTPS'
+                            Ensure    = 'Absent'
+                            Port      = 5986
+                            Address   = '*'
+                        }
+                    )
+                }
+
+                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                    -OutputPath $TestDrive `
+                    -ConfigurationData $configData
+
+                Start-DscConfiguration `
+                    -Path $TestDrive `
+                    -ComputerName localhost `
+                    -Wait `
+                    -Verbose `
+                    -Force `
+                    -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+        }
+        #endregion
+
+        It 'Should have set the resource and all the parameters should match' {
+            # Get the Rule details
+            $Listeners = @(Get-WSManInstance `
+                    -ResourceURI winrm/config/Listener `
+                    -Enumerate)
+            if ($Listeners)
+            {
+                $NewListener = $Listeners.Where( {$_.Transport -eq $configData.AllNodes[0].Transport } )
+            }
+            $NewListener                    | Should -BeNullOrEmpty
+        }
+    }
+    #endregion
+
     # Remove the certificate if it already exists
     Get-ChildItem -Path 'Cert:\LocalMachine\My' |
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
