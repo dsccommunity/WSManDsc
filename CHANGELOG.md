@@ -1,6 +1,6 @@
 # Versions
 
-## Unreleased
+## 2.1.0.0
 
 - Updated tests to meet Pester v4 standard.
 - Removed DSCResourceKit tag from manifest tags.
