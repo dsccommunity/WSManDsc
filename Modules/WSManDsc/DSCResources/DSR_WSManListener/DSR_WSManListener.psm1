@@ -66,7 +66,7 @@ function Get-TargetResource
             Ensure                = 'Present'
             Port                  = $listener.Port
             Address               = $listener.Address
-            HostName              = $listener.HostName
+            Hostname              = $listener.Hostname
             Enabled               = $listener.Enabled
             URLPrefix             = $listener.URLPrefix
             CertificateThumbprint = $listener.CertificateThumbprint
@@ -166,7 +166,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $CertificateThumbprint
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.String]
+        $Hostname
     )
 
     Write-Verbose -Message ( @(
@@ -235,17 +239,22 @@ function Set-TargetResource
                             -f $Transport, $Port
                     ) -join '' )
 
+                if ([System.String]::IsNullOrEmpty($Hostname))
+                {
+                    $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+                }
+
                 New-WSManInstance `
                     -ResourceURI 'winrm/config/Listener' `
                     -SelectorSet @{
-                    Address   = $Address
-                    Transport = $Transport
-                } `
+                        Address   = $Address
+                        Transport = $Transport
+                    } `
                     -ValueSet @{
-                    Hostname              = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-                    CertificateThumbprint = $thumbprint
-                    Port                  = $Port
-                } `
+                        Hostname              = $Hostname
+                        CertificateThumbprint = $thumbprint
+                        Port                  = $Port
+                    } `
                     -ErrorAction Stop
             }
             else
@@ -384,7 +393,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $CertificateThumbprint
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.String]
+        $Hostname
     )
 
     # Flag to signal whether settings are correct
@@ -590,7 +603,11 @@ function Find-Certificate
 
         [Parameter()]
         [System.String]
-        $CertificateThumbprint
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.String]
+        $Hostname
     )
 
     [System.String] $thumbprint = ''
@@ -614,8 +631,11 @@ function Find-Certificate
     if ($SubjectFormat -in 'Both', 'FQDNOnly')
     {
         # Lookup the certificate using the FQDN of the machine
-        [System.String] $HostName = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-        [System.String] $Subject = "CN=$HostName"
+        if ([System.String]::IsNullOrEmpty($Hostname))
+        {
+            $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+        }
+        $Subject = "CN=$Hostname"
 
         if ($PSBoundParameters.ContainsKey('DN'))
         {
@@ -628,14 +648,14 @@ function Find-Certificate
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
                     $($script:localizedData.FindCertificateAlternateMessage) `
-                        -f $Issuer, $Subject, $HostName
+                        -f $Issuer, $Subject, $Hostname
                 ) -join '' )
 
             $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                             -contains 'Server Authentication') -and
                     ($_.Issuer -eq $Issuer) -and
-                    ($HostName -in $_.DNSNameList.Unicode) -and
+                    ($Hostname -in $_.DNSNameList.Unicode) -and
                     ($_.Subject -eq $Subject)
                 } | Select-Object -First 1).Thumbprint
         }
@@ -661,8 +681,8 @@ function Find-Certificate
             -and ($SubjectFormat -in 'Both', 'NameOnly'))
     {
         # If could not find an FQDN cert, try for one issued to the computer name
-        [System.String] $HostName = $ENV:ComputerName
-        [System.String] $Subject = "CN=$HostName"
+        [System.String] $Hostname = $ENV:ComputerName
+        [System.String] $Subject = "CN=$Hostname"
 
         if ($PSBoundParameters.ContainsKey('DN'))
         {
@@ -675,14 +695,14 @@ function Find-Certificate
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
                     $($script:localizedData.FindCertificateAlternateMessage) `
-                        -f $Issuer, $Subject, $HostName
+                        -f $Issuer, $Subject, $Hostname
                 ) -join '' )
 
             $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                     ($_.Extensions.EnhancedKeyUsages.FriendlyName `
                             -contains 'Server Authentication') -and
                     ($_.Issuer -eq $Issuer) -and
-                    ($HostName -in $_.DNSNameList.Unicode) -and
+                    ($Hostname -in $_.DNSNameList.Unicode) -and
                     ($_.Subject -eq $Subject)
                 } | Select-Object -First 1).Thumbprint
         }
