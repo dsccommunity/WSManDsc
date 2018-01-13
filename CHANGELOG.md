@@ -1,5 +1,11 @@
 # Versions
 
+## 2.2.0.0
+
+- WSManListener:
+  - Added support for setting the Hostname of the listener will if the
+    subject of the certificate does not match the machine name - Fixes [Issue #11](https://github.com/PlagueHO/WSManDsc/issues/11).
+
 ## 2.1.0.0
 
 - Updated tests to meet Pester v4 standard.
