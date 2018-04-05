@@ -1,5 +1,9 @@
 # Versions
 
+## Unreleased
+
+- Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
+
 ## 2.2.0.0
 
 - WSManListener:
