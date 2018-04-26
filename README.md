@@ -8,8 +8,7 @@ PowerShell Remoting.
 
 **This project is not maintained or supported by Microsoft.**
 
-It has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/).
+This project has adopted this [Open Source Code of Conduct](CODEOFCONDUCT.md).
 
 This module should meet the [PowerShell DSC Resource Kit High Quality Resource
 Module Guidelines](https://github.com/PowerShell/DscResources/blob/master/HighQualityModuleGuidelines.md).
