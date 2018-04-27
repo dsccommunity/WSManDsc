@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
+- Added Open Code of Conduct.
 
 ## 2.2.0.0
 
