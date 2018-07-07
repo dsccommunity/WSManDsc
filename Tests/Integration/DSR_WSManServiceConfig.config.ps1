@@ -1,5 +1,5 @@
 # Load the parameter List from the data file
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
