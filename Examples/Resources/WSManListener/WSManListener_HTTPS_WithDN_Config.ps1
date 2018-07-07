@@ -1,21 +1,16 @@
+#Requires -module WSManDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         Create an HTTPS Listener using a LocalMachine certificate containing a DN matching
         'O=Contoso Inc, S=Pennsylvania, C=US' that is installed and issued by
         'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986.
 #>
 Configuration Example
 {
-    param
-    (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost'
-    )
-
     Import-DscResource -Module WSManDsc
 
-    Node $NodeName
+    Node localhost
     {
         WSManListener HTTPS
         {

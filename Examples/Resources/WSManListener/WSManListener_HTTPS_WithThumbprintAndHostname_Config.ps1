@@ -1,5 +1,7 @@
+#Requires -module WSManDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         Create an HTTPS Listener using a LocalMachine certificate with a thumbprint
         matching 'F2BE91E92AF040EF116E1CDC91D75C22F47D7BD6'. If the subject in the
         certificate does not match the name of the host then the Hostname parameter
@@ -8,16 +10,9 @@
 #>
 Configuration Example
 {
-    param
-    (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost'
-    )
-
     Import-DscResource -Module WSManDsc
 
-    Node $NodeName
+    Node localhost
     {
         WSManListener HTTPS
         {

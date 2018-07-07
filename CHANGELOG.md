@@ -4,6 +4,8 @@
 
 - Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
 - Added Open Code of Conduct.
+- Refactored module folder structure to move resource
+  to root folder of repository and remove test harness - Fixes [Issue #19](https://github.com/PlagueHO/WSManDsc/issues/19).
 
 ## 2.2.0.0
 
