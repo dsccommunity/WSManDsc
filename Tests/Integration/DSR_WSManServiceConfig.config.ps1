@@ -1,5 +1,5 @@
 # Load the parameter List from the data file
-[System.String] $script:moduleRoot = Join-Path -Path $(Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))) -ChildPath 'Modules\WSManDsc'
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `

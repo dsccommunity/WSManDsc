@@ -1,6 +1,8 @@
 $script:DSCModuleName   = 'WSManDsc'
 $script:DSCResourceName = 'DSR_WSManListener'
 
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
+
 #region HEADER
 # Unit Test Template Version: 1.1.0
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
