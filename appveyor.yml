@@ -5,7 +5,7 @@ version: 2.2.0.{build}
 install:
     # Needed for publishing of examples, build worker defaults to core.autocrlf=input.
     - git config --global core.autocrlf true
-    - git clone -b Issue-245 https://github.com/PowerShell/DscResource.Tests
+    - git clone -b Issue-245 https://github.com/PlagueHO/DscResource.Tests
 
     - ps: |
         $moduleName = 'WSManDsc'
