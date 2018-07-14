@@ -1,20 +1,15 @@
+#Requires -module WSManDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This will create or enable an HTTP WS-Man Listener on port 5985.
         configuration Sample_WSManListener_HTTP
 #>
 Configuration Example
 {
-    param
-    (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost'
-    )
-
     Import-DscResource -Module WSManDsc
 
-    Node $NodeName
+    Node localhost
     {
         WSManListener HTTP
         {
