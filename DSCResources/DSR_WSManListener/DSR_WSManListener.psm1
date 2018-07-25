@@ -16,13 +16,13 @@ $Default_HTTPS_Port = 5986
 
 <#
     .SYNOPSIS
-    Returns the current WS-Man Listener details.
+        Returns the current WS-Man Listener details.
 
     .PARAMETER Transport
-    The transport type of WS-Man Listener.
+        The transport type of WS-Man Listener.
 
     .PARAMETER Ensure
-    Specifies whether the WS-Man Listener should exist.
+        Specifies whether the WS-Man Listener should exist.
 #>
 function Get-TargetResource
 {
@@ -62,10 +62,19 @@ function Get-TargetResource
                     -f $Transport
             ) -join '' )
 
+        if ($listener.CertificateThumbprint)
+        {
+            $certificate = Find-Certificate -CertificateThumbprint $listener.CertificateThumbprint
+        }
+
         $returnValue += @{
             Ensure                = 'Present'
             Port                  = $listener.Port
             Address               = $listener.Address
+            Issuer                = $certificate.Issuer
+            SubjectFormat         = $null
+            MatchAlternate        = $null
+            DN                    = $null
             Hostname              = $listener.Hostname
             Enabled               = $listener.Enabled
             URLPrefix             = $listener.URLPrefix
@@ -82,7 +91,17 @@ function Get-TargetResource
             ) -join '' )
 
         $returnValue += @{
-            Ensure = 'Absent'
+            Ensure                = 'Absent'
+            Port                  = $null
+            Address               = $null
+            Issuer                = $null
+            SubjectFormat         = $null
+            MatchAlternate        = $null
+            DN                    = $null
+            Hostname              = $null
+            Enabled               = $null
+            URLPrefix             = $null
+            CertificateThumbprint = $null
         }
     } # if
 
@@ -94,35 +113,35 @@ function Get-TargetResource
     Sets the state of a WS-Man Listener.
 
     .PARAMETER Transport
-    The transport type of WS-Man Listener.
+        The transport type of WS-Man Listener.
 
     .PARAMETER Ensure
-    Specifies whether the WS-Man Listener should exist.
+        Specifies whether the WS-Man Listener should exist.
 
     .PARAMETER Port
-    The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
+        The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
 
     .PARAMETER Address
-    The Address that the WS-Man Listener will be bound to. The default is * (any address).
+        The Address that the WS-Man Listener will be bound to. The default is * (any address).
 
     .PARAMETER Issuer
-    The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
-    not specified.
+        The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
+        not specified.
 
     .PARAMETER SubjectFormat
-    The format used to match the certificate subject to use for an HTTPS WS-Man Listener
-    if a thumbprint is not specified.
+        The format used to match the certificate subject to use for an HTTPS WS-Man Listener
+        if a thumbprint is not specified.
 
     .PARAMETER MatchAlternate
-    Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
-    Listener if a thumbprint is not specified.
+        Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
+        Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-    This is a Distinguished Name component that will be used to identify the certificate to use
-    for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is a Distinguished Name component that will be used to identify the certificate to use
+        for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
-    The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
+        The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
 #>
 function Set-TargetResource
 {
@@ -228,7 +247,8 @@ function Set-TargetResource
             $null = $PSBoundParameters.Remove('Port')
             $null = $PSBoundParameters.Remove('Address')
 
-            [System.String] $thumbprint = Find-Certificate @PSBoundParameters
+            $certificate = Find-Certificate @PSBoundParameters
+            [System.String] $thumbprint = $certificate.thumbprint
 
             if ($thumbprint)
             {
@@ -317,38 +337,38 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Tests the state of a WS-Man Listener.
+        Tests the state of a WS-Man Listener.
 
     .PARAMETER Transport
-    The transport type of WS-Man Listener.
+        The transport type of WS-Man Listener.
 
     .PARAMETER Ensure
-    Specifies whether the WS-Man Listener should exist.
+        Specifies whether the WS-Man Listener should exist.
 
     .PARAMETER Port
-    The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
+        The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
 
     .PARAMETER Address
-    The Address that the WS-Man Listener will be bound to. The default is * (any address).
+        The Address that the WS-Man Listener will be bound to. The default is * (any address).
 
     .PARAMETER Issuer
-    The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
-    not specified.
+        The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
+        not specified.
 
     .PARAMETER SubjectFormat
-    The format used to match the certificate subject to use for an HTTPS WS-Man Listener
-    if a thumbprint is not specified.
+        The format used to match the certificate subject to use for an HTTPS WS-Man Listener
+        if a thumbprint is not specified.
 
     .PARAMETER MatchAlternate
-    Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
-    Listener if a thumbprint is not specified.
+        Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
+        Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-    This is a Distinguished Name component that will be used to identify the certificate to use
-    for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is a Distinguished Name component that will be used to identify the certificate to use
+        for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
-    The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
+        The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
 #>
 function Test-TargetResource
 {
@@ -487,10 +507,10 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-    Looks up a WS-Man listener on the machine and returns the details.
+        Looks up a WS-Man listener on the machine and returns the details.
 
     .PARAMETER Transport
-    The transport type of WS-Man Listener.
+        The transport type of WS-Man Listener.
 #>
 function Get-Listener
 {
@@ -517,13 +537,13 @@ function Get-Listener
 
 <#
     .SYNOPSIS
-    Returns the port to use for the listener based on the transport and port.
+        Returns the port to use for the listener based on the transport and port.
 
     .PARAMETER Transport
-    The transport type of WS-Man Listener.
+        The transport type of WS-Man Listener.
 
     .PARAMETER Port
-    The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
+        The port the WS-Man Listener should use. Defaults to 5985 for HTTP and 5986 for HTTPS listeners.
 #>
 function Get-DefaultPort
 {
@@ -558,30 +578,31 @@ function Get-DefaultPort
 
 <#
     .SYNOPSIS
-    Finds the certificate to use for the HTTPS WS-Man Listener
+        Finds the certificate to use for the HTTPS WS-Man Listener
 
     .PARAMETER Issuer
-    The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
-    not specified.
+        The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is
+        not specified.
 
     .PARAMETER SubjectFormat
-    The format used to match the certificate subject to use for an HTTPS WS-Man Listener
-    if a thumbprint is not specified.
+        The format used to match the certificate subject to use for an HTTPS WS-Man Listener
+        if a thumbprint is not specified.
 
     .PARAMETER MatchAlternate
-    Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
-    Listener if a thumbprint is not specified.
+        Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
+        Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-    This is a Distinguished Name component that will be used to identify the certificate to use
-    for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is a Distinguished Name component that will be used to identify the certificate to use
+        for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
-    The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
+        The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
 #>
 function Find-Certificate
 {
     [CmdletBinding()]
+    [OutputType([System.Security.Cryptography.X509Certificates.X509Certificate2])]
     param
     (
         [Parameter()]
@@ -614,126 +635,133 @@ function Find-Certificate
 
     if ($PSBoundParameters.ContainsKey('CertificateThumbprint'))
     {
-        $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                ($_.Thumbprint -eq $CertificateThumbprint)
-            } | Select-Object -First 1).Thumbprint
-
         Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($script:localizedData.FindCertificateByThumbprintMessage) `
                     -f $CertificateThumbprint
             ) -join '' )
 
-        return $thumbprint
-    } # if
-
-    # First try and find a certificate that is used to the FQDN of the machine
-    if ($SubjectFormat -in 'Both', 'FQDNOnly')
-    {
-        # Lookup the certificate using the FQDN of the machine
-        if ([System.String]::IsNullOrEmpty($Hostname))
-        {
-            $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-        }
-        $Subject = "CN=$Hostname"
-
-        if ($PSBoundParameters.ContainsKey('DN'))
-        {
-            $Subject = "$Subject, $DN"
-        } # if
-
-        if ($MatchAlternate)
-        {
-            # Try and lookup the certificate using the subject and the alternate name
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.FindCertificateAlternateMessage) `
-                        -f $Issuer, $Subject, $Hostname
-                ) -join '' )
-
-            $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                            -contains 'Server Authentication') -and
-                    ($_.Issuer -eq $Issuer) -and
-                    ($Hostname -in $_.DNSNameList.Unicode) -and
-                    ($_.Subject -eq $Subject)
-                } | Select-Object -First 1).Thumbprint
-        }
-        else
-        {
-            # Try and lookup the certificate using the subject name
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.FindCertificateMessage) `
-                        -f $Issuer, $Subject
-                ) -join '' )
-
-            $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                            -contains 'Server Authentication') -and
-                    ($_.Issuer -eq $Issuer) -and
-                    ($_.Subject -eq $Subject)
-                } | Select-Object -First 1).Thumbprint
-        } # if
+        $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+                ($_.Thumbprint -eq $CertificateThumbprint)
+            } | Select-Object -First 1
     }
-
-    if (-not $thumbprint `
-            -and ($SubjectFormat -in 'Both', 'NameOnly'))
+    else
     {
-        # If could not find an FQDN cert, try for one issued to the computer name
-        [System.String] $Hostname = $ENV:ComputerName
-        [System.String] $Subject = "CN=$Hostname"
-
-        if ($PSBoundParameters.ContainsKey('DN'))
+        # First try and find a certificate that is used to the FQDN of the machine
+        if ($SubjectFormat -in 'Both', 'FQDNOnly')
         {
-            $Subject = "$Subject, $DN"
-        } # if
+            # Lookup the certificate using the FQDN of the machine
+            if ([System.String]::IsNullOrEmpty($Hostname))
+            {
+                $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+            }
+            $Subject = "CN=$Hostname"
 
-        if ($MatchAlternate)
-        {
-            # Try and lookup the certificate using the subject and the alternate name
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.FindCertificateAlternateMessage) `
-                        -f $Issuer, $Subject, $Hostname
-                ) -join '' )
+            if ($PSBoundParameters.ContainsKey('DN'))
+            {
+                $Subject = "$Subject, $DN"
+            } # if
 
-            $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                            -contains 'Server Authentication') -and
-                    ($_.Issuer -eq $Issuer) -and
-                    ($Hostname -in $_.DNSNameList.Unicode) -and
-                    ($_.Subject -eq $Subject)
-                } | Select-Object -First 1).Thumbprint
+            if ($MatchAlternate)
+            {
+                # Try and lookup the certificate using the subject and the alternate name
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.FindCertificateAlternateMessage) `
+                            -f $Issuer, $Subject, $Hostname
+                    ) -join '' )
+
+                $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                                -contains 'Server Authentication') -and
+                        ($_.Issuer -eq $Issuer) -and
+                        ($Hostname -in $_.DNSNameList.Unicode) -and
+                        ($_.Subject -eq $Subject)
+                    } | Select-Object -First 1)
+            }
+            else
+            {
+                # Try and lookup the certificate using the subject name
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.FindCertificateMessage) `
+                            -f $Issuer, $Subject
+                    ) -join '' )
+
+                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                                -contains 'Server Authentication') -and
+                        ($_.Issuer -eq $Issuer) -and
+                        ($_.Subject -eq $Subject)
+                    } | Select-Object -First 1
+            } # if
         }
-        else
-        {
-            # Try and lookup the certificate using the subject name
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.FindCertificateMessage) `
-                        -f $Issuer, $Subject
-                ) -join '' )
 
-            $thumbprint = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                    ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                            -contains 'Server Authentication') -and
-                    ($_.Issuer -eq $Issuer) -and
-                    ($_.Subject -eq $Subject)
-                } | Select-Object -First 1).Thumbprint
+        if (-not $certificate `
+                -and ($SubjectFormat -in 'Both', 'NameOnly'))
+        {
+            # If could not find an FQDN cert, try for one issued to the computer name
+            [System.String] $Hostname = $ENV:ComputerName
+            [System.String] $Subject = "CN=$Hostname"
+
+            if ($PSBoundParameters.ContainsKey('DN'))
+            {
+                $Subject = "$Subject, $DN"
+            } # if
+
+            if ($MatchAlternate)
+            {
+                # Try and lookup the certificate using the subject and the alternate name
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.FindCertificateAlternateMessage) `
+                            -f $Issuer, $Subject, $Hostname
+                    ) -join '' )
+
+                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                                -contains 'Server Authentication') -and
+                        ($_.Issuer -eq $Issuer) -and
+                        ($Hostname -in $_.DNSNameList.Unicode) -and
+                        ($_.Subject -eq $Subject)
+                    } | Select-Object -First 1
+            }
+            else
+            {
+                # Try and lookup the certificate using the subject name
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.FindCertificateMessage) `
+                            -f $Issuer, $Subject
+                    ) -join '' )
+
+                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
+                                -contains 'Server Authentication') -and
+                        ($_.Issuer -eq $Issuer) -and
+                        ($_.Subject -eq $Subject)
+                    } | Select-Object -First 1
+            } # if
         } # if
     } # if
 
-    if (-not ([System.String]::IsNullOrEmpty($thumbprint)))
+    if ($certificate)
     {
         Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($script:localizedData.CertificateFoundMessage) `
-                    -f $thumbprint
+                    -f $certificate.thumbprint
+            ) -join '' )
+    }
+    else
+    {
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.CertificateNotFoundMessage) `
             ) -join '' )
     } # if
 
-    return $thumbprint
-} # Set-TargetResource
+    return $certificate
+} # Find-Certificate
 
 Export-ModuleMember -Function *-TargetResource
