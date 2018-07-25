@@ -16,7 +16,7 @@ Author = 'Daniel Scott-Raynsford'
 CompanyName = ''
 
 # Copyright statement for this module
-Copyright = '(c) 2017 Daniel Scott-Raynsford. All rights reserved.'
+Copyright = '(c) 2018 Daniel Scott-Raynsford. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'DSC Resource for configuring WS-Management Listeners.'
