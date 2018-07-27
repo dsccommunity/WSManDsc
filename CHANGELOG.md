@@ -8,6 +8,11 @@
   to root folder of repository and remove test harness - Fixes [Issue #19](https://github.com/PlagueHO/WSManDsc/issues/19).
 - Converted Examples to support format for publishing to PowerShell
   Gallery.
+- Change `Find-Certificate` in `WSManListener` to return entire certificate
+  instead of just thumbprint.
+- Fix `Get-TargetResource` in `WSManListener` to ensure all MOF parameters are
+  returned - Fixes [Issue #21](https://github.com/PlagueHO/WSManDsc/issues/21).
+- Minor style corrections to comment based help.
 
 ## 2.2.0.0
 
