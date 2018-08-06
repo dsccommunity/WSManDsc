@@ -13,6 +13,7 @@
 - Fix `Get-TargetResource` in `WSManListener` to ensure all MOF parameters are
   returned - Fixes [Issue #21](https://github.com/PlagueHO/WSManDsc/issues/21).
 - Minor style corrections to comment based help.
+- Correct configuration names in Examples - fixes [Issue #24](https://github.com/PlagueHO/WSManDsc/issues/24).
 
 ## 2.2.0.0
 
