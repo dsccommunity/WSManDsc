@@ -23,7 +23,7 @@
         matching 'F2BE91E92AF040EF116E1CDC91D75C22F47D7BD6'. The host name in the
         certificate must match the name of the host machine.
 #>
-Configuration Example
+Configuration WSManListener_HTTPS_WithThumbprint_Config
 {
     Import-DscResource -Module WSManDsc
 

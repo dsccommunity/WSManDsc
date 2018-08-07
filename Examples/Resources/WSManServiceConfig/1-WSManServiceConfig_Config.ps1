@@ -23,7 +23,7 @@
         maximum connections to 100, allow CredSSP (not recommended)
         and allow unecrypted WS-Man Sessions (not recommended).
 #>
-Configuration Example
+Configuration WSManServiceConfig_Config
 {
     Import-DscResource -Module WSManDsc
 

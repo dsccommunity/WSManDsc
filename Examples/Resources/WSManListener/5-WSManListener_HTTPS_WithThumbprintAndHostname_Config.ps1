@@ -25,7 +25,7 @@
         must be specified. In this example the subject in the certificate is
         'WsManListenerCert'.
 #>
-Configuration Example
+Configuration WSManListener_HTTPS_WithThumbprintAndHostname_Config
 {
     Import-DscResource -Module WSManDsc
 

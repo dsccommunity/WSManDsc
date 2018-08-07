@@ -23,7 +23,7 @@
         'O=Contoso Inc, S=Pennsylvania, C=US' that is installed and issued by
         'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' on port 5986.
 #>
-Configuration Example
+Configuration WSManListener_HTTPS_WithDN_Config
 {
     Import-DscResource -Module WSManDsc
 
