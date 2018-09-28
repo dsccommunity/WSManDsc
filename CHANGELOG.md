@@ -19,6 +19,7 @@
   - Common Tests - Validate Markdown Links
   - Common Tests - Relative Path Length
 - Opt-in to example publishing.
+- Update to new format LICENSE.
 
 ## 2.2.0.0
 
