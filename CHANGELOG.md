@@ -14,6 +14,12 @@
   returned - Fixes [Issue #21](https://github.com/PlagueHO/WSManDsc/issues/21).
 - Minor style corrections to comment based help.
 - Correct configuration names in Examples - fixes [Issue #24](https://github.com/PlagueHO/WSManDsc/issues/24).
+- Opt-in to common tests:
+  - Common Tests - Validate Example Files To Be Published
+  - Common Tests - Validate Markdown Links
+  - Common Tests - Relative Path Length
+- Opt-in to example publishing.
+- Update to new format LICENSE.
 
 ## 2.2.0.0
 
