@@ -5,7 +5,7 @@ Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot 
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
-[System.String] $script:moduleRoot = Join-Path -Path $(Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))) -ChildPath 'Modules\WSManDsc'
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -164,7 +164,7 @@ try
                 Mock -CommandName Remove-WSManInstance
                 Mock -CommandName New-WSManInstance
                 Mock -CommandName Find-Certificate -MockWith {
-                    return $mockCertificateThumbprint
+                    return $mockCertificate
                 }
 
                 It 'Should not throw error' {
@@ -264,7 +264,7 @@ try
                 Mock -CommandName Remove-WSManInstance
                 Mock -CommandName New-WSManInstance
                 Mock -CommandName Find-Certificate -MockWith {
-                    $mockCertificateThumbprint
+                    $mockCertificate
                 }
 
                 It 'Should not throw error' {
@@ -314,7 +314,7 @@ try
                 Mock -CommandName Remove-WSManInstance
                 Mock -CommandName New-WSManInstance
                 Mock -CommandName Find-Certificate -MockWith {
-                    $mockCertificateThumbprint
+                    $mockCertificate
                 }
 
                 It 'Should not throw error' {
@@ -481,13 +481,13 @@ try
                 Mock -CommandName Get-ChildItem
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -CertificateThumbprint $mockCertificateThumbprint `
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                It 'Should return null' {
+                    $script:returnedCertificate | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -501,13 +501,13 @@ try
                 }
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -CertificateThumbprint $mockCertificateThumbprint `
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
                 }
 
                 It 'Should call expected Mocks' {
@@ -519,7 +519,7 @@ try
                 Mock -CommandName Get-ChildItem
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
@@ -527,8 +527,8 @@ try
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                It 'Should return null' {
+                    $script:returnedCertificate | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -542,7 +542,7 @@ try
                 }
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
@@ -550,8 +550,8 @@ try
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return $mockCertificateThumbprint" {
-                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
                 }
 
                 It 'Should call expected Mocks' {
@@ -565,7 +565,7 @@ try
                 }
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
@@ -573,8 +573,8 @@ try
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                It 'Should return null' {
+                    $script:returnedCertificate | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -586,15 +586,15 @@ try
                 Mock -CommandName Get-ChildItem
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                It 'Should return null' {
+                    $script:returnedCertificate | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -608,15 +608,15 @@ try
                 }
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return empty" {
-                    $script:ReturnedThumbprint | Should -BeNullOrEmpty
+                It 'Should return null' {
+                    $script:returnedCertificate | Should -BeNullOrEmpty
                 }
 
                 It 'Should call expected Mocks' {
@@ -630,15 +630,15 @@ try
                 }
 
                 It 'Should not throw error' {
-                    { $script:ReturnedThumbprint = Find-Certificate `
+                    { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True  `
                         -Verbose } | Should -Not -Throw
                 }
 
-                It "Should return $mockCertificateThumbprint" {
-                    $script:ReturnedThumbprint | Should -Be $mockCertificateThumbprint
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
                 }
 
                 It 'Should call expected Mocks' {

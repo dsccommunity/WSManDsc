@@ -4,7 +4,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '2.2.0.0'
+ModuleVersion = '2.3.0.0'
 
 # ID used to uniquely identify this module
 GUID = '15a87fbe-766b-4d2c-b856-645fd4a8d275'
@@ -16,7 +16,7 @@ Author = 'Daniel Scott-Raynsford'
 CompanyName = ''
 
 # Copyright statement for this module
-Copyright = '(c) 2017 Daniel Scott-Raynsford. All rights reserved.'
+Copyright = '(c) 2018 Daniel Scott-Raynsford. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'DSC Resource for configuring WS-Management Listeners.'

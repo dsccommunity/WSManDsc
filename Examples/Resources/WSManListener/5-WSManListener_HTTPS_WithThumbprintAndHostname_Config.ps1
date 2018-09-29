@@ -1,23 +1,35 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 664b29c1-c8cd-4400-860e-d7e90a76586e
+.AUTHOR Daniel Scott-Raynsford
+.COMPANYNAME
+.COPYRIGHT (c) 2018 Daniel Scott-Raynsford. All rights reserved.
+.TAGS DSCConfiguration
+.LICENSEURI https://github.com/PlagueHO/WSManDsc/blob/master/LICENSE
+.PROJECTURI https://github.com/PlagueHO/WSManDsc
+.ICONURI
+.EXTERNALMODULEDEPENDENCIES
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
+.RELEASENOTES First version.
+.PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
+#>
+
+#Requires -module WSManDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         Create an HTTPS Listener using a LocalMachine certificate with a thumbprint
         matching 'F2BE91E92AF040EF116E1CDC91D75C22F47D7BD6'. If the subject in the
         certificate does not match the name of the host then the Hostname parameter
         must be specified. In this example the subject in the certificate is
         'WsManListenerCert'.
 #>
-Configuration Example
+Configuration WSManListener_HTTPS_WithThumbprintAndHostname_Config
 {
-    param
-    (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost'
-    )
-
     Import-DscResource -Module WSManDsc
 
-    Node $NodeName
+    Node localhost
     {
         WSManListener HTTPS
         {

@@ -26,10 +26,10 @@ $script:parameterList = $resourceData.ParameterList
 
 <#
     .SYNOPSIS
-    Returns the WS-Man Service configuration.
+        Returns the WS-Man Service configuration.
 
     .PARAMETER IsSingleInstance
-    Specifies the resource is a single instance, the value must be 'Yes'
+        Specifies the resource is a single instance, the value must be 'Yes'
 #>
 function Get-TargetResource
 {
@@ -65,53 +65,53 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the current WS-Man Service configuration.
+        Sets the current WS-Man Service configuration.
 
     .PARAMETER IsSingleInstance
-    Specifies the resource is a single instance, the value must be 'Yes'
+        Specifies the resource is a single instance, the value must be 'Yes'
 
     .PARAMETER RootSDDL
-    Specifies the security descriptor that controls remote access to the listener.
+        Specifies the security descriptor that controls remote access to the listener.
 
     .PARAMETER MaxConnections
-    Specifies the maximum number of active requests that the service can process simultaneously.
+        Specifies the maximum number of active requests that the service can process simultaneously.
 
     .PARAMETER MaxConcurrentOperationsPerUser
-    Specifies the maximum number of concurrent operations that any user can remotely open on the
-    same system.
+        Specifies the maximum number of concurrent operations that any user can remotely open on the
+        same system.
 
     .PARAMETER EnumerationTimeoutMS
-    Specifies the idle time-out in milliseconds between Pull messages.
+        Specifies the idle time-out in milliseconds between Pull messages.
 
     .PARAMETER MaxPacketRetrievalTimeSeconds
-    Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
+        Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
 
     .PARAMETER AllowUnencrypted
-    Allows the client computer to request unencrypted traffic.
+        Allows the client computer to request unencrypted traffic.
 
     .PARAMETER AuthBasic
-    Allows the WinRM service to use Basic authentication.
+        Allows the WinRM service to use Basic authentication.
 
     .PARAMETER AuthKerberos
-    Allows the WinRM service to use Kerberos authentication.
+        Allows the WinRM service to use Kerberos authentication.
 
     .PARAMETER AuthNegotiate
-    Allows the WinRM service to use Negotiate authentication.
+        Allows the WinRM service to use Negotiate authentication.
 
     .PARAMETER AuthCertificate
-    Allows the WinRM service to use client certificate-based authentication.
+        Allows the WinRM service to use client certificate-based authentication.
 
     .PARAMETER AuthCredSSP
-    Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
+        Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
 
     .PARAMETER AuthCbtHardeningLevel
-    Allows the client computer to request unencrypted traffic.
+        Allows the client computer to request unencrypted traffic.
 
     .PARAMETER EnableCompatibilityHttpListener
-    Specifies whether the compatibility HTTP listener is enabled.
+        Specifies whether the compatibility HTTP listener is enabled.
 
     .PARAMETER EnableCompatibilityHttpsListener
-    Specifies whether the compatibility HTTPS listener is enabled.
+        Specifies whether the compatibility HTTPS listener is enabled.
 #>
 function Set-TargetResource
 {
@@ -212,53 +212,53 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Tests the current WS-Man Service configuration to see if any changes need to be made.
+        Tests the current WS-Man Service configuration to see if any changes need to be made.
 
     .PARAMETER IsSingleInstance
-    Specifies the resource is a single instance, the value must be 'Yes'
+        Specifies the resource is a single instance, the value must be 'Yes'
 
     .PARAMETER RootSDDL
-    Specifies the security descriptor that controls remote access to the listener.
+        Specifies the security descriptor that controls remote access to the listener.
 
     .PARAMETER MaxConnections
-    Specifies the maximum number of active requests that the service can process simultaneously.
+        Specifies the maximum number of active requests that the service can process simultaneously.
 
     .PARAMETER MaxConcurrentOperationsPerUser
-    Specifies the maximum number of concurrent operations that any user can remotely open on the
-    same system.
+        Specifies the maximum number of concurrent operations that any user can remotely open on the
+        same system.
 
     .PARAMETER EnumerationTimeoutMS
-    Specifies the idle time-out in milliseconds between Pull messages.
+        Specifies the idle time-out in milliseconds between Pull messages.
 
     .PARAMETER MaxPacketRetrievalTimeSeconds
-    Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
+        Specifies the maximum length of time, in seconds, the WinRM service takes to retrieve a packet.
 
     .PARAMETER AllowUnencrypted
-    Allows the client computer to request unencrypted traffic.
+        Allows the client computer to request unencrypted traffic.
 
     .PARAMETER AuthBasic
-    Allows the WinRM service to use Basic authentication.
+        Allows the WinRM service to use Basic authentication.
 
     .PARAMETER AuthKerberos
-    Allows the WinRM service to use Kerberos authentication.
+        Allows the WinRM service to use Kerberos authentication.
 
     .PARAMETER AuthNegotiate
-    Allows the WinRM service to use Negotiate authentication.
+        Allows the WinRM service to use Negotiate authentication.
 
     .PARAMETER AuthCertificate
-    Allows the WinRM service to use client certificate-based authentication.
+        Allows the WinRM service to use client certificate-based authentication.
 
     .PARAMETER AuthCredSSP
-    Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
+        Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
 
     .PARAMETER AuthCbtHardeningLevel
-    Allows the client computer to request unencrypted traffic.
+        Allows the client computer to request unencrypted traffic.
 
     .PARAMETER EnableCompatibilityHttpListener
-    Specifies whether the compatibility HTTP listener is enabled.
+        Specifies whether the compatibility HTTP listener is enabled.
 
     .PARAMETER EnableCompatibilityHttpsListener
-    Specifies whether the compatibility HTTPS listener is enabled.
+        Specifies whether the compatibility HTTPS listener is enabled.
 #>
 function Test-TargetResource
 {

@@ -19,4 +19,5 @@ ConvertFrom-StringData @'
     FindCertificateMessage = Looking for machine server certificate with subject '{0}' issued by '{1}'.
     FindCertificateByThumbprintMessage = Looking for machine server certificate with thumbprint '{0}'.
     CertificateFoundMessage = Certificate found with thumbprint '{0}' to use for HTTPS Listener.
+    CertificateNotFoundMessage = Certificate not found.
 '@
