@@ -1,6 +1,6 @@
 # Versions
 
-## Unreleased
+## 2.3.0.0
 
 - Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
 - Added Open Code of Conduct.
