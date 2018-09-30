@@ -1,5 +1,9 @@
 # Versions
 
+## Unreleased
+
+- Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
+
 ## 2.3.0.0
 
 - Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
