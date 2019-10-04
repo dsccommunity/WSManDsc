@@ -19,24 +19,22 @@
 
 <#
     .DESCRIPTION
-        Enable compatibility HTTP and HTTPS listeners, set
-        maximum connections to 100, allow CredSSP (not recommended)
-        and allow unecrypted WS-Man Sessions (not recommended).
+        Set the WS-Man maximum envelope size to 2000KB, the
+        maximum timeout to 120 seconds and the maximum batch
+        items to 64000.
 #>
-Configuration WSManServiceConfig_Config
+Configuration WSManConfig_Config
 {
     Import-DscResource -Module WSManDsc
 
     Node localhost
     {
-        WSManServiceConfig ServiceConfig
+        WSManConfig Config
         {
-            IsSingleInstance                 = 'Yes'
-            MaxConnections                   = 100
-            AllowUnencrypted                 = $False
-            AuthCredSSP                      = $True
-            EnableCompatibilityHttpListener  = $True
-            EnableCompatibilityHttpsListener = $True
-        } # End of WSManServiceConfig Resource
+            IsSingleInstance  = 'Yes'
+            MaxEnvelopeSizekb = 2000
+            MaxTimeoutms      = 120000
+            MaxBatchItems     = 64000
+        } # End of WSManConfig Resource
     } # End of Node
 } # End of Configuration
