@@ -224,9 +224,9 @@ function Set-TargetResource
             Remove-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                Transport = $listener.Transport
-                Address   = $listener.Address
-            }
+                    Transport = $listener.Transport
+                    Address   = $listener.Address
+                }
         }
         else
         {
@@ -298,12 +298,12 @@ function Set-TargetResource
             New-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                Address   = $Address
-                Transport = $Transport
-            } `
-                -ValueSet @{
-                Port = $Port
-            } `
+                    Address   = $Address
+                    Transport = $Transport
+                } `
+                    -ValueSet @{
+                    Port = $Port
+                } `
                 -ErrorAction Stop
         }
     }
@@ -328,9 +328,9 @@ function Set-TargetResource
             Remove-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                Transport = $listener.Transport
-                Address   = $listener.Address
-            }
+                    Transport = $listener.Transport
+                    Address   = $listener.Address
+                }
         }
     } # if
 } # Set-TargetResource
@@ -421,7 +421,7 @@ function Test-TargetResource
     )
 
     # Flag to signal whether settings are correct
-    [System.Boolean] $desiredConfigurationMatch = $true
+    $desiredConfigurationMatch = $true
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "

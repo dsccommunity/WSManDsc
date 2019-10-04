@@ -4,6 +4,7 @@
 
 - Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
 - Added .gitattributes file to fix bug publishing examples - Fixes [Issue #40](https://github.com/PlagueHO/WSManDsc/issues/34).
+- Fix minor style issues in hashtable layout.
 
 ## 2.3.0.0
 
