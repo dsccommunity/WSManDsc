@@ -3,8 +3,13 @@
 ## Unreleased
 
 - Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
-- Added .gitattributes file to fix bug publishing examples - Fixes [Issue #40](https://github.com/PlagueHO/WSManDsc/issues/34).
 - Fix minor style issues in hashtable layout.
+- Added .gitattributes file to fix bug publishing examples - Fixes [Issue #34](https://github.com/PlagueHO/WSManDsc/issues/34).
+- WSManConfig:
+  - Added new resource to allow configuration of core WS-Man
+    settings - Fixes [Issue #40](https://github.com/PlagueHO/WSManDsc/issues/40).
+- WSManServiceConfig:
+  - Updated integration tests to latest version of template.
 
 ## 2.3.0.0
 

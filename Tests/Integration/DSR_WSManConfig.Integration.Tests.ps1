@@ -1,5 +1,5 @@
 $script:DSCModuleName   = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManServiceConfig'
+$script:DSCResourceName = 'DSR_WSManConfig'
 
 #region HEADER
 # Integration Test Template Version: 1.1.1
@@ -27,14 +27,14 @@ $resourceData = Import-LocalizedData `
 $script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 
 # Backup the existing settings
-$currentWsManServiceConfig = [PSObject] @{}
+$currentWsManConfig = [PSObject] @{}
 
 foreach ($parameter in $script:parameterList)
 {
     $parameterPath = Join-Path `
-        -Path 'WSMan:\Localhost\Service\' `
+        -Path 'WSMan:\Localhost\' `
         -ChildPath $parameter.Path
-    $currentWsManServiceConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+    $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
 } # foreach
 
 # Using try/finally to always cleanup even if something awful happens.
@@ -49,11 +49,11 @@ try
             -ErrorAction Stop
     } # if
 
-    # Set the Service Config to default settings
+    # Set the Config to default settings
     foreach ($parameter in $script:parameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\Service\' `
+            -Path 'WSMan:\Localhost\' `
             -ChildPath $parameter.Path
 
         Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
@@ -108,9 +108,9 @@ try
             foreach ($parameter in $script:parameterList)
             {
                 $parameterPath = Join-Path `
-                    -Path 'WSMan:\Localhost\Service\' `
+                    -Path 'WSMan:\Localhost\' `
                     -ChildPath $parameter.Path
-                (Get-Item -Path $parameterPath).Value | Should -Be $WSManServiceConfigNew.$($parameter.Name)
+                (Get-Item -Path $parameterPath).Value | Should -Be $WSManConfigNew.$($parameter.Name)
             } # foreach
         }
     }
@@ -121,9 +121,9 @@ finally
     foreach ($parameter in $script:parameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\Service\' `
+            -Path 'WSMan:\Localhost\' `
             -ChildPath $parameter.Path
-        Set-Item -Path $parameterPath -Value $currentWsManServiceConfig.$($parameter.Name) -Force
+        Set-Item -Path $parameterPath -Value $currentWsManConfig.$($parameter.Name) -Force
     } # foreach
 
     #region FOOTER

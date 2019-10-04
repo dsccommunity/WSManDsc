@@ -1,5 +1,5 @@
 ConvertFrom-StringData @'
-    GettingWSManServiceConfigMessage = Getting WS-Man Service Configs.
+    GettingWSManServiceConfigMessage = Getting WS-Man Service Config.
     SettingWSManServiceConfigMessage = Setting WS-Man Service Config.
     WSManServiceConfigUpdateParameterMessage = Updating WS-Man Service Config parameter {0} from "{1}" to "{2}".
     WSManServiceConfigUpdatedMessage = Setting WS-Man Service Config updated.

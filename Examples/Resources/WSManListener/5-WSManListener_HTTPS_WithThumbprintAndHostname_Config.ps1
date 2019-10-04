@@ -3,7 +3,7 @@
 .GUID 664b29c1-c8cd-4400-860e-d7e90a76586e
 .AUTHOR Daniel Scott-Raynsford
 .COMPANYNAME
-.COPYRIGHT (c) 2018 Daniel Scott-Raynsford. All rights reserved.
+.COPYRIGHT (c) Daniel Scott-Raynsford. All rights reserved.
 .TAGS DSCConfiguration
 .LICENSEURI https://github.com/PlagueHO/WSManDsc/blob/master/LICENSE
 .PROJECTURI https://github.com/PlagueHO/WSManDsc
