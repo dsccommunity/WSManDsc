@@ -74,16 +74,13 @@ function Get-TargetResource
         Specifies the resource is a single instance, the value must be 'Yes'
 
     .PARAMETER MaxEnvelopeSizekb
-        Specifies the WS-Man maximum envelope size in KB.
+        Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.
 
     .PARAMETER MaxTimeoutms
-        Specifies the WS-Man maximum timeout in milliseconds.
+        Specifies the WS-Man maximum timeout in milliseconds. The minimum value is 500 and the maximum is 4294967295.
 
     .PARAMETER MaxBatchItems
-        Specifies the WS-Man maximum batch items.
-
-    .PARAMETER MaxProviderRequests
-        Specifies the WS-Man maximum provider requests.
+        Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.
 #>
 function Set-TargetResource
 {
@@ -96,20 +93,19 @@ function Set-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
+        [ValidateRange(32,4294967295)]
         [System.Uint32]
         $MaxEnvelopeSizekb,
 
         [Parameter()]
+        [ValidateRange(500,4294967295)]
         [System.Uint32]
         $MaxTimeoutms,
 
         [Parameter()]
+        [ValidateRange(1,4294967295)]
         [System.Uint32]
-        $MaxBatchItems,
-
-        [Parameter()]
-        [System.Uint32]
-        $MaxProviderRequests
+        $MaxBatchItems
     )
 
     Write-Verbose -Message ( @(
@@ -149,16 +145,13 @@ function Set-TargetResource
         Specifies the resource is a single instance, the value must be 'Yes'
 
     .PARAMETER MaxEnvelopeSizekb
-        Specifies the WS-Man maximum envelope size in KB.
+        Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.
 
     .PARAMETER MaxTimeoutms
-        Specifies the WS-Man maximum timeout in milliseconds.
+        Specifies the WS-Man maximum timeout in milliseconds. The minimum value is 500 and the maximum is 4294967295.
 
     .PARAMETER MaxBatchItems
-        Specifies the WS-Man maximum batch items.
-
-    .PARAMETER MaxProviderRequests
-        Specifies the WS-Man maximum provider requests.
+        Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.
 #>
 function Test-TargetResource
 {
@@ -172,20 +165,19 @@ function Test-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
+        [ValidateRange(32,4294967295)]
         [System.Uint32]
         $MaxEnvelopeSizekb,
 
         [Parameter()]
+        [ValidateRange(500,4294967295)]
         [System.Uint32]
         $MaxTimeoutms,
 
         [Parameter()]
+        [ValidateRange(1,4294967295)]
         [System.Uint32]
-        $MaxBatchItems,
-
-        [Parameter()]
-        [System.Uint32]
-        $MaxProviderRequests
+        $MaxBatchItems
     )
 
     Write-Verbose -Message ( @(

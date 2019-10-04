@@ -8,7 +8,6 @@ configuration DSR_WSManConfig_Config {
             MaxEnvelopeSizekb   = $Node.MaxEnvelopeSizekb
             MaxTimeoutms        = $Node.MaxTimeoutms
             MaxBatchItems       = $Node.MaxBatchItems
-            MaxProviderRequests = $Node.MaxProviderRequests
         }
     }
 }

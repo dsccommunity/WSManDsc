@@ -24,12 +24,12 @@ $resourceData = Import-LocalizedData `
     -BaseDirectory ($script:moduleRoot | Join-Path -ChildPath 'DscResources' | Join-Path -ChildPath $script:DSCResourceName) `
     -FileName "$script:DSCResourceName.data.psd1"
 
-$script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
+$parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 
 # Backup the existing settings
 $currentWsManConfig = [PSObject] @{}
 
-foreach ($parameter in $script:parameterList)
+foreach ($parameter in $parameterList)
 {
     $parameterPath = Join-Path `
         -Path 'WSMan:\Localhost\' `
@@ -50,7 +50,7 @@ try
     } # if
 
     # Set the Config to default settings
-    foreach ($parameter in $script:parameterList)
+    foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\' `
@@ -75,7 +75,7 @@ try
                 }
 
                 # Dynamically assemble the parameters from the parameter list
-                foreach ($parameter in $script:parameterList)
+                foreach ($parameter in $parameterList)
                 {
                     $configData.AllNodes[0] += @{
                         $($parameter.Name) = $($parameter.TestVal)
@@ -105,12 +105,12 @@ try
 
         It 'Should have set the resource and all the parameters should match' {
             # Get the Rule details
-            foreach ($parameter in $script:parameterList)
+            foreach ($parameter in $parameterList)
             {
                 $parameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\' `
                     -ChildPath $parameter.Path
-                (Get-Item -Path $parameterPath).Value | Should -Be $WSManConfigNew.$($parameter.Name)
+                (Get-Item -Path $parameterPath).Value | Should -Be $WSManConfigNew.$($parameter.Name).TestVal
             } # foreach
         }
     }
@@ -118,7 +118,7 @@ try
 finally
 {
     # Clean up by restoring all parameters
-    foreach ($parameter in $script:parameterList)
+    foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\' `

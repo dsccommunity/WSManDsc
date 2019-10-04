@@ -23,14 +23,6 @@
             Default = 32000
             TestVal = 32001
             IntTest = $true
-        },
-        @{
-            Name    = 'MaxProviderRequests'
-            Path    = 'MaxProviderRequests'
-            Type    = 'Uint32'
-            Default = 4294967295
-            TestVal = 4294967296
-            IntTest = $true
         }
     )
 }
