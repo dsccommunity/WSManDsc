@@ -110,7 +110,7 @@ try
                 $parameterPath = Join-Path `
                     -Path 'WSMan:\Localhost\Service\' `
                     -ChildPath $parameter.Path
-                (Get-Item -Path $parameterPath).Value | Should -Be $WSManServiceConfigNew.$($parameter.Name)
+                (Get-Item -Path $parameterPath).Value | Should -Be $WSManServiceConfigNew.$($parameter.Name).TestVal
             } # foreach
         }
     }
