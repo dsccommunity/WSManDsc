@@ -52,12 +52,15 @@ function Get-TargetResource
     $returnValue = @{
         IsSingleInstance = 'Yes'
     }
+
     foreach ($parameter in $script:parameterList)
     {
         $ParameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $($parameter.Path)
-        $returnValue += @{ $($parameter.Name) = (Get-Item -Path $ParameterPath).Value }
+        $returnValue += @{
+            $($parameter.Name) = (Get-Item -Path $ParameterPath).Value
+        }
     } # foreach
 
     return $returnValue
@@ -335,7 +338,7 @@ function Test-TargetResource
         ) -join '' )
 
     # Flag to signal whether settings are correct
-    [System.Boolean] $desiredConfigurationMatch = $true
+    $desiredConfigurationMatch = $true
 
     # Check each parameter
     foreach ($parameter in $script:parameterList)
