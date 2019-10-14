@@ -23,7 +23,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     # Make sure WS-Man is enabled
-    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
             -SkipNetworkProfileCheck `

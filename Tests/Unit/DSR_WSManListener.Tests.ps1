@@ -366,7 +366,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should -Be $False
+                        -Verbose | Should -BeFalse
                 }
 
                 It 'Should call expected Mocks' {
@@ -382,7 +382,7 @@ try
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose | Should -Be $False
+                        -Verbose | Should -BeFalse
                 }
 
                 It 'Should call expected Mocks' {
@@ -399,7 +399,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose | Should -Be $False
+                        -Verbose | Should -BeFalse
                 }
 
                 It 'Should call expected Mocks' {
@@ -416,7 +416,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose | Should -Be $False
+                        -Verbose | Should -BeFalse
                 }
 
                 It 'Should call expected Mocks' {
@@ -433,7 +433,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should -Be $True
+                        -Verbose | Should -BeTrue
                 }
 
                 It 'Should call expected Mocks' {
@@ -450,7 +450,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should -Be $True
+                        -Verbose | Should -BeTrue
                 }
 
                 It 'Should call expected Mocks' {
@@ -467,7 +467,7 @@ try
                     Test-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present'  `
-                        -Verbose | Should -Be $True
+                        -Verbose | Should -BeTrue
                 }
 
                 It 'Should call expected Mocks' {

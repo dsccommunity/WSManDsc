@@ -55,11 +55,11 @@ function Get-TargetResource
 
     foreach ($parameter in $script:parameterList)
     {
-        $ParameterPath = Join-Path `
+        $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\' `
             -ChildPath $($parameter.Path)
         $returnValue += @{
-            $($parameter.Name) = (Get-Item -Path $ParameterPath).Value
+            $($parameter.Name) = (Get-Item -Path $parameterPath).Value
         }
     } # foreach
 
@@ -186,7 +186,7 @@ function Test-TargetResource
         ) -join '' )
 
     # Flag to signal whether settings are correct
-    [System.Boolean] $desiredConfigurationMatch = $true
+    $desiredConfigurationMatch = $true
 
     # Check each parameter
     foreach ($parameter in $script:parameterList)

@@ -30,7 +30,7 @@ $script:parameterList = $resourceData.ParameterList
 try
 {
     # Make sure WS-Man is enabled
-    if (-not (Get-PSPRovider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
             -SkipNetworkProfileCheck `
@@ -61,7 +61,7 @@ try
         }
 
         Describe "$($script:DSCResourceName)\Get-TargetResource" {
-            Context 'WS-Man Config Exists' {
+            Context 'When WS-Man Config Exists' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
                 {
@@ -108,7 +108,7 @@ try
         }
 
         Describe "$($script:DSCResourceName)\Set-TargetResource" {
-            Context 'WS-Man Config all parameters are the same' {
+            Context 'When WS-Man Config all parameters are the same' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
                 {
@@ -250,10 +250,10 @@ try
                     }
             }
 
-            Context 'WS-Man Config all parameters are the same' {
+            Context 'When WS-Man Config all parameters are the same' {
                 It 'Should return true' {
                     $testTargetResourceParameters = $wsManConfigSplat.Clone()
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $True
+                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
                 }
 
                 It 'Should call expected Mocks' {
@@ -278,7 +278,7 @@ try
                     It 'Should return false' {
                         $testTargetResourceSplat = $wsManConfigSplat.Clone()
                         $testTargetResourceSplat.$($parameter.Name) = $parameter.TestVal
-                        Test-TargetResource @testTargetResourceSplat | Should -Be $False
+                        Test-TargetResource @testTargetResourceSplat | Should -BeFalse
                     }
 
                     It 'Should call expected Mocks' {

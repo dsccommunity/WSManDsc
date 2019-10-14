@@ -55,7 +55,7 @@ function Get-TargetResource
 
     foreach ($parameter in $script:parameterList)
     {
-        $ParameterPath = Join-Path `
+        $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $($parameter.Path)
         $returnValue += @{
