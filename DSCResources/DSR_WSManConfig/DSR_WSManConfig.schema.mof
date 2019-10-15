@@ -1,0 +1,8 @@
+[ClassVersion("1.0.0.0"), FriendlyName("WSManConfig")]
+class DSR_WSManConfig : OMI_BaseResource
+{
+    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.")] Uint32 MaxEnvelopeSizekb;
+    [Write, Description("Specifies the WS-Man maximum timeout in milliseconds. The minimum value is 500 and the maximum is 4294967295.")] Uint32 MaxTimeoutms;
+    [Write, Description("Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.")] Uint32 MaxBatchItems;
+};

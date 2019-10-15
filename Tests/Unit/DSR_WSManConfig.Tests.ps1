@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManServiceConfig'
+$script:DSCResourceName = 'DSR_WSManConfig'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
@@ -21,8 +21,8 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
-    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\DSR_WSManServiceConfig') `
-    -FileName 'DSR_WSManServiceConfig.data.psd1'
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\DSR_WSManConfig') `
+    -FileName 'DSR_WSManConfig.data.psd1'
 
 $script:parameterList = $resourceData.ParameterList
 
@@ -43,30 +43,30 @@ try
         $script:DSCResourceName = 'DSR_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
-        $wsManServiceConfigSettings = [PSObject] @{}
-        $wsManServiceConfigSplat = [PSObject] @{
+        $wsManConfigSettings = [PSObject] @{}
+        $wsManConfigSplat = [PSObject] @{
             IsSingleInstance = 'Yes'
             Verbose          = $True
         }
 
         foreach ($parameter in $parameterList)
         {
-            $wsManServiceConfigSettings += [PSObject] @{
+            $wsManConfigSettings += [PSObject] @{
                 $($parameter.Name) = $parameter.default
             }
 
-            $wsManServiceConfigSplat += [PSObject] @{
+            $wsManConfigSplat += [PSObject] @{
                 $($parameter.Name) = $parameter.default
             }
         }
 
         Describe "$($script:DSCResourceName)\Get-TargetResource" {
-            Context 'When WS-Man Service Config Exists' {
+            Context 'When WS-Man Config Exists' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
                 {
                     $parameterPath = Join-Path `
-                        -Path 'WSMan:\Localhost\Service\' `
+                        -Path 'WSMan:\Localhost\' `
                         -ChildPath $parameter.Path
 
                     Mock `
@@ -81,12 +81,12 @@ try
                         }
                 }
 
-                It 'Should return current WS-Man Service Config values' {
+                It 'Should return current WS-Man Config values' {
                     $result = Get-TargetResource -IsSingleInstance 'Yes'
 
                     foreach ($parameter in $parameterList)
                     {
-                        $result.$($parameter.Name) | Should -Be $wsManServiceConfigSettings.$($parameter.Name)
+                        $result.$($parameter.Name) | Should -Be $wsManConfigSettings.$($parameter.Name)
                     }
                 }
 
@@ -94,7 +94,7 @@ try
                     foreach ($parameter in $parameterList)
                     {
                         $parameterPath = Join-Path `
-                            -Path 'WSMan:\Localhost\Service\' `
+                            -Path 'WSMan:\Localhost\' `
                             -ChildPath $parameter.Path
 
                         Assert-MockCalled `
@@ -108,12 +108,12 @@ try
         }
 
         Describe "$($script:DSCResourceName)\Set-TargetResource" {
-            Context 'When WS-Man Service Config all parameters are the same' {
+            Context 'When WS-Man Config all parameters are the same' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
                 {
                     $parameterPath = Join-Path `
-                        -Path 'WSMan:\Localhost\Service\' `
+                        -Path 'WSMan:\Localhost\' `
                         -ChildPath $parameter.Path
 
                     Mock `
@@ -136,7 +136,7 @@ try
 
                 It 'Should not throw error' {
                     {
-                        $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
+                        $setTargetResourceParameters = $wsManConfigSplat.Clone()
                         Set-TargetResource @setTargetResourceParameters
                     } | Should -Not -Throw
                 }
@@ -145,7 +145,7 @@ try
                     foreach ($parameter in $parameterList)
                     {
                         $parameterPath = Join-Path `
-                            -Path 'WSMan:\Localhost\Service\' `
+                            -Path 'WSMan:\Localhost\' `
                             -ChildPath $parameter.Path
 
                         Assert-MockCalled `
@@ -165,9 +165,9 @@ try
 
             foreach ($parameter in $parameterList)
             {
-                Context "WS-Man Service Config $($parameter.Name) is different" {
+                Context "WS-Man Config $($parameter.Name) is different" {
                     $parameterPath = Join-Path `
-                        -Path 'WSMan:\Localhost\Service\' `
+                        -Path 'WSMan:\Localhost\' `
                         -ChildPath $parameter.Path
 
                     Mock `
@@ -189,7 +189,7 @@ try
 
                     It 'Should not throw error' {
                         {
-                            $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
+                            $setTargetResourceParameters = $wsManConfigSplat.Clone()
                             $setTargetResourceParameters.$($parameter.Name) = $parameter.TestVal
                             Set-TargetResource @setTargetResourceParameters
                         } | Should -Not -Throw
@@ -199,7 +199,7 @@ try
                         foreach ($parameter1 in $parameterList)
                         {
                             $parameterPath = Join-Path `
-                                -Path 'WSMan:\Localhost\Service\' `
+                                -Path 'WSMan:\Localhost\' `
                                 -ChildPath $parameter1.Path
 
                             Assert-MockCalled `
@@ -235,7 +235,7 @@ try
             foreach ($parameter in $parameterList)
             {
                 $parameterPath = Join-Path `
-                    -Path 'WSMan:\Localhost\Service\' `
+                    -Path 'WSMan:\Localhost\' `
                     -ChildPath $parameter.Path
 
                 Mock `
@@ -250,9 +250,9 @@ try
                     }
             }
 
-            Context 'When WS-Man Service Config all parameters are the same' {
+            Context 'When WS-Man Config all parameters are the same' {
                 It 'Should return true' {
-                    $testTargetResourceParameters = $wsManServiceConfigSplat.Clone()
+                    $testTargetResourceParameters = $wsManConfigSplat.Clone()
                     Test-TargetResource @testTargetResourceParameters | Should -BeTrue
                 }
 
@@ -260,7 +260,7 @@ try
                     foreach ($parameter in $parameterList)
                     {
                         $parameterPath = Join-Path `
-                            -Path 'WSMan:\Localhost\Service\' `
+                            -Path 'WSMan:\Localhost\' `
                             -ChildPath $parameter.Path
 
                         Assert-MockCalled `
@@ -274,9 +274,9 @@ try
 
             foreach ($parameter in $parameterList)
             {
-                Context "WS-Man Service Config $($parameter.Name) is different" {
+                Context "WS-Man Config $($parameter.Name) is different" {
                     It 'Should return false' {
-                        $testTargetResourceSplat = $wsManServiceConfigSplat.Clone()
+                        $testTargetResourceSplat = $wsManConfigSplat.Clone()
                         $testTargetResourceSplat.$($parameter.Name) = $parameter.TestVal
                         Test-TargetResource @testTargetResourceSplat | Should -BeFalse
                     }
@@ -285,7 +285,7 @@ try
                         foreach ($parameter in $parameterList)
                         {
                             $parameterPath = Join-Path `
-                                -Path 'WSMan:\Localhost\Service\' `
+                                -Path 'WSMan:\Localhost\' `
                                 -ChildPath $parameter.Path
 
                             Assert-MockCalled `

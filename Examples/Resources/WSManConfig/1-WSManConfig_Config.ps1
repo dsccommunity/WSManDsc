@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID c5ad1c71-ca78-4f8c-8a7c-eac499340676
+.GUID f24bd48c-1a88-4969-8d93-a46a11caad8c
 .AUTHOR Daniel Scott-Raynsford
 .COMPANYNAME
 .COPYRIGHT (c) Daniel Scott-Raynsford. All rights reserved.
@@ -19,19 +19,22 @@
 
 <#
     .DESCRIPTION
-        This will create or enable an HTTP WS-Man Listener on port 5985.
-        configuration Sample_WSManListener_HTTP
+        Set the WS-Man maximum envelope size to 2000KB, the
+        maximum timeout to 120 seconds and the maximum batch
+        items to 64000.
 #>
-Configuration WSManListener_HTTP_Config
+Configuration WSManConfig_Config
 {
     Import-DscResource -Module WSManDsc
 
     Node localhost
     {
-        WSManListener HTTP
+        WSManConfig Config
         {
-            Transport = 'HTTP'
-            Ensure    = 'Present'
-        } # End of WSManListener Resource
+            IsSingleInstance  = 'Yes'
+            MaxEnvelopeSizekb = 2000
+            MaxTimeoutms      = 120000
+            MaxBatchItems     = 64000
+        } # End of WSManConfig Resource
     } # End of Node
 } # End of Configuration
