@@ -1,6 +1,6 @@
 # Versions
 
-## Unreleased
+## 2.4.0.0
 
 - Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
 - Fix minor style issues in hashtable layout.

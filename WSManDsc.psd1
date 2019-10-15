@@ -4,7 +4,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '2.3.0.0'
+ModuleVersion = '2.4.0.0'
 
 # ID used to uniquely identify this module
 GUID = '15a87fbe-766b-4d2c-b856-645fd4a8d275'
@@ -96,7 +96,16 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = ''
+        ReleaseNotes = '- Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
+  - Fix minor style issues in hashtable layout.
+  - Added .gitattributes file to fix bug publishing examples - Fixes [Issue #34](https://github.com/PlagueHO/WSManDsc/issues/34).
+  - WSManConfig:
+    - Added new resource to allow configuration of core WS-Man
+      settings - Fixes [Issue #40](https://github.com/PlagueHO/WSManDsc/issues/40).
+  - WSManServiceConfig:
+    - Updated integration tests to latest version of template.
+
+'
 
     } # End of PSData hashtable
 
