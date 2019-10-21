@@ -70,7 +70,7 @@ VariablesToExport = @()
 AliasesToExport = @()
 
 # DSC resources to export from this module
-DscResourcesToExport = @('WSManListener','WSManServiceConfig')
+DscResourcesToExport = @('WSManListener','WSManConfig','WSManServiceConfig')
 
 # List of all modules packaged with this module
 # ModuleList = @()
