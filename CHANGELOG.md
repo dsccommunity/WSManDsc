@@ -1,5 +1,9 @@
 # Versions
 
+## Unreleased
+
+- Added `WSManConfig` to `DscResourcesToExport` in manifest.
+
 ## 2.4.0.0
 
 - Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
