@@ -1,6 +1,6 @@
 # Versions
 
-## Unreleased
+## 2.4.1.0
 
 - Added `WSManConfig` to `DscResourcesToExport` in manifest.
 
