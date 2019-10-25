@@ -23,7 +23,7 @@ the [WSManDsc wiki](https://github.com/dsccommunity/WSManDsc/wiki).
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lppuhbyqkwoect24/branch/master?svg=true)](https://ci.appveyor.com/project/dsccommunity/wsmandsc/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/dsccommunity/WSManDsc?branch=master&svg=true)](https://ci.appveyor.com/project/dsccommunity/WSManDsc/branch/master)
 [![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc/branch/master)
 
 This is the branch containing the latest release - no contributions should be made
@@ -31,7 +31,7 @@ directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lppuhbyqkwoect24/branch/dev?svg=true)](https://ci.appveyor.com/project/dsccommunity/wsmandsc/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/dsccommunity/WSManDsc?branch=dev&svg=true)](https://ci.appveyor.com/project/dsccommunity/WSManDsc/branch/dev)
 [![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc/branch/dev)
 
 This is the development branch to which contributions should be proposed by contributors
