@@ -5,8 +5,8 @@
 .COMPANYNAME
 .COPYRIGHT (c) Daniel Scott-Raynsford. All rights reserved.
 .TAGS DSCConfiguration
-.LICENSEURI https://github.com/PlagueHO/WSManDsc/blob/master/LICENSE
-.PROJECTURI https://github.com/PlagueHO/WSManDsc
+.LICENSEURI https://github.com/dsccommunity/WSManDsc/blob/master/LICENSE
+.PROJECTURI https://github.com/dsccommunity/WSManDsc
 .ICONURI
 .EXTERNALMODULEDEPENDENCIES
 .REQUIREDSCRIPTS
