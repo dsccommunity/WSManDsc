@@ -1,9 +1,9 @@
 <#PSScriptInfo
 .VERSION 1.0.0
 .GUID c5ad1c71-ca78-4f8c-8a7c-eac499340676
-.AUTHOR Daniel Scott-Raynsford
-.COMPANYNAME
-.COPYRIGHT (c) Daniel Scott-Raynsford. All rights reserved.
+.AUTHOR DSC Community
+.COMPANYNAME DSC Community
+.COPYRIGHT Copyright the DSC Community contributors. All rights reserved.
 .TAGS DSCConfiguration
 .LICENSEURI https://github.com/dsccommunity/WSManDsc/blob/master/LICENSE
 .PROJECTURI https://github.com/dsccommunity/WSManDsc
