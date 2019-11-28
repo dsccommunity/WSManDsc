@@ -668,7 +668,7 @@ function Find-Certificate
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
                         $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Issuer, $Subject, $Hostname
+                            -f $Subject, $Issuer, $Hostname
                     ) -join '' )
 
                 $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
@@ -685,7 +685,7 @@ function Find-Certificate
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
                         $($script:localizedData.FindCertificateMessage) `
-                            -f $Issuer, $Subject
+                            -f $Subject, $Issuer
                     ) -join '' )
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
@@ -715,7 +715,7 @@ function Find-Certificate
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
                         $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Issuer, $Subject, $Hostname
+                            -f $Subject, $Issuer, $Hostname
                     ) -join '' )
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
@@ -732,7 +732,7 @@ function Find-Certificate
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
                         $($script:localizedData.FindCertificateMessage) `
-                            -f $Issuer, $Subject
+                            -f $Subject, $Issuer
                     ) -join '' )
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
