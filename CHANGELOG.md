@@ -4,6 +4,8 @@
 
 - Transferred ownership to DSCCommunity.org.
 - Added missing resource to README.MD.
+- WSManListener:
+  - Fix Find-Certificate Verbose Messages - fixes [Issue #49](https://github.com/dsccommunity/WSManDsc/issues/49).
 
 ## 2.4.1.0
 
