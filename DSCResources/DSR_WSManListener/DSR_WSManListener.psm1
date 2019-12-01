@@ -301,7 +301,7 @@ function Set-TargetResource
                     Address   = $Address
                     Transport = $Transport
                 } `
-                    -ValueSet @{
+                -ValueSet @{
                     Port = $Port
                 } `
                 -ErrorAction Stop
