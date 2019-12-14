@@ -4,8 +4,6 @@
 .vs
 .psproj
 .sln
-Modules/WSManDsc/DscResource.Tests
-Modules/WSManDsc/DscResource.Tests/*
 markdownissues.txt
 TestResults.xml
 output/*

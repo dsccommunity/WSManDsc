@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:DSCModuleName   = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManListener'
+$script:dscModuleName   = 'WSManDsc'
+$script:dscResourceName = 'DSR_WSManListener'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -26,8 +26,8 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope $script:DSCResourceName {
-        $script:DSCResourceName = 'DSR_WSManListener'
+    InModuleScope $script:dscResourceName {
+        $script:dscResourceName = 'DSR_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $mockFQDN = 'SERVER1.CONTOSO.COM'
@@ -78,7 +78,7 @@ try
             CertificateThumbprint = $mockCertificateThumbprint
         }
 
-        Describe "$($script:DSCResourceName)\Get-TargetResource" {
+        Describe "$($script:dscResourceName)\Get-TargetResource" {
             Context 'No listeners exist' {
                 Mock -CommandName Get-WSManInstance
 
@@ -140,7 +140,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Set-TargetResource" {
+        Describe "$($script:dscResourceName)\Set-TargetResource" {
             Context 'HTTP Listener does not exist but should' {
                 Mock -CommandName Get-WSManInstance
                 Mock -CommandName Remove-WSManInstance
@@ -361,7 +361,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Test-TargetResource" {
+        Describe "$($script:dscResourceName)\Test-TargetResource" {
             Context 'HTTP Listener does not exist but should' {
                 Mock -CommandName Get-WSManInstance
 
@@ -479,7 +479,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Find-Certificate" {
+        Describe "$($script:dscResourceName)\Find-Certificate" {
             Context 'CertificateThumbprint is passed but does not exist' {
                 Mock -CommandName Get-ChildItem
 

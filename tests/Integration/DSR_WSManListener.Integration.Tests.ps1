@@ -1,5 +1,7 @@
-$script:DSCModuleName = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManListener'
+$script:dscModuleName = 'WSManDsc'
+$script:dscResourceName = 'DSR_WSManListener'
+
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 function Invoke-TestSetup
 {
@@ -31,10 +33,10 @@ try
             -ErrorAction Stop
     } # if
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTP.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTP.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration_Add_HTTP" {
+    Describe "$($script:dscResourceName)_Integration_Add_HTTP" {
         $configData = @{
             AllNodes = @(
                 @{
@@ -49,7 +51,7 @@ try
 
         It 'Should compile without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Add_HTTP" `
+                & "$($script:dscResourceName)_Config_Add_HTTP" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -87,7 +89,7 @@ try
         So there is no integration test defined that will remove the listener created above.
     #>
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTPS.config.ps1"
     . $ConfigFile
 
     # Create a certificate to use for the HTTPS listener
@@ -141,7 +143,7 @@ try
             -EnhancedKeyUsage 'Server Authentication'
     } # if
 
-    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS" {
+    Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
         # This is to pass to the Config
         $configData = @{
             AllNodes = @(
@@ -162,7 +164,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Add_HTTPS" `
+                & "$($script:dscResourceName)_Config_Add_HTTPS" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -195,10 +197,10 @@ try
         }
     }
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Remove_HTTPS.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS" {
+    Describe "$($script:dscResourceName)_Integration_Remove_HTTPS" {
         $configData = @{
             AllNodes = @(
                 @{
@@ -213,7 +215,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                & "$($script:dscResourceName)_Config_Remove_HTTPS" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -244,10 +246,10 @@ try
         }
     }
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS_Thumbprint.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTPS_Thumbprint.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS_Thumbprint" {
+    Describe "$($script:dscResourceName)_Integration_Add_HTTPS_Thumbprint" {
         $configData = @{
             AllNodes = @(
                 @{
@@ -263,7 +265,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Add_HTTPS_Thumbprint" `
+                & "$($script:dscResourceName)_Config_Add_HTTPS_Thumbprint" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -296,10 +298,10 @@ try
         }
     }
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Remove_HTTPS.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS_Thumbprint" {
+    Describe "$($script:dscResourceName)_Integration_Remove_HTTPS_Thumbprint" {
         $configData = @{
             AllNodes = @(
                 @{
@@ -314,7 +316,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                & "$($script:dscResourceName)_Config_Remove_HTTPS" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -345,7 +347,7 @@ try
         }
     }
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Add_HTTPS_ThumbprintHostname.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTPS_ThumbprintHostname.config.ps1"
     . $ConfigFile
 
     # Create a certificate to use for the HTTPS listener
@@ -398,7 +400,7 @@ try
             -EnhancedKeyUsage 'Server Authentication'
     } # if
 
-    Describe "$($script:DSCResourceName)_Integration_Add_HTTPS_Thumbprint_Hostname" {
+    Describe "$($script:dscResourceName)_Integration_Add_HTTPS_Thumbprint_Hostname" {
         # This is to pass to the Config
         $configData = @{
             AllNodes = @(
@@ -416,7 +418,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Add_HTTPS_Thumbprint_Hostname" `
+                & "$($script:dscResourceName)_Config_Add_HTTPS_Thumbprint_Hostname" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 
@@ -449,10 +451,10 @@ try
         }
     }
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Remove_HTTPS.config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Remove_HTTPS.config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration_Remove_HTTPS" {
+    Describe "$($script:dscResourceName)_Integration_Remove_HTTPS" {
         $configData = @{
             AllNodes = @(
                 @{
@@ -467,7 +469,7 @@ try
 
         It 'Should compile and apply the MOF without throwing' {
             {
-                & "$($script:DSCResourceName)_Config_Remove_HTTPS" `
+                & "$($script:dscResourceName)_Config_Remove_HTTPS" `
                     -OutputPath $TestDrive `
                     -ConfigurationData $configData
 

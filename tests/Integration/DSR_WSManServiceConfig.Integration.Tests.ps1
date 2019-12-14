@@ -1,5 +1,7 @@
-$script:DSCModuleName   = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManServiceConfig'
+$script:dscModuleName   = 'WSManDsc'
+$script:dscResourceName = 'DSR_WSManServiceConfig'
+
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 function Invoke-TestSetup
 {
@@ -19,8 +21,8 @@ function Invoke-TestCleanup
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
-    -BaseDirectory ($script:moduleRoot | Join-Path -ChildPath 'DscResources' | Join-Path -ChildPath $script:DSCResourceName) `
-    -FileName "$script:DSCResourceName.data.psd1"
+    -BaseDirectory ($script:moduleRoot | Join-Path -ChildPath 'DscResources' | Join-Path -ChildPath $script:dscResourceName) `
+    -FileName "$script:dscResourceName.data.psd1"
 
 $parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 
@@ -60,10 +62,10 @@ try
     } # foreach
 
     #region Integration Tests
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $ConfigFile
 
-    Describe "$($script:DSCResourceName)_Integration" {
+    Describe "$($script:dscResourceName)_Integration" {
         It 'Should compile without throwing' {
             {
                 $configData = @{

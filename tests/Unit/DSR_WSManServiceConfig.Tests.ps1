@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:DSCModuleName = 'WSManDsc'
-$script:DSCResourceName = 'DSR_WSManServiceConfig'
+$script:dscModuleName = 'WSManDsc'
+$script:dscResourceName = 'DSR_WSManServiceConfig'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -42,8 +42,8 @@ try
             -ErrorAction Stop
     } # if
 
-    InModuleScope $script:DSCResourceName {
-        $script:DSCResourceName = 'DSR_WSManListener'
+    InModuleScope $script:dscResourceName {
+        $script:dscResourceName = 'DSR_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $wsManServiceConfigSettings = [PSObject] @{}
@@ -63,7 +63,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Get-TargetResource" {
+        Describe "$($script:dscResourceName)\Get-TargetResource" {
             Context 'When WS-Man Service Config Exists' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
@@ -110,7 +110,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Set-TargetResource" {
+        Describe "$($script:dscResourceName)\Set-TargetResource" {
             Context 'When WS-Man Service Config all parameters are the same' {
                 # Set up Mocks
                 foreach ($parameter in $parameterList)
@@ -233,7 +233,7 @@ try
             }
         }
 
-        Describe "$($script:DSCResourceName)\Test-TargetResource" {
+        Describe "$($script:dscResourceName)\Test-TargetResource" {
             # Set up Mocks
             foreach ($parameter in $parameterList)
             {
