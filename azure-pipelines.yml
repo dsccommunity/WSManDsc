@@ -42,7 +42,7 @@ stages:
     jobs:
       - job: HQRM_Test
         pool:
-          vmImage: 'win1903'
+          vmImage: 'win1803'
         timeoutInMinutes: 0
         steps:
           - task: DownloadBuildArtifacts@0
@@ -64,7 +64,7 @@ stages:
 
       - job: Unit_Test
         pool:
-          vmImage: 'win1903'
+          vmImage: 'win1803'
         timeoutInMinutes: 0
         variables:
           # This sets environment variable $env:CI.
@@ -110,12 +110,6 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-          - task: PowerShell@2
-            name: ConfigureWinRM
-            inputs:
-              targetType: 'inline'
-              script: 'winrm quickconfig -quiet'
-              pwsh: false
           - task: PowerShell@2
             name: Test
             inputs:
