@@ -40,9 +40,10 @@ stages:
   - stage: test_module
     dependsOn: Build_artefact
     jobs:
-      - job: test_linux
+      - job: HQRM_Test
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'win1903'
+        timeoutInMinutes: 0
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -50,27 +51,26 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks test'
-
+              arguments: '-tasks hqrmtest'
+              pwsh: false
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
 
-
-          # Publish code coverage results
-          - task: PublishCodeCoverageResults@1
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'output/testResults/CodeCov*.xml'
-      - job: test_windows_core
+      - job: Unit_Test
         pool:
-          vmImage: 'win1803'
+          vmImage: 'win1903'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CI.
+          CI: true
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Unit
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -78,57 +78,31 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-
-          - task: PowerShell@2
-            name: Test
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: true
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-
-
-          # Publish code coverage results
-          - task: PublishCodeCoverageResults@1
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'output/testResults/CodeCov*.xml'
-      - job: test_windows_ps
-        pool:
-          vmImage: 'win1803'
-        steps:
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'output'
-              downloadPath: '$(Build.SourcesDirectory)'
-
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
               pwsh: false
-
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-
-
           # Publish code coverage results
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
-      - job: test_macos
+
+      - job: Integration_Test
         pool:
-          vmImage: 'macos-latest'
+          vmImage: 'windows-2019'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CI.
+          CI: true
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Integration
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -136,24 +110,22 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-
+          - task: PowerShell@2
+            name: ConfigureWinRM
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
-              pwsh: true
-
+              pwsh: false
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-
-          # Publish code coverage results
-          - task: PublishCodeCoverageResults@1
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'output/testResults/CodeCov*.xml'
 
   - stage: Deploy
     dependsOn: test_module
