@@ -10,7 +10,7 @@ trigger:
 #variables:
 
 stages:
-  - stage: Build_artefact
+  - stage: Build
     jobs:
       - job: BuildModuleJob
         pool:
@@ -37,10 +37,10 @@ stages:
               ArtifactName: 'output'
               publishLocation: 'Container'
 
-  - stage: test_module
+  - stage: Test
     dependsOn: Build_artefact
     jobs:
-      - job: HQRM_Test
+      - job: Test_HQRM
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
@@ -62,7 +62,7 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
 
-      - job: Unit_Test
+      - job: Test_Unit
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
@@ -94,7 +94,7 @@ stages:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
 
-      - job: Integration_Test
+      - job: Test_Integration
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
@@ -122,7 +122,7 @@ stages:
               testResultsFiles: 'output/testResults/NUnit*.xml'
 
   - stage: Deploy
-    dependsOn: test_module
+    dependsOn: Test
     # Only execute deploy stage if we're on master and previous stage succeeded
     condition: |
       and(
