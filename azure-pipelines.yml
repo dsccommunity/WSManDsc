@@ -38,7 +38,7 @@ stages:
               publishLocation: 'Container'
 
   - stage: Test
-    dependsOn: Build_artefact
+    dependsOn: Build
     jobs:
       - job: Test_HQRM
         pool:
