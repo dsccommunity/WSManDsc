@@ -6,9 +6,7 @@ Import-Module -Name (Join-Path -Path $modulePath `
             -ChildPath 'WSManDsc.Common.psm1'))
 
 # Import Localization Strings
-$script:localizedData = Get-LocalizedData `
-    -ResourceName 'DSR_WSManListener' `
-    -ResourcePath (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'DSC_WSManListener'
 
 # Standard Transport Ports
 $Default_HTTP_Port = 5985

@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 $script:dscModuleName   = 'WSManDsc'
-$script:dscResourceName = 'DSR_WSManListener'
+$script:dscResourceName = 'DSC_WSManListener'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -27,7 +27,7 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:dscResourceName {
-        $script:dscResourceName = 'DSR_WSManListener'
+        $script:dscResourceName = 'DSC_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $mockFQDN = 'SERVER1.CONTOSO.COM'

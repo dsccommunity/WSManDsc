@@ -1,5 +1,5 @@
 # Integration Test Config Template Version: 1.0.0
-configuration DSR_WSManConfig_Config {
+configuration DSC_WSManConfig_Config {
     Import-DscResource -ModuleName WSManDsc
 
     node $AllNodes.NodeName {

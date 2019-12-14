@@ -1,4 +1,4 @@
-Configuration DSR_WSManListener_Config_Add_HTTPS_Thumbprint_Hostname {
+Configuration DSC_WSManListener_Config_Add_HTTPS_Thumbprint {
     Import-DscResource -ModuleName WSManDsc
 
     node localhost {
@@ -8,7 +8,6 @@ Configuration DSR_WSManListener_Config_Add_HTTPS_Thumbprint_Hostname {
             Port                  = $Node.Port
             Address               = $Node.Address
             CertificateThumbprint = $Node.CertificateThumbprint
-            Hostname              = $Node.Hostname
         }
     }
 }

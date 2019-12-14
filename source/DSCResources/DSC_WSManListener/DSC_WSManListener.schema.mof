@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("WSManListener")]
-class DSR_WSManListener : OMI_BaseResource
+class DSC_WSManListener : OMI_BaseResource
 {
     [Key, Description("The transport type of WS-Man Listener."), ValueMap{"HTTP","HTTPS"}, Values{"HTTP","HTTPS"}] String Transport;
     [Required, Description("Specifies whether the WS-Man Listener should exist."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;

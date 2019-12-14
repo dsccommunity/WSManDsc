@@ -1,4 +1,4 @@
-Configuration DSR_WSManListener_Config_Remove_HTTPS {
+Configuration DSC_WSManListener_Config_Remove_HTTPS {
     Import-DscResource -ModuleName WSManDsc
 
     node localhost {

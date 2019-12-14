@@ -1,5 +1,5 @@
 $script:dscModuleName = 'WSManDsc'
-$script:dscResourceName = 'DSR_WSManListener'
+$script:dscResourceName = 'DSC_WSManListener'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 

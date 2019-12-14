@@ -1,4 +1,4 @@
-Configuration DSR_WSManListener_Config_Add_HTTP {
+Configuration DSC_WSManListener_Config_Add_HTTP {
     Import-DscResource -ModuleName WSManDsc
 
     node localhost {

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WSManDsc
   - Transferred ownership to DSCCommunity.org.
   - Added missing resource to README.MD.
+  - BREAKING CHANGE: Changed resource prefix from DSR to DSC.
+  - Renamed module `WSManDsc.ResourceHelper` to `WSManDsc.Common` and updated
+    to use standard functions.
 
 ### Deprecated
 

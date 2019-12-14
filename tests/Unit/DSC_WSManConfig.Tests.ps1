@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 $script:dscModuleName = 'WSManDsc'
-$script:dscResourceName = 'DSR_WSManConfig'
+$script:dscResourceName = 'DSC_WSManConfig'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -23,8 +23,8 @@ function Invoke-TestCleanup
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
-    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSR_WSManConfig') `
-    -FileName 'DSR_WSManConfig.data.psd1'
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManConfig') `
+    -FileName 'DSC_WSManConfig.data.psd1'
 
 $script:parameterList = $resourceData.ParameterList
 
@@ -43,7 +43,7 @@ try
     } # if
 
     InModuleScope $script:dscResourceName {
-        $script:dscResourceName = 'DSR_WSManListener'
+        $script:dscResourceName = 'DSC_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
         $wsManConfigSettings = [PSObject] @{}

@@ -1,5 +1,5 @@
 $script:dscModuleName   = 'WSManDsc'
-$script:dscResourceName = 'DSR_WSManConfig'
+$script:dscResourceName = 'DSC_WSManServiceConfig'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -21,20 +21,20 @@ function Invoke-TestCleanup
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
-    -BaseDirectory ($script:moduleRoot | Join-Path -ChildPath 'DscResources' | Join-Path -ChildPath $script:dscResourceName) `
-    -FileName "$script:dscResourceName.data.psd1"
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManServiceConfig') `
+    -FileName 'DSC_WSManServiceConfig.data.psd1'
 
 $parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 
 # Backup the existing settings
-$currentWsManConfig = [PSObject] @{}
+$currentWsManServiceConfig = [PSObject] @{}
 
 foreach ($parameter in $parameterList)
 {
     $parameterPath = Join-Path `
-        -Path 'WSMan:\Localhost\' `
+        -Path 'WSMan:\Localhost\Service\' `
         -ChildPath $parameter.Path
-    $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+    $currentWsManServiceConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
 } # foreach
 
 # Using try/finally to always cleanup even if something awful happens.
@@ -51,17 +51,16 @@ try
             -ErrorAction Stop
     } # if
 
-    # Set the Config to default settings
+    # Set the Service Config to default settings
     foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $parameter.Path
 
         Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
     } # foreach
 
-    #region Integration Tests
     $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $ConfigFile
 
@@ -110,7 +109,7 @@ try
             foreach ($parameter in $parameterList)
             {
                 $parameterPath = Join-Path `
-                    -Path 'WSMan:\Localhost\' `
+                    -Path 'WSMan:\Localhost\Service\' `
                     -ChildPath $parameter.Path
                 (Get-Item -Path $parameterPath).Value | Should -Be $($parameter.TestVal)
             } # foreach
@@ -123,9 +122,9 @@ finally
     foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $parameter.Path
-        Set-Item -Path $parameterPath -Value $currentWsManConfig.$($parameter.Name) -Force
+        Set-Item -Path $parameterPath -Value $currentWsManServiceConfig.$($parameter.Name) -Force
     } # foreach
 
     Invoke-TestCleanup

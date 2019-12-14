@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("WSManServiceConfig")]
-class DSR_WSManServiceConfig : OMI_BaseResource
+class DSC_WSManServiceConfig : OMI_BaseResource
 {
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
     [Write, Description("Specifies the security descriptor that controls remote access to the listener.")] String RootSDDL;

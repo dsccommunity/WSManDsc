@@ -1,4 +1,4 @@
-Configuration DSR_WSManListener_Config_Add_HTTPS {
+Configuration DSC_WSManListener_Config_Add_HTTPS {
     Import-DscResource -ModuleName WSManDsc
 
     node localhost {

@@ -6,9 +6,7 @@ Import-Module -Name (Join-Path -Path $modulePath `
         -ChildPath 'WSManDsc.Common.psm1'))
 
 # Import Localization Strings
-$LocalizedData = Get-LocalizedData `
-    -ResourceName 'DSR_WSManServiceConfig' `
-    -ResourcePath (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'DSC_WSManServiceConfig'
 
 <#
     This is an array of all the parameters used by this resource.
@@ -20,7 +18,7 @@ $LocalizedData = Get-LocalizedData `
 #>
 $resourceData = Import-LocalizedData `
     -BaseDirectory $PSScriptRoot `
-    -FileName 'DSR_WSManServiceConfig.data.psd1'
+    -FileName 'DSC_WSManServiceConfig.data.psd1'
 
 $script:parameterList = $resourceData.ParameterList
 
