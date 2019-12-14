@@ -1,0 +1,25 @@
+TOPIC
+    about_WSManDsc
+
+SHORT DESCRIPTION
+    DSC resources for configuring WS-Man.
+
+LONG DESCRIPTION
+    This module contains DSC resources for configuring WS-Man.
+
+EXAMPLES
+    PS C:\> Get-DscResource -Module WSManDsc
+
+NOTE:
+    Thank you to the DSC Community contributors who contributed to this module by
+    writing code, sharing opinions, and provided feedback.
+
+TROUBLESHOOTING NOTE:
+    Look in Github repository for read about issues and submit a new issue.
+    https://github.com/dsccommunity/WSManDsc/issues
+
+SEE ALSO
+  - https://github.com/dsccommunity/WSManDsc
+
+KEYWORDS
+      DSC, DscResource, WSMan

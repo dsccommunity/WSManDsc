@@ -1,23 +1,21 @@
 $script:DSCModuleName   = 'WSManDsc'
 $script:DSCResourceName = 'DSR_WSManConfig'
 
-#region HEADER
-# Integration Test Template Version: 1.1.1
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+function Invoke-TestSetup
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    Import-Module -Name DscResource.Test -Force
+
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Integration'
 }
 
-Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-Import-Module (Join-Path -Path $script:moduleRoot -ChildPath "$($script:DSCModuleName).psd1") -Force
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -TestType Integration
-#endregion
+function Invoke-TestCleanup
+{
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+}
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
@@ -40,6 +38,8 @@ foreach ($parameter in $parameterList)
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
+    Invoke-TestSetup
+
     # Make sure WS-Man is enabled
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
@@ -126,7 +126,5 @@ finally
         Set-Item -Path $parameterPath -Value $currentWsManConfig.$($parameter.Name) -Force
     } # foreach
 
-    #region FOOTER
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-    #endregion
+    Invoke-TestCleanup
 }

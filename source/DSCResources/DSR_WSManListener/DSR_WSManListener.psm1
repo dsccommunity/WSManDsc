@@ -2,8 +2,8 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 # Import the Networking Resource Helper Module
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'WSManDsc.ResourceHelper' `
-            -ChildPath 'WSManDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'WSManDsc.Common' `
+            -ChildPath 'WSManDsc.Common.psm1'))
 
 # Import Localization Strings
 $script:localizedData = Get-LocalizedData `
@@ -301,7 +301,7 @@ function Set-TargetResource
                     Address   = $Address
                     Transport = $Transport
                 } `
-                    -ValueSet @{
+                -ValueSet @{
                     Port = $Port
                 } `
                 -ErrorAction Stop
