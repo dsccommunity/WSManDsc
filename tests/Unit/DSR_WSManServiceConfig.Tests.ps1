@@ -23,7 +23,7 @@ function Invoke-TestCleanup
 
 # Load the parameter List from the data file
 $resourceData = Import-LocalizedData `
-    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\DSR_WSManServiceConfig') `
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSR_WSManServiceConfig') `
     -FileName 'DSR_WSManServiceConfig.data.psd1'
 
 $script:parameterList = $resourceData.ParameterList
