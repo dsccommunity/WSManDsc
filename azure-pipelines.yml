@@ -7,7 +7,6 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
-#variables:
 
 stages:
   - stage: Build
@@ -51,12 +50,14 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks hqrmtest'
               pwsh: false
+
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
@@ -67,9 +68,7 @@ stages:
           vmImage: 'win1803'
         timeoutInMinutes: 0
         variables:
-          # This sets environment variable $env:CI.
           CI: true
-          # This sets environment variable $env:CONFIGURATION.
           configuration: Unit
         steps:
           - task: DownloadBuildArtifacts@0
@@ -78,17 +77,19 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
               pwsh: false
+
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
-          # Publish code coverage results
+
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: 'JaCoCo'
@@ -99,9 +100,7 @@ stages:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
         variables:
-          # This sets environment variable $env:CI.
           CI: true
-          # This sets environment variable $env:CONFIGURATION.
           configuration: Integration
         steps:
           - task: DownloadBuildArtifacts@0
@@ -110,12 +109,21 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+
+          - task: PowerShell@2
+            name: ConfigureWinRM
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+
           - task: PowerShell@2
             name: Test
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks test'
               pwsh: false
+
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
@@ -143,6 +151,7 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+
           - task: PowerShell@2
             name: publish_prerelease
             inputs:
@@ -152,6 +161,7 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
+
           - task: PowerShell@2
             name: send_changelog_PR
             inputs:
