@@ -3,27 +3,17 @@ $script:dscResourceName = 'DSC_WSManListener'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-function Invoke-TestSetup
-{
-    Import-Module -Name DscResource.Test -Force
+Import-Module -Name DscResource.Test -Force
 
-    $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
-        -DSCResourceName $script:dscResourceName `
-        -ResourceType 'Mof' `
-        -TestType 'Integration'
-}
-
-function Invoke-TestCleanup
-{
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-}
+$script:testEnvironment = Initialize-TestEnvironment `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
+    -ResourceType 'Mof' `
+    -TestType 'Integration'
 
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
-    Invoke-TestSetup
-
     # Make sure WS-Man is enabled
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
@@ -507,5 +497,5 @@ try
 }
 finally
 {
-    Invoke-TestCleanup
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
