@@ -70,6 +70,7 @@ stages:
         variables:
           CI: true
           configuration: Unit
+          PesterScript: tests/Unit
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -102,6 +103,7 @@ stages:
         variables:
           CI: true
           configuration: Integration
+          PesterScript: tests/Integration
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
