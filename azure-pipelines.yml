@@ -74,7 +74,6 @@ stages:
         variables:
           CI: true
           configuration: Unit
-          PesterScript: tests/Unit
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -87,7 +86,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-Tasks test'
+              arguments: "-Tasks test -PesterScript 'tests/Unitegration'"
               pwsh: false
 
           - task: PublishTestResults@2
@@ -107,7 +106,6 @@ stages:
         variables:
           CI: true
           configuration: Integration
-          PesterScript: tests/Integration
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -127,7 +125,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-Tasks test -CodeCoverageThreshold 0'
+              arguments: "-Tasks test -PesterScript 'tests/Integration' -CodeCoverageThreshold 0"
               pwsh: false
 
           - task: PublishTestResults@2
