@@ -10,13 +10,13 @@ ModuleVersion = '2.4.1.0'
 GUID = '15a87fbe-766b-4d2c-b856-645fd4a8d275'
 
 # Author of this module
-Author = 'Daniel Scott-Raynsford'
+Author = 'DSC Community'
 
 # Company or vendor of this module
-CompanyName = ''
+CompanyName = 'DSC Community'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Daniel Scott-Raynsford. All rights reserved.'
+Copyright = 'Copyright the DSC Community contributors. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'DSC Resource for configuring WS-Management Listeners.'
@@ -87,10 +87,10 @@ PrivateData = @{
         Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'WSMan')
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/PlagueHO/WSManDsc/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/dsccommunity/WSManDsc/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/PlagueHO/WSManDsc'
+        ProjectUri = 'https://github.com/dsccommunity/WSManDsc'
 
         # A URL to an icon representing this module.
         # IconUri = ''

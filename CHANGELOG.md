@@ -1,34 +1,39 @@
 # Versions
 
+## Unreleased
+
+- Transferred ownership to DSCCommunity.org.
+- Added missing resource to README.MD.
+
 ## 2.4.1.0
 
 - Added `WSManConfig` to `DscResourcesToExport` in manifest.
 
 ## 2.4.0.0
 
-- Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/PlagueHO/WSManDsc/issues/32).
+- Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #32](https://github.com/dsccommunity/WSManDsc/issues/32).
 - Fix minor style issues in hashtable layout.
-- Added .gitattributes file to fix bug publishing examples - Fixes [Issue #34](https://github.com/PlagueHO/WSManDsc/issues/34).
+- Added .gitattributes file to fix bug publishing examples - Fixes [Issue #34](https://github.com/dsccommunity/WSManDsc/issues/34).
 - WSManConfig:
   - Added new resource to allow configuration of core WS-Man
-    settings - Fixes [Issue #40](https://github.com/PlagueHO/WSManDsc/issues/40).
+    settings - Fixes [Issue #40](https://github.com/dsccommunity/WSManDsc/issues/40).
 - WSManServiceConfig:
   - Updated integration tests to latest version of template.
 
 ## 2.3.0.0
 
-- Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/PlagueHO/WSManDsc/issues/14).
+- Enabled PSSA rule violations to fail build - Fixes [Issue #14](https://github.com/dsccommunity/WSManDsc/issues/14).
 - Added Open Code of Conduct.
 - Refactored module folder structure to move resource
-  to root folder of repository and remove test harness - Fixes [Issue #19](https://github.com/PlagueHO/WSManDsc/issues/19).
+  to root folder of repository and remove test harness - Fixes [Issue #19](https://github.com/dsccommunity/WSManDsc/issues/19).
 - Converted Examples to support format for publishing to PowerShell
   Gallery.
 - Change `Find-Certificate` in `WSManListener` to return entire certificate
   instead of just thumbprint.
 - Fix `Get-TargetResource` in `WSManListener` to ensure all MOF parameters are
-  returned - Fixes [Issue #21](https://github.com/PlagueHO/WSManDsc/issues/21).
+  returned - Fixes [Issue #21](https://github.com/dsccommunity/WSManDsc/issues/21).
 - Minor style corrections to comment based help.
-- Correct configuration names in Examples - fixes [Issue #24](https://github.com/PlagueHO/WSManDsc/issues/24).
+- Correct configuration names in Examples - fixes [Issue #24](https://github.com/dsccommunity/WSManDsc/issues/24).
 - Opt-in to common tests:
   - Common Tests - Validate Example Files To Be Published
   - Common Tests - Validate Markdown Links
@@ -40,7 +45,7 @@
 
 - WSManListener:
   - Added support for setting the Hostname of the listener will if the
-    subject of the certificate does not match the machine name - Fixes [Issue #11](https://github.com/PlagueHO/WSManDsc/issues/11).
+    subject of the certificate does not match the machine name - Fixes [Issue #11](https://github.com/dsccommunity/WSManDsc/issues/11).
 
 ## 2.1.0.0
 
