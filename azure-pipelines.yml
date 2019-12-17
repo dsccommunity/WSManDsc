@@ -66,6 +66,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+            condition: succeededOrFailed()
 
       - job: Test_Unit
         pool:
@@ -93,6 +94,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+            condition: succeededOrFailed()
 
           - task: PublishCodeCoverageResults@1
             inputs:
@@ -132,6 +134,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+            condition: succeededOrFailed()
 
   - stage: Deploy
     dependsOn: Test
