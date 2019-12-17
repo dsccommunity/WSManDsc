@@ -86,7 +86,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: "-Tasks test -PesterScript 'tests/Unitegration'"
+              arguments: "-Tasks test -PesterScript 'tests/Unit'"
               pwsh: false
 
           - task: PublishTestResults@2
