@@ -29,7 +29,7 @@ stages:
             name: Build
             inputs:
               filePath: './build.ps1'
-              arguments: '-ResolveDependency -tasks pack'
+              arguments: '-Tasks pack -ResolveDependency'
               pwsh: true
             env:
               ModuleVersion: $(GitVersion.Informationalversion)
@@ -59,7 +59,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks hqrmtest'
+              arguments: '-Tasks hqrmtest'
               pwsh: false
 
           - task: PublishTestResults@2
@@ -87,7 +87,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks test'
+              arguments: '-Tasks test'
               pwsh: false
 
           - task: PublishTestResults@2
@@ -127,7 +127,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: '-tasks test'
+              arguments: '-Tasks test -CodeCoverageThreshold 0'
               pwsh: false
 
           - task: PublishTestResults@2
