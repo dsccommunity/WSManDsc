@@ -72,9 +72,6 @@ stages:
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
-        variables:
-          CI: true
-          configuration: Unit
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
@@ -105,9 +102,6 @@ stages:
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
-        variables:
-          CI: true
-          configuration: Integration
         steps:
           - task: DownloadBuildArtifacts@0
             inputs:
