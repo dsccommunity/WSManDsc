@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to use standard functions.
   - Pinned `ModuleBuilder` to v1.0.0.
   - Updated build badges in README.MD.
+  - Remove unused localization strings.
 
 ### Deprecated
 
