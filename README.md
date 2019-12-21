@@ -23,20 +23,7 @@ the [WSManDsc wiki](https://github.com/dsccommunity/WSManDsc/wiki).
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/dsccommunity/WSManDsc?branch=master&svg=true)](https://ci.appveyor.com/project/dsccommunity/WSManDsc/branch/master)
-[![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc/branch/master)
-
-This is the branch containing the latest release - no contributions should be made
-directly to this branch.
-
-### dev
-
-[![Build status](https://ci.appveyor.com/api/projects/status/github/dsccommunity/WSManDsc?branch=dev&svg=true)](https://ci.appveyor.com/project/dsccommunity/WSManDsc/branch/dev)
-[![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc/branch/dev)
-
-This is the development branch to which contributions should be proposed by contributors
-as pull requests. This development branch will periodically be merged to the master
-branch, and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
+[![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=master)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=master)
 
 ## Contributing
 

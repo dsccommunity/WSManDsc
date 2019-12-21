@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed module `WSManDsc.ResourceHelper` to `WSManDsc.Common` and updated
     to use standard functions.
   - Pinned `ModuleBuilder` to v1.0.0.
+  - Updated build badges in README.MD.
 
 ### Deprecated
 
