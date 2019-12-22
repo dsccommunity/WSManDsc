@@ -94,9 +94,11 @@ stages:
             condition: succeededOrFailed()
 
           - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
             inputs:
               codeCoverageTool: 'JaCoCo'
               summaryFileLocation: 'output/testResults/CodeCov*.xml'
+              pathToSources: '$(Build.SourcesDirectory)/output/$(DscBuildVariable.RepositoryName)'
 
       - job: Test_Integration
         pool:

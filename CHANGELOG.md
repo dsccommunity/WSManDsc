@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pinned `ModuleBuilder` to v1.0.0.
   - Updated build badges in README.MD.
   - Remove unused localization strings.
+  - Adopt DSC Community Code of Conduct.
+  - Fix Code Coverage generation.
 
 ### Deprecated
 
