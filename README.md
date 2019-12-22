@@ -22,6 +22,7 @@ the [WSManDsc wiki](https://github.com/dsccommunity/WSManDsc/wiki).
 ### master
 
 [![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=master)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=master)
+![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WsManDsc/6)
 
 ## Contributing
 
