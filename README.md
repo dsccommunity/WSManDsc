@@ -1,8 +1,8 @@
 # WSManDsc
 
 [![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=master)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=master)
-![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/6)
-[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
+![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/6/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6/master)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/WSManDsc?label=WSManDsc%20Preview)](https://www.powershellgallery.com/packages/WSManDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/WSManDsc?label=WSManDsc)](https://www.powershellgallery.com/packages/WSManDsc/)
 
