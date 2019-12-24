@@ -123,7 +123,7 @@ stages:
             name: Test
             inputs:
               filePath: './build.ps1'
-              arguments: "-Tasks Fail_Build_if_Pester_Tests_failed -PesterScript 'tests/Integration' -CodeCoverageThreshold 0"
+              arguments: "-Tasks test -PesterScript 'tests/Integration' -CodeCoverageThreshold 0"
               pwsh: false
 
           - task: PublishTestResults@2
