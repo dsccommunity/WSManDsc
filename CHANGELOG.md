@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove unused localization strings.
   - Adopt DSC Community Code of Conduct.
   - Fix Code Coverage generation.
+  - Updated the CI pipeline files to the latest template.
+  - Changed unit tests to handle missing DscResource.Test better.
 
 ### Deprecated
 
@@ -32,10 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - WSManDsc
   - Removed unused file `.codecov.yml`.
+  - Removed the file `Deploy.PSDeploy.ps1` since it is not longer used by
+    the build pipeline.
 
 ### Fixed
 
-- None
+- WSManDsc
+  - Added CODE_OF_CONDUCT.md file, and a 'Code of Conduct' section in the
+    README.md.
 
 ### Security
 

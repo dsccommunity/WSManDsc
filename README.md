@@ -13,7 +13,11 @@ PowerShell Remoting.
 - **WSManConfig**: Configure general WS-Man settings.
 - **WSManServiceConfig**: Configure the WS-Man Service.
 
-This project has adopted the [DSC Community Code of Conduct](https://dsccommunity.org/code_of_conduct).
+## Code of Conduct
+
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Quality
 
 This module should meet the [PowerShell DSC Resource Kit High Quality Resource
 Module Guidelines](https://github.com/PowerShell/DscResources/blob/master/HighQualityModuleGuidelines.md).
@@ -25,4 +29,8 @@ the [WSManDsc wiki](https://github.com/dsccommunity/WSManDsc/wiki).
 
 ## Contributing
 
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
