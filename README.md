@@ -17,6 +17,17 @@ PowerShell Remoting.
 
 This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Releases
+
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
+
+## Contributing
+
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
 ## Quality
 
 This module should meet the [PowerShell DSC Resource Kit High Quality Resource
@@ -26,10 +37,6 @@ Module Guidelines](https://github.com/PowerShell/DscResources/blob/master/HighQu
 
 For a full list of resources in WSManDsc and examples on their use, check out
 the [WSManDsc wiki](https://github.com/dsccommunity/WSManDsc/wiki).
-
-## Contributing
-
-Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 
 ## Change log
 
