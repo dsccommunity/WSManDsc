@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WSManDsc
   - Added CODE_OF_CONDUCT.md file, and a 'Code of Conduct' section in the
     README.md.
+- WSManListener
+  - Fix Find-Certificate Verbose Messages [Issue #49](https://github.com/dsccommunity/WSManDsc/issues/49).
 
 ### Security
 
