@@ -66,6 +66,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+              testRunTitle: 'HQRM'
             condition: succeededOrFailed()
 
       - job: Test_Unit
@@ -96,6 +97,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+              testRunTitle: 'Unit'
             condition: succeededOrFailed()
 
           - task: PublishCodeCoverageResults@1
@@ -135,6 +137,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: 'output/testResults/NUnit*.xml'
+              testRunTitle: 'Integration'
             condition: succeededOrFailed()
 
   - stage: Deploy

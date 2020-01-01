@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated the CI pipeline files to the latest template.
   - Changed unit tests to handle missing DscResource.Test better.
   - Changed `azure-pipeline.yml` to match current pattern ([Issue #59](https://github.com/dsccommunity/WSManDsc/issues/59)).
+- Set `testRunTitle` for PublishTestResults steps so that a helpful name is
+  displayed in Azure DevOps for each test run.
 
 ### Deprecated
 
