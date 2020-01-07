@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     README.md.
 - WSManListener
   - Fix Find-Certificate Verbose Messages [Issue #49](https://github.com/dsccommunity/WSManDsc/issues/49).
+- Fixed `GitVersion.yml` feature and fix Regex - fixes
+  [issue #62](https://github.com/PowerShell/WSManDsc/issues/62).
 
 ### Security
 
