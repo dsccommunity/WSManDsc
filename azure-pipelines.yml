@@ -78,6 +78,7 @@ stages:
             condition: succeededOrFailed()
 
       - job: Test_Unit
+        displayName: 'Unit'
         pool:
           vmImage: 'win1803'
         timeoutInMinutes: 0
@@ -119,6 +120,7 @@ stages:
               pathToSources: '$(Build.SourcesDirectory)/output/$(dscBuildVariable.RepositoryName)'
 
       - job: Test_Integration
+        displayName: 'Integration'
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
@@ -182,7 +184,7 @@ stages:
 
           - task: PowerShell@2
             name: publishRelease
-            displayName: 'Publish Prerelease'
+            displayName: 'Publish Release'
             inputs:
               filePath: './build.ps1'
               arguments: '-tasks publish'
