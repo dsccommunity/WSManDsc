@@ -7,7 +7,7 @@ $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 function Invoke-TestSetup
 {
-    Import-Module -Name DscResource.Test -Force
+    Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `

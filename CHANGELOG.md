@@ -49,6 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix Find-Certificate Verbose Messages [Issue #49](https://github.com/dsccommunity/WSManDsc/issues/49).
 - Fixed `GitVersion.yml` feature and fix Regex - fixes
   [issue #62](https://github.com/PowerShell/WSManDsc/issues/62).
+- Fix import statement in all tests, making sure it throws if module
+  DscResource.Test cannot be imported - fixes
+  [issue #67](https://github.com/PowerShell/WSManDsc/issues/67).
+- Fix deploy stage in CI pipeline to prevent it executing against forks
+  of the repository - fixes [issue #66](https://github.com/PowerShell/WSManDsc/issues/66).
 
 ### Security
 
