@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set `testRunTitle` for PublishTestResults steps so that a helpful name is
   displayed in Azure DevOps for each test run.
 - Set a display name on all the jobs and tasks in the CI
-  pipeline - fixes [issue #63](https://github.com/PowerShell/WSManDsc/issues/63)
+  pipeline - fixes [issue #63](https://github.com/dsccommunity/WSManDsc/issues/63)
 
 ### Deprecated
 
@@ -49,6 +49,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     README.md.
 - WSManListener
   - Fix Find-Certificate Verbose Messages [Issue #49](https://github.com/dsccommunity/WSManDsc/issues/49).
+- Fixed `GitVersion.yml` feature and fix Regex - fixes
+  [issue #62](https://github.com/dsccommunity/WSManDsc/issues/62).
+- Fix import statement in all tests, making sure it throws if module
+  DscResource.Test cannot be imported - fixes
+  [issue #67](https://github.com/dsccommunity/WSManDsc/issues/67).
+- Fix deploy stage in CI pipeline to prevent it executing against forks
+  of the repository - fixes [issue #66](https://github.com/dsccommunity/WSManDsc/issues/66).
 
 ### Security
 
