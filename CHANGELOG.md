@@ -5,6 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Changed CI pipeline HQRM Test image to use `windows-2019` Azure DevOps hosted
+  image - fixes [issue #69](https://github.com/dsccommunity/WSManDsc/issues/69)
+- Changed CI pipeline Unit Test image to use `vs2017-win2016` Azure
+  DevOps hosted image - fixes [issue #69](https://github.com/dsccommunity/WSManDsc/issues/69)
+- Added CI pipeline stages for running Integration and Unit tests on
+  Windows Server 2016 and Windows Server 2019 respectively.
+
 ## [3.1.0] - 2020-01-15
 
 ### Added
