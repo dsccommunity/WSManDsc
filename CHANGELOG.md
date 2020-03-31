@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.1] - 2020-01-31
+
 ### Changed
 
 - Changed CI pipeline HQRM Test image to use `windows-2019` Azure DevOps hosted
