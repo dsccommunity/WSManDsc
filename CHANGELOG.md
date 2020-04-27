@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```
 - Change Azure DevOps Pipeline definition to include `source/*` - fixes [Issue #75](https://github.com/dsccommunity/WSManDsc/issues/75).
 - Updated pipeline to use `latest` version of `ModuleBuilder` - fixes [Issue #75](https://github.com/dsccommunity/WSManDsc/issues/75).
-- Merge `HISTORIC_CHANGELOG.md` into `CHANGELOG.md` - Fixes [Issue #76](https://github.com/dsccommunity/WSManDsc/issues/76).
+- Merge `HISTORIC_CHANGELOG.md` into `CHANGELOG.md` - fixes [Issue #76](https://github.com/dsccommunity/WSManDsc/issues/76).
 
 ## [3.1.1] - 2020-01-31
 
