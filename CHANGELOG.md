@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change Azure DevOps Pipeline definition to include `source/*` - fixes [Issue #75](https://github.com/dsccommunity/WSManDsc/issues/75).
 - Updated pipeline to use `latest` version of `ModuleBuilder` - fixes [Issue #75](https://github.com/dsccommunity/WSManDsc/issues/75).
 - Merge `HISTORIC_CHANGELOG.md` into `CHANGELOG.md` - fixes [Issue #76](https://github.com/dsccommunity/WSManDsc/issues/76).
+- WSManDsc
+  - Updated to use the common module _DscResource.Common_ - Fixes [Issue #78](https://github.com/dsccommunity/WSManDsc/issues/78).
+  - Fixed build failures caused by changes in `ModuleBuilder` module v1.7.0
+    by changing `CopyDirectories` to `CopyPaths` - Fixes [Issue #79](https://github.com/dsccommunity/WSManDsc/issues/79).
+  - Pin `Pester` module to 4.10.1 because Pester 5.0 is missing code
+    coverage - Fixes [Issue #78](https://github.com/dsccommunity/WSManDsc/issues/78).
 
 ## [3.1.1] - 2020-01-31
 

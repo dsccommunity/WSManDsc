@@ -1,12 +1,9 @@
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 
-# Import the Networking Resource Helper Module
-Import-Module -Name (Join-Path -Path $modulePath `
-    -ChildPath (Join-Path -Path 'WSManDsc.Common' `
-        -ChildPath 'WSManDsc.Common.psm1'))
+Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
 
 # Import Localization Strings
-$script:localizedData = Get-LocalizedData -ResourceName 'DSC_WSManConfig'
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     This is an array of all the parameters used by this resource.
