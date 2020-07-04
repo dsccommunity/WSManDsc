@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     by changing `CopyDirectories` to `CopyPaths` - Fixes [Issue #79](https://github.com/dsccommunity/WSManDsc/issues/79).
   - Pin `Pester` module to 4.10.1 because Pester 5.0 is missing code
     coverage - Fixes [Issue #78](https://github.com/dsccommunity/WSManDsc/issues/78).
+- WSManDsc
+  - Automatically publish documentation to GitHub Wiki - Fixes [Issue #82](https://github.com/dsccommunity/WSManDsc/issues/82).
 
 ## [3.1.1] - 2020-01-31
 
