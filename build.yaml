@@ -7,7 +7,6 @@ CopyPaths:
   - DSCResources
 Encoding: UTF8
 VersionedOutputDirectory: true
-MainGitBranch: main
 
 ####################################################
 #   ModuleBuilder Dependent Modules Configuration  #
@@ -74,6 +73,7 @@ DscTest:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
+  MainGitBranch: main
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
