@@ -73,6 +73,7 @@ DscTest:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
+  MainGitBranch: main
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
@@ -102,4 +103,3 @@ GitHubConfig:
   GitHubConfigUserName: dscbot
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
-  MainGitBranch: main
