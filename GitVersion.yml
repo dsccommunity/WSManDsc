@@ -13,14 +13,11 @@ branches:
   feature:
     tag: useBranchName
     increment: Minor
-    regex: f(eature(s)?)?\/-]
-    source-branches: ['master']
+    regex: f(eature(s)?)?[\/-]
+    source-branches: ['main']
   hotfix:
     tag: fix
     increment: Patch
     regex: (hot)?fix(es)?[\/-]
-    source-branches: ['master']
-
-ignore:
-  sha: []
+    source-branches: ['main']
 merge-message-formats: {}

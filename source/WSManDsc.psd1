@@ -88,7 +88,7 @@
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'WSMan')
 
             # A URL to the license for this module.
-            LicenseUri   = 'https://github.com/dsccommunity/WSManDsc/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/dsccommunity/WSManDsc/blob/main/LICENSE'
 
             # A URL to the main website for this project.
             ProjectUri   = 'https://github.com/dsccommunity/WSManDsc'
