@@ -73,7 +73,6 @@ DscTest:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
-  MainGitBranch: main
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
