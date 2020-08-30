@@ -67,8 +67,6 @@ stages:
               filePath: './build.ps1'
               arguments: '-Tasks hqrmtest'
               pwsh: false
-            env:
-              MainGitBranch: main
 
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
