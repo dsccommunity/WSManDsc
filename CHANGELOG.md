@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WSManDsc
   - Automatically publish documentation to GitHub Wiki - Fixes [Issue #82](https://github.com/dsccommunity/WSManDsc/issues/82).
 - Renamed `master` branch to `main` - Fixes [Issue #82](https://github.com/dsccommunity/WSManDsc/issues/82).
+- Minor corrections to pipeline files and examples after renaming `master`
+  branch to `main`.
 
 ## [3.1.1] - 2020-01-31
 
