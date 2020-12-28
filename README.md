@@ -1,8 +1,8 @@
 # WSManDsc
 
-[![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=master)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=master)
-![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/6/master)
-[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6/master)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
+[![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=main)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=main)
+![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/6/main)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6/main)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/WSManDsc?label=WSManDsc%20Preview)](https://www.powershellgallery.com/packages/WSManDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/WSManDsc?label=WSManDsc)](https://www.powershellgallery.com/packages/WSManDsc/)
 
@@ -19,7 +19,7 @@ This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Releases
 
-For each merge to the branch `master` a preview release will be
+For each merge to the branch `main` a preview release will be
 deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
 Periodically a release version tag will be pushed which will deploy a
 full release to [PowerShell Gallery](https://www.powershellgallery.com/).

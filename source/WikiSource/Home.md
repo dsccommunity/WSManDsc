@@ -32,4 +32,4 @@ Get-DscResource -Module WSManDsc
 
 ## Change Log
 
-A full list of changes in each version can be found in the [change log](https://github.com/dsccommunity/WSManDsc/blob/master/CHANGELOG.md).
+A full list of changes in each version can be found in the [change log](https://github.com/dsccommunity/WSManDsc/blob/main/CHANGELOG.md).
