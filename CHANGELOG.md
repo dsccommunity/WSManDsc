@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minor corrections to pipeline files and examples after renaming `master`
   branch to `main`.
 - Updated `GitVersion.yml` to latest pattern - Fixes [Issue #87](https://github.com/dsccommunity/WSManDsc/issues/87).
+- Updated build to use `Sampler.GitHubTasks` - Fixes [Issue #90](https://github.com/dsccommunity/WSManDsc/issues/90).
 
 ## [3.1.1] - 2020-01-31
 
