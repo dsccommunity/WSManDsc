@@ -5,6 +5,8 @@
 [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6/main)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/WSManDsc?label=WSManDsc%20Preview)](https://www.powershellgallery.com/packages/WSManDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/WSManDsc?label=WSManDsc)](https://www.powershellgallery.com/packages/WSManDsc/)
+[![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc)
+![Azure DevOps coverage (main)](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/14/main)
 
 The **WSManDsc** module contains DSC resources for configuring WS-Management and
 PowerShell Remoting.
