@@ -46,7 +46,7 @@ stages:
             displayName: 'Publish Build Artifact'
             inputs:
               PathtoPublish: '$(buildFolderName)/'
-              ArtifactName: $(testArtifactName)
+              ArtifactName: $(buildArtifactName)
               publishLocation: 'Container'
 
   - stage: Test
@@ -288,13 +288,12 @@ stages:
         pool:
           vmImage: 'ubuntu 16.04'
         steps:
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Download Build Artifact'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'output'
-              downloadPath: '$(Build.SourcesDirectory)'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
 
           - task: PowerShell@2
             name: publishRelease
