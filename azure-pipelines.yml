@@ -79,7 +79,7 @@ stages:
             displayName: 'Publish Test Results'
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: '$(Build.SourcesDirectory)/$(buildFolderName)/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'HQRM'
             condition: succeededOrFailed()
 
@@ -114,7 +114,7 @@ stages:
             displayName: 'Publish Test Results'
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: '$(Build.SourcesDirectory)/$(buildFolderName)/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Unit (Windows Server 2016)'
             condition: succeededOrFailed()
 
@@ -197,7 +197,7 @@ stages:
             displayName: 'Publish Test Results'
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: '$(Build.SourcesDirectory)/$(buildFolderName)/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (Windows Server 2016)'
             condition: succeededOrFailed()
 
@@ -232,7 +232,7 @@ stages:
             displayName: 'Publish Test Results'
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: '$(Build.SourcesDirectory)/$(buildFolderName)/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Unit (Windows Server 2019)'
             condition: succeededOrFailed()
 
@@ -269,7 +269,7 @@ stages:
             displayName: 'Publish Test Results'
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: '$(Build.SourcesDirectory)/$(buildFolderName)/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (Windows Server 2019)'
             condition: succeededOrFailed()
 
