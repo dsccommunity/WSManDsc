@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   branch to `main`.
 - Updated `GitVersion.yml` to latest pattern - Fixes [Issue #87](https://github.com/dsccommunity/WSManDsc/issues/87).
 - Updated build to use `Sampler.GitHubTasks` - Fixes [Issue #90](https://github.com/dsccommunity/WSManDsc/issues/90).
+- Added support for publishing code coverage to `CodeCov.io` and
+  Azure Pipelines - Fixes [Issue #91](https://github.com/dsccommunity/WSManDsc/issues/91).
 
 ## [3.1.1] - 2020-01-31
 
