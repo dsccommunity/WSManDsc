@@ -34,7 +34,7 @@ try
         $mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
         $mockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
         $mockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-        $mockDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+        $mockBaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
 
         $mockCertificate = [PSObject] @{
             Thumbprint = $mockCertificateThumbprint
@@ -44,9 +44,9 @@ try
             DNSNameList = @{ Unicode = $mockHostName }
         }
 
-        $mockCertificateDN = [PSObject] @{
+        $mockCertificateWithBaseDN = [PSObject] @{
             Thumbprint = $mockCertificateThumbprint
-            Subject = "CN=$mockHostName, $mockDN"
+            Subject = "CN=$mockHostName, $mockBaseDN"
             Issuer = $mockIssuer
             Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
             DNSNameList = @{ Unicode = $mockHostName }
@@ -500,7 +500,7 @@ try
 
             Context 'CertificateThumbprint is passed and does exist' {
                 Mock -CommandName Get-ChildItem -MockWith {
-                    $mockCertificateDN
+                    $mockCertificateWithBaseDN
                 }
 
                 It 'Should not throw error' {
@@ -526,7 +526,7 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
-                        -DN $mockDN  `
+                        -DN $mockBaseDN  `
                         -Verbose } | Should -Not -Throw
                 }
 
@@ -541,7 +541,7 @@ try
 
             Context 'SubjectFormat is Both, Certificate with DN Exists, DN passed' {
                 Mock -CommandName Get-ChildItem -MockWith {
-                    $mockCertificateDN
+                    $mockCertificateWithBaseDN
                 }
 
                 It 'Should not throw error' {
@@ -549,7 +549,7 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
-                        -DN $mockDN  `
+                        -DN $mockBaseDN  `
                         -Verbose } | Should -Not -Throw
                 }
 
@@ -562,7 +562,7 @@ try
                 }
             }
 
-            Context 'SubjectFormat is Both, Certificate without DN Exists, DN passed' {
+            Context 'SubjectFormat is Both, Certificate without Base DN Exists, DN passed' {
                 Mock -CommandName Get-ChildItem -MockWith {
                     $mockCertificate
                 }
@@ -572,7 +572,7 @@ try
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
-                        -DN $mockDN  `
+                        -DN $mockBaseDN  `
                         -Verbose } | Should -Not -Throw
                 }
 
@@ -605,9 +605,9 @@ try
                 }
             }
 
-            Context 'SubjectFormat is Both, Certificate with DN Exists, DN not passed' {
+            Context 'SubjectFormat is Both, Certificate with Base DN Exists, DN not passed' {
                 Mock -CommandName Get-ChildItem -MockWith {
-                    $mockCertificateDN
+                    $mockCertificateWithBaseDN
                 }
 
                 It 'Should not throw error' {
@@ -627,7 +627,7 @@ try
                 }
             }
 
-            Context 'SubjectFormat is Both, Certificate without DN Exists, DN not passed' {
+            Context 'SubjectFormat is Both, Certificate without Base DN Exists, DN not passed' {
                 Mock -CommandName Get-ChildItem -MockWith {
                     $mockCertificate
                 }

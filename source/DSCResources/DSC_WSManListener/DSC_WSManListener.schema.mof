@@ -8,7 +8,7 @@ class DSC_WSManListener : OMI_BaseResource
     [Write, Description("The Issuer of the certificate to use for the HTTPS WS-Man Listener if a thumbprint is not specified.")] String Issuer;
     [Write, Description("The format used to match the certificate subject to use for an HTTPS WS-Man Listener if a thumbprint is not specified."), ValueMap{"Both","FQDNOnly","NameOnly"}, Values{"Both","FQDNOnly","NameOnly"}] String SubjectFormat;
     [Write, Description("Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man Listener if a thumbprint is not specified.")] Boolean MatchAlternate;
-    [Write, Description("This is a Distinguished Name component that will be used to identify the certificate to use for the HTTPS WS-Man Listener if a thumbprint is not specified.")] String DN;
+    [Write, Description("This is the BaseDN (base of the full Distinguished Name) used to identify the certificate to use for the HTTPS WS-Man Listener if a thumbprint is not specified.")] String DN;
     [Write, Description("The host name that a HTTPS WS-Man Listener will be bound to. If not specified it will default to the computer name of the node.")] String Hostname;
     [Read, Description("Returns true if the existing WS-Man Listener is enabled.")] Boolean Enabled;
     [Read, Description("The URL Prefix of the existing WS-Man Listener.")] String URLPrefix;

@@ -91,8 +91,8 @@ try
         Remove-Item -Force
 
     $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
-    $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
-    $Issuer = "CN=$Hostname, $DN"
+    $BaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $Issuer = "CN=$Hostname, $BaseDN"
 
     # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
@@ -146,7 +146,7 @@ try
                     Issuer         = $Issuer
                     SubjectFormat  = 'Both'
                     MatchAlternate = $False
-                    DN             = $DN
+                    BaseDN         = $BaseDN
                     Hostname       = $Hostname
                 }
             )

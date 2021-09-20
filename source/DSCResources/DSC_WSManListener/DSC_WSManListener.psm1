@@ -133,8 +133,8 @@ function Get-TargetResource
         Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-        This is a Distinguished Name component that will be used to identify the certificate to use
-        for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is the BaseDN (path part of the full Distinguished Name) used to identify the certificate
+        to use for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
         The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
@@ -360,8 +360,8 @@ function Set-TargetResource
         Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-        This is a Distinguished Name component that will be used to identify the certificate to use
-        for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is the BaseDN (path part of the full Distinguished Name) used to identify the certificate
+        to use for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
         The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
@@ -589,8 +589,8 @@ function Get-DefaultPort
         Listener if a thumbprint is not specified.
 
     .PARAMETER DN
-        This is a Distinguished Name component that will be used to identify the certificate to use
-        for the HTTPS WS-Man Listener if a thumbprint is not specified.
+        This is the BaseDN (path part of the full Distinguished Name) used to identify the certificate
+        to use for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
         The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
