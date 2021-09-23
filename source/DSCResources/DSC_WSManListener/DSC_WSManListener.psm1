@@ -627,7 +627,10 @@ function Find-Certificate
         $Hostname
     )
 
-    [System.String] $thumbprint = ''
+    $private:PSDefaultParameterValues = @{
+        'Get-Childitem:Path'                    = 'Cert:\LocalMachine\My'
+        'Get-ChildItem:SSLServerAuthentication' = $true
+    }
 
     if ($PSBoundParameters.ContainsKey('CertificateThumbprint'))
     {
@@ -637,7 +640,7 @@ function Find-Certificate
                     -f $CertificateThumbprint
             ) -join '' )
 
-        $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
+        $certificate = Get-ChildItem | Where-Object -FilterScript {
                 ($_.Thumbprint -eq $CertificateThumbprint)
             } | Select-Object -First 1
     }
@@ -667,9 +670,7 @@ function Find-Certificate
                             -f $Subject, $Issuer, $Hostname
                     ) -join '' )
 
-                $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                $certificate = (Get-ChildItem | Where-Object -FilterScript {
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
@@ -684,9 +685,7 @@ function Find-Certificate
                             -f $Subject, $Issuer
                     ) -join '' )
 
-                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                $certificate = Get-ChildItem | Where-Object -FilterScript {
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
                     } | Select-Object -First 1
@@ -714,9 +713,7 @@ function Find-Certificate
                             -f $Subject, $Issuer, $Hostname
                     ) -join '' )
 
-                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                $certificate = Get-ChildItem | Where-Object -FilterScript {
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
@@ -731,9 +728,7 @@ function Find-Certificate
                             -f $Subject, $Issuer
                     ) -join '' )
 
-                $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                $certificate = Get-ChildItem | Where-Object -FilterScript {
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
                     } | Select-Object -First 1
