@@ -602,7 +602,7 @@ function Find-Certificate
     param
     (
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Issuer,
 
         [Parameter()]
@@ -615,7 +615,7 @@ function Find-Certificate
         $MatchAlternate,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $DN,
 
         [Parameter()]
@@ -624,7 +624,7 @@ function Find-Certificate
 
         [Parameter()]
         [System.String]
-        $Hostname
+        $Hostname = $env:ComputerName
     )
 
     $private:PSDefaultParameterValues = @{
@@ -632,109 +632,80 @@ function Find-Certificate
         'Get-ChildItem:SSLServerAuthentication' = $true
     }
 
-    if ($PSBoundParameters.ContainsKey('CertificateThumbprint'))
-    {
-        Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.FindCertificateByThumbprintMessage) `
-                    -f $CertificateThumbprint
-            ) -join '' )
+    # This hashtable will represent the search criteria.  It is later compiled
+    # into a FilterScript
+    [Hashtable] $X509Properties = @{}
 
-        $certificate = Get-ChildItem | Where-Object -FilterScript {
-                ($_.Thumbprint -eq $CertificateThumbprint)
-            } | Select-Object -First 1
+    # If CertificateThumbprint is specified, that's all we need or care about.
+    # Else, convert the input parameters into matcher arrays in $X509Properties.
+    if ($CertificateThumbprint) {
+        $X509Properties.Thumbprint = $CertificateThumbprint
     }
-    else
-    {
-        # First try and find a certificate that is used to the FQDN of the machine
-        if ($SubjectFormat -in 'Both', 'FQDNOnly')
+    else {
+        [System.String] $FQDN = [System.Net.Dns]::GetHostByName($Hostname).HostName
+
+        # SubjectFormat
+        switch ($SubjectFormat)
         {
-            # Lookup the certificate using the FQDN of the machine
-            if ([System.String]::IsNullOrEmpty($Hostname))
-            {
-                $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-            }
-            $Subject = "CN=$Hostname"
-
-            if ($PSBoundParameters.ContainsKey('DN'))
-            {
-                $Subject = "$Subject, $DN"
-            } # if
-
-            if ($MatchAlternate)
-            {
-                # Try and lookup the certificate using the subject and the alternate name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Subject, $Issuer, $Hostname
-                    ) -join '' )
-
-                $certificate = (Get-ChildItem | Where-Object -FilterScript {
-                        ($_.Issuer -eq $Issuer) -and
-                        ($Hostname -in $_.DNSNameList.Unicode) -and
-                        ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1)
-            }
-            else
-            {
-                # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateMessage) `
-                            -f $Subject, $Issuer
-                    ) -join '' )
-
-                $certificate = Get-ChildItem | Where-Object -FilterScript {
-                        ($_.Issuer -eq $Issuer) -and
-                        ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
-            } # if
+            'FQDNOnly' { [System.String]   $CNs = $FQDN               }
+            'NameOnly' { [System.String]   $CNs = $Hostname           }
+            'Both'     { [System.String[]] $CNs = @($FQDN, $Hostname) }
         }
 
-        if (-not $certificate `
-                -and ($SubjectFormat -in 'Both', 'NameOnly'))
-        {
-            # If could not find an FQDN cert, try for one issued to the computer name
-            [System.String] $Hostname = $ENV:ComputerName
-            [System.String] $Subject = "CN=$Hostname"
+        # DNSNameList via MatchAlternate
+        if ($MatchAlternate) { [System.String[]] $X509Properties.DNSNameList = @($CNs) }
 
-            if ($PSBoundParameters.ContainsKey('DN'))
-            {
-                $Subject = "$Subject, $DN"
-            } # if
+        # BaseDNs via DN
+        if ($PSBoundParameters.ContainsKey('DN')) {
+            [System.String[]] $BaseDNs = foreach ($baseDN in $DN) { ", ${baseDN}" }
+        } else {
+            [System.String[]] $BaseDNs = @('')
+        }
 
-            if ($MatchAlternate)
-            {
-                # Try and lookup the certificate using the subject and the alternate name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Subject, $Issuer, $Hostname
-                    ) -join '' )
-
-                $certificate = Get-ChildItem | Where-Object -FilterScript {
-                        ($_.Issuer -eq $Issuer) -and
-                        ($Hostname -in $_.DNSNameList.Unicode) -and
-                        ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+        # Put it all together for a list of possible Subject names
+        [System.String[]] $X509Properties.Subject = foreach ($hostname in $CNs) {
+            foreach ($baseDN in $BaseDNs) {
+                "CN=${hostname}${baseDN}"
             }
-            else
-            {
-                # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateMessage) `
-                            -f $Subject, $Issuer
-                    ) -join '' )
+        }
 
-                $certificate = Get-ChildItem | Where-Object -FilterScript {
-                        ($_.Issuer -eq $Issuer) -and
-                        ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
-            } # if
-        } # if
-    } # if
+        if ($Issuer) { [System.String[]] $X509Properties.Issuer = @($Issuer) }
+    }
+
+    # Compile the X509Properties object into a list of expressions
+    [System.String[]] $filterExpressions = foreach ($property in $X509Properties.GetEnumerator()) {
+        if ($property.Value.Length -GT 0) {
+            [System.String] $valueString = "'{0}'" -f ($property.Value -join "','")
+
+            switch ($property.Key) {
+                'DNSNameList' {
+                    '(Compare-Object $_.DNSNameList.Unicode ({0}) -PassThru -IncludeEqual -ExcludeDifferent) -gt 0' -f $valueString
+                }
+                default {
+                    '$_.{0} -in {1}' -f $property.Key, $valueString
+                }
+            }
+
+        }
+    }
+
+    # Link the expressions
+    [System.String] $filterScriptString = $filterExpressions -join ' -and '
+
+    # Create the ScriptBlock
+    $filterScript = [System.Management.Automation.ScriptBlock]::Create($filterScriptString)
+
+    # Execute our search
+    $certificateList = Get-ChildItem | Where-Object -FilterScript $filterScript
+
+    # Sort and select to ensure deterministic behavior
+    if ($certificateList)
+    {
+        $certificate = $certificateList | Sort-Object @(
+            @{ Expression = { $X509Properties['Subject'].IndexOf($_.Subject) }; Descending = $true  }
+            @{ Expression = { $X509Properties['Issuer'].IndexOf($_.Issuer)   }; Descending = $false }
+        ) | Select-Object -First 1
+    }
 
     if ($certificate)
     {

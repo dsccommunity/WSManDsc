@@ -31,9 +31,12 @@ try
 
         # Create the Mock Objects that will be used for running tests
         $mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
+        $mockCertificateThumbprintFQDN = 'A264CA7ADCC280077D401D95DCDEAD41F244F2529'
+        $mockCertificateThumbprintAlternateIssuer = '391A345E1DD2FF5CC62E5CA6938B3B7DF52A62052'
         $mockHostName = ($env:ComputerName).ToLower()
         $mockFQDN = [System.Net.Dns]::GetHostByName($env:ComputerName).Hostname
         $mockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
+        $mockIssuer2 = 'cn=Example CA,dc=example,dc=com'
         $mockBaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
 
         $mockCertificate = [PSObject] @{
@@ -53,9 +56,17 @@ try
         }
 
         $mockCertificateWithFQDN = [PSObject] @{
-            Thumbprint = $mockCertificateThumbprint
+            Thumbprint = $mockCertificateThumbprintFQDN
             Subject = "CN=$mockFQDN"
             Issuer = $mockIssuer
+            Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+            DNSNameList = @{ Unicode = $mockFQDN }
+        }
+
+        $mockCertificateWithAlternateIssuer = [PSObject] @{
+            Thumbprint = $mockCertificateThumbprintAlternateIssuer
+            Subject = "CN=$mockHostName"
+            Issuer = $mockIssuer2
             Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
             DNSNameList = @{ Unicode = $mockFQDN }
         }
@@ -543,7 +554,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -566,7 +577,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -589,7 +600,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -609,7 +620,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -631,7 +642,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -653,7 +664,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
                 }
             }
 
@@ -672,6 +683,152 @@ try
 
                 It 'Should return expected certificate' {
                     $script:returnedCertificate.Subject | Should -Be "CN=$mockFQDN"
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is an Array, Primary certificate exists' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificate
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer, $mockIssuer2) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is an Array, Secondary certificate exists' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificateWithAlternateIssuer
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer, $mockIssuer2) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprintAlternateIssuer
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is an Array, Two matching certificate exist' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificate, $mockCertificateWithAlternateIssuer
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer, $mockIssuer2) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is an Array, Two matching certificate exist, Certificate order reversed' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificateWithAlternateIssuer, $mockCertificate
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer, $mockIssuer2) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is a reversed Array, Two matching certificate exist' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificate, $mockCertificateWithAlternateIssuer
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer2, $mockIssuer) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprintAlternateIssuer
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer is an reversed Array, Two matching certificate exist, Certificate order reversed' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificateWithAlternateIssuer, $mockCertificate
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer @($mockIssuer2, $mockIssuer) `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprintAlternateIssuer
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                }
+            }
+
+            Context 'Issuer not specified, Two matching certificate exist' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificate, $mockCertificateWithAlternateIssuer
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Thumbprint | Should -BeIn $mockCertificateThumbprint, $mockCertificateThumbprintAlternateIssuer
                 }
 
                 It 'Should call expected Mocks' {
