@@ -30,9 +30,9 @@ try
         $script:dscResourceName = 'DSC_WSManListener'
 
         # Create the Mock Objects that will be used for running tests
-        $mockFQDN = 'SERVER1.CONTOSO.COM'
         $mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-        $mockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+        $mockHostName = ($env:ComputerName).ToLower()
+        $mockFQDN = [System.Net.Dns]::GetHostByName($env:ComputerName).Hostname
         $mockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
         $mockBaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
 
@@ -50,6 +50,14 @@ try
             Issuer = $mockIssuer
             Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
             DNSNameList = @{ Unicode = $mockHostName }
+        }
+
+        $mockCertificateWithFQDN = [PSObject] @{
+            Thumbprint = $mockCertificateThumbprint
+            Subject = "CN=$mockFQDN"
+            Issuer = $mockIssuer
+            Extensions = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+            DNSNameList = @{ Unicode = $mockFQDN }
         }
 
         $mockListenerHTTP = [PSObject] @{
@@ -558,7 +566,7 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 1
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
                 }
             }
 
@@ -642,6 +650,28 @@ try
 
                 It 'Should return expected certificate' {
                     $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+                }
+
+                It 'Should call expected Mocks' {
+                    Assert-MockCalled -CommandName Get-ChildItem -Exactly -Times 2
+                }
+            }
+
+            Context 'SubjectFormat is Both, Multiple certificates exist, DN not passed' {
+                Mock -CommandName Get-ChildItem -MockWith {
+                    $mockCertificate, $mockCertificateWithFQDN
+                }
+
+                It 'Should not throw error' {
+                    { $script:returnedCertificate = Find-Certificate `
+                        -Issuer $mockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $True  `
+                        -Verbose } | Should -Not -Throw
+                }
+
+                It 'Should return expected certificate' {
+                    $script:returnedCertificate.Subject | Should -Be "CN=$mockFQDN"
                 }
 
                 It 'Should call expected Mocks' {
