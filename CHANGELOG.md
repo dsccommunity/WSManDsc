@@ -40,6 +40,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for publishing code coverage to `CodeCov.io` and
   Azure Pipelines - Fixes [Issue #91](https://github.com/dsccommunity/WSManDsc/issues/91).
 - Build pipeline: Removed unused `dscBuildVariable` tasks.
+- Updated .github issue templates to standard - Fixes [Issue #97](https://github.com/dsccommunity/WSManDsc/issues/97).
+- Added Create_ChangeLog_GitHub_PR task to publish stage of build pipeline.
+- Added SECURITY.md.
+- Updated pipeline Deploy_Module anb Code_Coverage jobs to use ubuntu-latest
+  images - Fixes [Issue #96](https://github.com/dsccommunity/WSManDsc/issues/96).
+- Updated pipeline unit tests and integration tests to use Windows Server 2019 and
+  Windows Server 2022 images - Fixes [Issue #96](https://github.com/dsccommunity/WSManDsc/issues/96).
+
+### Fixed
+
+- Fixed pipeline by replacing the GitVersion task in the `azure-pipelines.yml`
+  with a script.
 
 ## [3.1.1] - 2020-01-31
 
