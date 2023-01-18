@@ -12,6 +12,8 @@ ConvertFrom-StringData @'
     TestingListenerMessage = Testing Listener.
     ListenerOnWrongPortMessage = {0} Listener is on port {1}, should be on {2}. Change required.
     ListenerOnWrongAddressMessage = {0} Listener is bound to {1}, should be {2}. Change required.
+    ListenerOnWrongHostnameMessage = {0} Listener Hostname is {1}, should be {2}. Change required.
+    ListenerOnWrongCertificateThumbprintMessage = {0} Listener Certificate Thumbprint is {1}, should be {2}. Change required.
     ListenerDoesNotExistButShouldMessage = {0} Listener does not exist but should. Change required.
     ListenerExistsButShouldNotMessage = {0} Listener exists but should not. Change required.
     ListenerDoesNotExistAndShouldNotMessage = {0} Listener does not exist and should not. Change not required.
