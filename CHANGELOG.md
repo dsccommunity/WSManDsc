@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- WSManDsc
+  - Added support for changing the hostname and/or certificate thumbprint on the listener - fixes [Issue #23](https://github.com/dsccommunity/WSManDsc/issues/23).
+
 ### Added
 
 - Added build task `Generate_Conceptual_Help` to generate conceptual help

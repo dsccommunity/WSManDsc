@@ -462,6 +462,26 @@ function Test-TargetResource
                     ) -join '' )
                 $desiredConfigurationMatch = $false
             }
+
+            if ($PSBoundParameters.ContainsKey('Hostname') -and $listener.Hostname -ne $Hostname)
+            {
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.ListenerOnWrongHostnameMessage) `
+                            -f $Transport, $listener.Hostname, $Hostname
+                    ) -join '' )
+                $desiredConfigurationMatch = $false
+            }
+
+            if ($PSBoundParameters.ContainsKey('CertificateThumbprint') -and $listener.CertificateThumbprint -ne $CertificateThumbprint)
+            {
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($script:localizedData.ListenerOnWrongCertificateThumbprintMessage) `
+                            -f $Transport, $listener.CertificateThumbprint, $CertificateThumbprint
+                    ) -join '' )
+                $desiredConfigurationMatch = $false
+            }
         }
         else
         {
