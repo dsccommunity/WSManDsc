@@ -79,6 +79,15 @@ BeforeAll {
             }
         }
     }
+
+    #Make sure WS-Man is enabled
+    if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
+    {
+        $null = Enable-PSRemoting `
+            -SkipNetworkProfileCheck `
+            -Force `
+            -ErrorAction Stop
+    } # if
 }
 
 AfterAll {
@@ -94,22 +103,6 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
-
-# Begin Testing
-
-# Make sure WS-Man is enabled
-# if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
-# {
-#     $null = Enable-PSRemoting `
-#         -SkipNetworkProfileCheck `
-#         -Force `
-#         -ErrorAction Stop
-# } # if
-
-
-#$script:dscResourceName = 'DSC_WSManListener'
-
-
 
 Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
     Context 'When WS-Man Service Config Exists for <Name>' -ForEach $parameterList {
@@ -153,7 +146,7 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
                 -CommandName Get-Item `
                 -ParameterFilter {
                 $Path -eq $parameterPath
-            } -Exactly -Times 1
+            } -Exactly -Times 1 `
             -Scope Context
         }
     }
