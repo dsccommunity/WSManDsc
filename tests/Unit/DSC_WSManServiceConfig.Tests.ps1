@@ -65,13 +65,7 @@ BeforeAll {
         $script:wsManServiceConfigSettings = @{}
         $script:wsManServiceConfigSplat = @{
             IsSingleInstance = 'Yes'
-            #Verbose          = $True
-        }
-
-        foreach ($parameter in $parameterList)
-        {
-            $script:wsManServiceConfigSettings[$parameter.Name] = $parameter.default
-            $script:wsManServiceConfigSplat[$parameter.Name] = $parameter.default
+            Verbose          = $VerbosePreference
         }
     }
 
@@ -114,9 +108,11 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result = Get-TargetResource -IsSingleInstance 'Yes'
+                $getTargetResourceParameters = $wsManServiceConfigSettings.Clone()
+                $getTargetResourceParameters[$Name] = $Default
 
-                $result.$($Name) | Should -Be $wsManServiceConfigSettings.$($Name)
+                $result = Get-TargetResource -IsSingleInstance 'Yes'
+                $result[$Name] | Should -Be $getTargetResourceParameters[$Name]
             }
         }
 
@@ -135,145 +131,109 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
     }
 }
 
-# Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
-#     Context 'When WS-Man Service Config all parameters are the same <Name>' -ForEach $parameterList {
-#         BeforeAll {
-#             # Set up Mocks
-#             $parameterPath = Join-Path `
-#                 -Path 'WSMan:\Localhost\Service\' `
-#                 -ChildPath $Path
+Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
+    Context 'When WS-Man Service Config parameter <Name> is the same' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
+            Mock `
+                -CommandName Set-Item
+        }
 
-#             Mock `
-#                 -CommandName Get-Item `
-#                 -ParameterFilter {
-#                 $Path -eq $parameterPath
-#             } `
-#                 -MockWith {
-#                 @{
-#                     Value = $Default
-#                 }
-#             }
+        It 'Should not throw error' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#             Mock `
-#                 -CommandName Set-Item `
-#                 -ParameterFilter {
-#                 $Path -eq $parameterPath
-#             }
+                {
+                    $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
+                    $setTargetResourceParameters[$Name] = $Default
+                    Set-TargetResource @setTargetResourceParameters
+                } | Should -Not -Throw
+            }
+        }
 
-#             # Mock other Get-Item calls
-#             Mock -CommandName Get-Item
-#         }
+        It 'Should call expected Mocks' {
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\Service\' `
+                -ChildPath $Path
 
-#         It 'Should not throw error' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
 
-#                 {
-#                     $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
-#                     Set-TargetResource @setTargetResourceParameters
-#                 } | Should -Not -Throw
-#             }
-#         }
+            Should -Invoke `
+                -CommandName Set-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 0 `
+                -Scope Context
+        }
+    }
 
-#         It 'Should call expected Mocks' {
-#             $parameterPath = Join-Path `
-#                 -Path 'WSMan:\Localhost\Service\' `
-#                 -ChildPath $Path
+    Context 'WS-Man Service Config parameter <Name> is different' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $parameter.Default
+                }
+            }
+            Mock -CommandName Set-Item
+        }
 
-#             Should -Invoke `
-#                 -CommandName Get-Item `
-#                 -ParameterFilter {
-#                 $Path -eq $parameterPath
-#             } -Exactly -Times 1 `
-#                 -Scope Context
+        It 'Should not throw error' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
+                {
+                    $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
+                    $setTargetResourceParameters[$Name] = $TestVal
+                    Set-TargetResource @setTargetResourceParameters
+                } | Should -Not -Throw
+            }
+        }
 
-#             Should -Invoke `
-#                 -CommandName Set-Item `
-#                 -ParameterFilter {
-#                 $Path -eq $parameterPath
-#             } -Exactly -Times 0 `
-#                 -Scope Context
-#         }
-#     }
+        It 'Should call expected Mocks' {
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\Service\' `
+                -ChildPath $Path
 
-#     # foreach ($parameter in $parameterList)
-#     # {
-#     #     Context "WS-Man Service Config $($parameter.Name) is different" {
-#     #         $parameterPath = Join-Path `
-#     #             -Path 'WSMan:\Localhost\Service\' `
-#     #             -ChildPath $parameter.Path
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
 
-#     #         Mock `
-#     #             -CommandName Get-Item `
-#     #             -ParameterFilter {
-#     #             $Path -eq $parameterPath
-#     #         } `
-#     #             -MockWith {
-#     #             @{
-#     #                 Value = $parameter.Default
-#     #             }
-#     #         }
+            Should -Invoke `
+                -CommandName Set-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
 
-#     #         Mock `
-#     #             -CommandName Set-Item `
-#     #             -ParameterFilter {
-#     #             $Path -eq $parameterPath
-#     #         }
-
-#     #         It 'Should not throw error' {
-#     #             {
-#     #                 $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
-#     #                 $setTargetResourceParameters.$($parameter.Name) = $parameter.TestVal
-#     #                 Set-TargetResource @setTargetResourceParameters
-#     #             } | Should -Not -Throw
-#     #         }
-
-#     #         It 'Should call expected Mocks' {
-#     #             foreach ($parameter1 in $parameterList)
-#     #             {
-#     #                 $parameterPath = Join-Path `
-#     #                     -Path 'WSMan:\Localhost\Service\' `
-#     #                     -ChildPath $parameter1.Path
-
-#     #                 Assert-MockCalled `
-#     #                     -CommandName Get-Item `
-#     #                     -ParameterFilter {
-#     #                     $Path -eq $parameterPath
-#     #                 } -Exactly -Times 1
-
-#     #                 if ($parameter.Name -eq $parameter1.Name)
-#     #                 {
-#     #                     Assert-MockCalled `
-#     #                         -CommandName Set-Item `
-#     #                         -ParameterFilter {
-#     #                         $Path -eq $parameterPath
-#     #                     } -Exactly -Times 1
-#     #                 }
-#     #                 else
-#     #                 {
-#     #                     Assert-MockCalled `
-#     #                         -CommandName Set-Item `
-#     #                         -ParameterFilter {
-#     #                         $Path -eq $parameterPath
-#     #                     } -Exactly -Times 0
-#     #                 }
-#     #             }
-#     #         }
-#     #     }
-#     # }
-# }
+        }
+    }
+}
 
 Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
-    Context 'When WS-Man Service Config all parameters are the same' {
+    Context 'When WS-Man Service Config parameter <Name> is the same' -ForEach $parameterList {
         BeforeAll {
-            # Mock `
-            #     -CommandName Get-Item `
-            #     -MockWith {
-            #     @{
-            #         Value = $Default
-            #     }
-            # }
-            Mock -CommandName Get-Item
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
         }
 
         It 'Should return true' {
@@ -293,8 +253,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
         }
     }
 
-
-    Context 'WS-Man Service Config <Name> is different' -ForEach $parameterList {
+    Context 'WS-Man Service Config parameter <Name> is different' -ForEach $parameterList {
         BeforeAll {
             Mock `
                 -CommandName Get-Item `
