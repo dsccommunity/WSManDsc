@@ -65,17 +65,6 @@ BeforeAll {
             IsSingleInstance = 'Yes'
             Verbose          = $VerbosePreference
         }
-
-        # foreach ($parameter in $parameterList)
-        # {
-        #     $wsManConfigSettings += [PSObject] @{
-        #         $($parameter.Name) = $parameter.default
-        #     }
-
-        #     $wsManConfigSplat += [PSObject] @{
-        #         $($parameter.Name) = $parameter.default
-        #     }
-        # }
     }
 }
 
