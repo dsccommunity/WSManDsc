@@ -202,7 +202,7 @@ function Set-TargetResource
             Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($script:localizedData.WSManServiceConfigUpdateParameterMessage) `
-                    -f $parameter.Name,$parameterCurrent,$parameterNew
+                    -f $parameter.Name, $parameterCurrent, $parameterNew
                 ) -join '' )
         } # if
     } # foreach
@@ -332,33 +332,15 @@ function Test-TargetResource
             $($script:localizedData.TestingWSManServiceConfigMessage)
         ) -join '' )
 
-    # Flag to signal whether settings are correct
-    $desiredConfigurationMatch = $true
+    $currentSettings = Get-TargetResource `
+        -IsSingleInstance $IsSingleInstance `
+        -Verbose:$VerbosePreference
 
-    # Check each parameter
-    foreach ($parameter in $script:parameterList)
-    {
-        $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\Service\' `
-            -ChildPath $parameter.Path
-
-        $parameterCurrent = (Get-Item -Path $parameterPath).Value
-        $parameterNew = (Get-Variable -Name $parameter.Name).Value
-
-        if ($PSBoundParameters.ContainsKey($parameter.Name) `
-            -and ($parameterCurrent -ne $parameterNew))
-        {
-            Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.WSManServiceConfigParameterNeedsUpdateMessage) `
-                    -f $parameter.Name,$parameterCurrent,$parameterNew
-                ) -join '' )
-
-            $desiredConfigurationMatch = $false
-        } # if
-    } # foreach
-
-    return $desiredConfigurationMatch
+    return Test-DscParameterState `
+        -CurrentValues $currentSettings `
+        -DesiredValues $PSBoundParameters `
+        -ExcludeProperties @('IsSingleInstance') `
+        -Verbose:$VerbosePreference
 } # Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource
