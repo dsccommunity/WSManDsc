@@ -48,6 +48,7 @@ function Get-TargetResource
 
     # Lookup the existing Listener
     $listener = Get-Listener -Transport $Transport
+    $certificate = ''
 
     if ($listener)
     {
@@ -220,9 +221,9 @@ function Set-TargetResource
             Remove-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                    Transport = $listener.Transport
-                    Address   = $listener.Address
-                }
+                Transport = $listener.Transport
+                Address   = $listener.Address
+            }
         }
         else
         {
@@ -263,14 +264,14 @@ function Set-TargetResource
                 New-WSManInstance `
                     -ResourceURI 'winrm/config/Listener' `
                     -SelectorSet @{
-                        Address   = $Address
-                        Transport = $Transport
-                    } `
+                    Address   = $Address
+                    Transport = $Transport
+                } `
                     -ValueSet @{
-                        Hostname              = $Hostname
-                        CertificateThumbprint = $thumbprint
-                        Port                  = $Port
-                    } `
+                    Hostname              = $Hostname
+                    CertificateThumbprint = $thumbprint
+                    Port                  = $Port
+                } `
                     -ErrorAction Stop
             }
             else
@@ -294,12 +295,12 @@ function Set-TargetResource
             New-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                    Address   = $Address
-                    Transport = $Transport
-                } `
+                Address   = $Address
+                Transport = $Transport
+            } `
                 -ValueSet @{
-                    Port = $Port
-                } `
+                Port = $Port
+            } `
                 -ErrorAction Stop
         }
     }
@@ -324,9 +325,9 @@ function Set-TargetResource
             Remove-WSManInstance `
                 -ResourceURI 'winrm/config/Listener' `
                 -SelectorSet @{
-                    Transport = $listener.Transport
-                    Address   = $listener.Address
-                }
+                Transport = $listener.Transport
+                Address   = $listener.Address
+            }
         }
     } # if
 } # Set-TargetResource
@@ -659,7 +660,7 @@ function Find-Certificate
 
         $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                 ($_.Thumbprint -eq $CertificateThumbprint)
-            } | Select-Object -First 1
+        } | Select-Object -First 1
     }
     else
     {
@@ -689,7 +690,7 @@ function Find-Certificate
 
                 $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                            -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
@@ -706,10 +707,10 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             } # if
         }
 
@@ -736,11 +737,11 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             }
             else
             {
@@ -753,10 +754,10 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             } # if
         } # if
     } # if

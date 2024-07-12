@@ -170,41 +170,41 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
         }
     }
 
-    # Context 'Requested listener does exist' {
-    #     BeforeAll {
-    #         Mock -CommandName Get-WSManInstance -MockWith {
-    #             @($mockListenerHTTP)
-    #         }
-    #     }
+    Context 'Requested listener does exist' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance -MockWith {
+                @($mockListenerHTTP)
+            }
+        }
 
-    #     It 'Should return correct listener' {
-    #         InModuleScope -Parameters @{
-    #             mockListenerHTTP = $script:mockListenerHTTP
-    #         } -ScriptBlock {
-    #             Set-StrictMode -Version 1.0
+        It 'Should return correct listener' {
+            InModuleScope -Parameters @{
+                mockListenerHTTP = $script:mockListenerHTTP
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #             $result = Get-TargetResource `
-    #                 -Transport $mockListenerHTTP.Transport `
-    #                 -Ensure Present `
-    #                 -Verbose
+                $result = Get-TargetResource `
+                    -Transport $mockListenerHTTP.Transport `
+                    -Ensure Present `
+                    -Verbose
 
-    #             $result.Ensure | Should -Be 'Present'
-    #             $result.Port | Should -Be $mockListenerHTTP.Port
-    #             $result.Address | Should -Be $mockListenerHTTP.Address
-    #             $result.HostName | Should -Be $mockListenerHTTP.HostName
-    #             $result.Enabled | Should -Be $mockListenerHTTP.Enabled
-    #             $result.URLPrefix | Should -Be $mockListenerHTTP.URLPrefix
-    #             $result.CertificateThumbprint | Should -Be $mockListenerHTTP.CertificateThumbprint
-    #         }
-    #     }
+                $result.Ensure | Should -Be 'Present'
+                $result.Port | Should -Be $mockListenerHTTP.Port
+                $result.Address | Should -Be $mockListenerHTTP.Address
+                $result.HostName | Should -Be $mockListenerHTTP.HostName
+                $result.Enabled | Should -Be $mockListenerHTTP.Enabled
+                $result.URLPrefix | Should -Be $mockListenerHTTP.URLPrefix
+                $result.CertificateThumbprint | Should -Be $mockListenerHTTP.CertificateThumbprint
+            }
+        }
 
-    #     It 'Should call Get-WSManInstance once' {
-    #         Should -Invoke `
-    #             -CommandName Get-WSManInstance `
-    #             -Exactly -Times 1 `
-    #             -Scope Context
-    #     }
-    # }
+        It 'Should call Get-WSManInstance once' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
 }
 
 Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
@@ -294,53 +294,53 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
         }
     }
 
-    # Context 'HTTPS Listener does not exist but should but certificate missing' {
-    #     BeforeAll {
-    #         Mock -CommandName Get-WSManInstance
-    #         Mock -CommandName Remove-WSManInstance
-    #         Mock -CommandName New-WSManInstance
-    #         Mock -CommandName Find-Certificate
+    Context 'HTTPS Listener does not exist but should but certificate missing' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance
+            Mock -CommandName Remove-WSManInstance
+            Mock -CommandName New-WSManInstance
+            Mock -CommandName Find-Certificate
+        }
 
-    #         $script:errorRecord = Get-InvalidArgumentRecord `
-    #             -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
-    #                 $mockListenerHTTPS.Transport, '5986') `
-    #             -ArgumentName 'Issuer'
-    #     }
+        It 'Should throw error' {
+            InModuleScope -Parameters @{
+                mockListenerHTTPS = $script:mockListenerHTTPS
+                mockIssuer        = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #     It 'Should throw error' {
-    #         InModuleScope -Parameters @{
-    #             mockListenerHTTPS = $script:mockListenerHTTPS
-    #             mockIssuer        = $script:mockIssuer
-    #         } -ScriptBlock {
-    #             Set-StrictMode -Version 1.0
+                $errorRecord = Get-InvalidArgumentRecord `
+                -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
+                    $mockListenerHTTPS.Transport, '5986') `
+                -ArgumentName 'Issuer'
 
-    #             { Set-TargetResource `
-    #                     -Transport $mockListenerHTTPS.Transport `
-    #                     -Ensure 'Present' `
-    #                     -Issuer $mockIssuer `
-    #                     -Verbose } | Should -Throw $errorRecord
-    #         }
-    #     }
+                { Set-TargetResource `
+                        -Transport $mockListenerHTTPS.Transport `
+                        -Ensure 'Present' `
+                        -Issuer $mockIssuer `
+                        -Verbose } | Should -Throw $errorRecord
+            }
+        }
 
-    #     It 'Should call expected Mocks' {
-    #         Should -Invoke `
-    #             -CommandName Get-WSManInstance `
-    #             -Exactly -Times 1 `
-    #             -Scope Context
-    #         Should -Invoke `
-    #             -CommandName Remove-WSManInstance `
-    #             -Exactly -Times 0 `
-    #             -Scope Context
-    #         Should -Invoke `
-    #             -CommandName New-WSManInstance `
-    #             -Exactly -Times 0 `
-    #             -Scope Context
-    #         Should -Invoke `
-    #             -CommandName Find-Certificate `
-    #             -Exactly -Times 1 `
-    #             -Scope Context
-    #     }
-    # }
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+            Should -Invoke `
+                -CommandName Remove-WSManInstance `
+                -Exactly -Times 0 `
+                -Scope Context
+            Should -Invoke `
+                -CommandName New-WSManInstance `
+                -Exactly -Times 0 `
+                -Scope Context
+            Should -Invoke `
+                -CommandName Find-Certificate `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
 
     Context 'HTTP Listener exists but should not' {
         BeforeAll {
