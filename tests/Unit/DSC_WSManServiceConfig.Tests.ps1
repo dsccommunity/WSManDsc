@@ -68,15 +68,6 @@ BeforeAll {
             Verbose          = $VerbosePreference
         }
     }
-
-    #Make sure WS-Man is enabled
-    if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
-    {
-        $null = Enable-PSRemoting `
-            -SkipNetworkProfileCheck `
-            -Force `
-            -ErrorAction Stop
-    } # if
 }
 
 AfterAll {
