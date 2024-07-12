@@ -125,8 +125,7 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
 Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
     Context 'When WS-Man Service Config parameter <Name> is the same' -ForEach $parameterList {
         BeforeAll {
-            Mock `
-                -CommandName Get-Item `
+            Mock -CommandName Get-Item `
                 -MockWith {
                 @{
                     Value = $Default
@@ -171,11 +170,10 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
 
     Context 'WS-Man Service Config parameter <Name> is different' -ForEach $parameterList {
         BeforeAll {
-            Mock `
-                -CommandName Get-Item `
+            Mock -CommandName Get-Item `
                 -MockWith {
                 @{
-                    Value = $parameter.Default
+                    Value = $Default
                 }
             }
             Mock -CommandName Set-Item
@@ -184,6 +182,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
         It 'Should not throw error' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
+
                 {
                     $setTargetResourceParameters = $wsManServiceConfigSplat.Clone()
                     $setTargetResourceParameters[$Name] = $TestVal
@@ -218,8 +217,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
 Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
     Context 'When WS-Man Service Config parameter <Name> is the same' -ForEach $parameterList {
         BeforeAll {
-            Mock `
-                -CommandName Get-Item `
+            Mock -CommandName Get-Item `
                 -MockWith {
                 @{
                     Value = $Default
@@ -246,8 +244,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
 
     Context 'WS-Man Service Config parameter <Name> is different' -ForEach $parameterList {
         BeforeAll {
-            Mock `
-                -CommandName Get-Item `
+            Mock -CommandName Get-Item `
                 -MockWith {
                 @{
                     Value = $Default
