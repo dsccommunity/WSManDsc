@@ -1,309 +1,294 @@
-# Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+<#
+    .SYNOPSIS
+        Unit test for DSC_WSManConfig DSC resource.
 
-# $script:dscModuleName = 'WSManDsc'
-# $script:dscResourceName = 'DSC_WSManConfig'
+    .NOTES
+#>
 
-# $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-# function Invoke-TestSetup
-# {
-#     Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
 
-#     $script:testEnvironment = Initialize-TestEnvironment `
-#         -DSCModuleName $script:dscModuleName `
-#         -DSCResourceName $script:dscResourceName `
-#         -ResourceType 'Mof' `
-#         -TestType 'Unit'
-# }
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
 
-# function Invoke-TestCleanup
-# {
-#     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-# }
+    $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-# # Load the parameter List from the data file
-# $resourceData = Import-LocalizedData `
-#     -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManConfig') `
-#     -FileName 'DSC_WSManConfig.data.psd1'
+    # Load the parameter List from the data file
+    $resourceData = Import-LocalizedData `
+        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManConfig') `
+        -FileName 'DSC_WSManConfig.data.psd1'
 
-# $script:parameterList = $resourceData.ParameterList
+    $script:parameterList = $resourceData.ParameterList
 
-# # Begin Testing
-# try
-# {
-#     Invoke-TestSetup
+    $script:dscResourceName = 'DSC_WSManConfig'
+}
 
-#     # Make sure WS-Man is enabled
-#     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
-#     {
-#         $null = Enable-PSRemoting `
-#             -SkipNetworkProfileCheck `
-#             -Force `
-#             -ErrorAction Stop
-#     } # if
+BeforeAll {
+    $script:dscModuleName = 'WSManDsc'
+    $script:dscResourceName = 'DSC_WSManConfig'
 
-#     InModuleScope $script:dscResourceName {
-#         $script:dscResourceName = 'DSC_WSManListener'
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 
-#         # Create the Mock Objects that will be used for running tests
-#         $wsManConfigSettings = [PSObject] @{}
-#         $wsManConfigSplat = [PSObject] @{
-#             IsSingleInstance = 'Yes'
-#             Verbose          = $True
-#         }
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-#         foreach ($parameter in $parameterList)
-#         {
-#             $wsManConfigSettings += [PSObject] @{
-#                 $($parameter.Name) = $parameter.default
-#             }
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 
-#             $wsManConfigSplat += [PSObject] @{
-#                 $($parameter.Name) = $parameter.default
-#             }
-#         }
+    InModuleScope -ScriptBlock {
+        # Create the Mock Objects that will be used for running tests
+        $script:wsManConfigSettings = @{}
+        $script:wsManConfigSplat = @{
+            IsSingleInstance = 'Yes'
+            Verbose          = $VerbosePreference
+        }
 
-#         Describe "$($script:dscResourceName)\Get-TargetResource" {
-#             Context 'When WS-Man Config Exists' {
-#                 # Set up Mocks
-#                 foreach ($parameter in $parameterList)
-#                 {
-#                     $parameterPath = Join-Path `
-#                         -Path 'WSMan:\Localhost\' `
-#                         -ChildPath $parameter.Path
+        # foreach ($parameter in $parameterList)
+        # {
+        #     $wsManConfigSettings += [PSObject] @{
+        #         $($parameter.Name) = $parameter.default
+        #     }
 
-#                     Mock `
-#                         -CommandName Get-Item `
-#                         -ParameterFilter {
-#                             $Path -eq $parameterPath
-#                         } `
-#                         -MockWith {
-#                             @{
-#                                 Value = $parameter.Default
-#                             }
-#                         }
-#                 }
+        #     $wsManConfigSplat += [PSObject] @{
+        #         $($parameter.Name) = $parameter.default
+        #     }
+        # }
+    }
+}
 
-#                 It 'Should return current WS-Man Config values' {
-#                     $result = Get-TargetResource -IsSingleInstance 'Yes'
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
 
-#                     foreach ($parameter in $parameterList)
-#                     {
-#                         $result.$($parameter.Name) | Should -Be $wsManConfigSettings.$($parameter.Name)
-#                     }
-#                 }
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
-#                 It 'Should call the expected mocks' {
-#                     foreach ($parameter in $parameterList)
-#                     {
-#                         $parameterPath = Join-Path `
-#                             -Path 'WSMan:\Localhost\' `
-#                             -ChildPath $parameter.Path
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
 
-#                         Assert-MockCalled `
-#                             -CommandName Get-Item `
-#                             -ParameterFilter {
-#                                 $Path -eq $parameterPath
-#                             } -Exactly 1
-#                     }
-#                 }
-#             }
-#         }
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+}
 
-#         Describe "$($script:dscResourceName)\Set-TargetResource" {
-#             Context 'When WS-Man Config all parameters are the same' {
-#                 # Set up Mocks
-#                 foreach ($parameter in $parameterList)
-#                 {
-#                     $parameterPath = Join-Path `
-#                         -Path 'WSMan:\Localhost\' `
-#                         -ChildPath $parameter.Path
+Describe "$($script:dscResourceName)\Get-TargetResource" {
+    Context 'When WS-Man Config Exists for parameter <Name>' -ForEach $parameterList {
+        BeforeAll {
+            # Set up Mocks
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
+        }
 
-#                     Mock `
-#                         -CommandName Get-Item `
-#                         -ParameterFilter {
-#                             $Path -eq $parameterPath
-#                         } `
-#                         -MockWith {
-#                             @{
-#                                 Value = $parameter.Default
-#                             }
-#                         }
+        It 'Should return current WS-Man Config values' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                     Mock `
-#                         -CommandName Set-Item `
-#                         -ParameterFilter {
-#                             $Path -eq $parameterPath
-#                         }
-#                 }
+                $getTargetResourceParameters = $wsManConfigSettings.Clone()
+                $getTargetResourceParameters[$Name] = $Default
 
-#                 It 'Should not throw error' {
-#                     {
-#                         $setTargetResourceParameters = $wsManConfigSplat.Clone()
-#                         Set-TargetResource @setTargetResourceParameters
-#                     } | Should -Not -Throw
-#                 }
+                $result = Get-TargetResource -IsSingleInstance 'Yes'
+                $result.$($Name) | Should -Be $getTargetResourceParameters.$($Name)
+            }
+        }
 
-#                 It 'Should call expected Mocks' {
-#                     foreach ($parameter in $parameterList)
-#                     {
-#                         $parameterPath = Join-Path `
-#                             -Path 'WSMan:\Localhost\' `
-#                             -ChildPath $parameter.Path
+        It 'Should call the expected mocks' {
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\' `
+                -ChildPath $Path
 
-#                         Assert-MockCalled `
-#                             -CommandName Get-Item `
-#                             -ParameterFilter {
-#                                 $Path -eq $parameterPath
-#                             } -Exactly -Times 1
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+}
 
-#                         Assert-MockCalled `
-#                             -CommandName Set-Item `
-#                             -ParameterFilter {
-#                                 $Path -eq $parameterPath
-#                             } -Exactly -Times 0
-#                     }
-#                 }
-#             }
+Describe "$($script:dscResourceName)\Set-TargetResource" {
+    Context 'When WS-Man Config parameter <Name> is the same' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
 
-#             foreach ($parameter in $parameterList)
-#             {
-#                 Context "WS-Man Config $($parameter.Name) is different" {
-#                     $parameterPath = Join-Path `
-#                         -Path 'WSMan:\Localhost\' `
-#                         -ChildPath $parameter.Path
+            Mock -CommandName Set-Item
+        }
 
-#                     Mock `
-#                         -CommandName Get-Item `
-#                         -ParameterFilter {
-#                             $Path -eq $parameterPath
-#                         } `
-#                         -MockWith {
-#                             @{
-#                                 Value = $parameter.Default
-#                             }
-#                         }
+        It 'Should not throw error' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                     Mock `
-#                         -CommandName Set-Item `
-#                         -ParameterFilter {
-#                             $Path -eq $parameterPath
-#                         }
+                {
+                    $setTargetResourceParameters = $wsManConfigSplat.Clone()
+                    $setTargetResourceParameters[$Name] = $Default
+                    Set-TargetResource @setTargetResourceParameters
+                } | Should -Not -Throw
+            }
+        }
 
-#                     It 'Should not throw error' {
-#                         {
-#                             $setTargetResourceParameters = $wsManConfigSplat.Clone()
-#                             $setTargetResourceParameters.$($parameter.Name) = $parameter.TestVal
-#                             Set-TargetResource @setTargetResourceParameters
-#                         } | Should -Not -Throw
-#                     }
+        It 'Should call expected Mocks' {
 
-#                     It 'Should call expected Mocks' {
-#                         foreach ($parameter1 in $parameterList)
-#                         {
-#                             $parameterPath = Join-Path `
-#                                 -Path 'WSMan:\Localhost\' `
-#                                 -ChildPath $parameter1.Path
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\' `
+                -ChildPath $Path
 
-#                             Assert-MockCalled `
-#                                 -CommandName Get-Item `
-#                                 -ParameterFilter {
-#                                     $Path -eq $parameterPath
-#                                 } -Exactly -Times 1
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
 
-#                             if ($parameter.Name -eq $parameter1.Name)
-#                             {
-#                                 Assert-MockCalled `
-#                                     -CommandName Set-Item `
-#                                     -ParameterFilter {
-#                                         $Path -eq $parameterPath
-#                                     } -Exactly -Times 1
-#                             }
-#                             else
-#                             {
-#                                 Assert-MockCalled `
-#                                     -CommandName Set-Item `
-#                                     -ParameterFilter {
-#                                         $Path -eq $parameterPath
-#                                     } -Exactly -Times 0
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#         }
+            Should -Invoke `
+                -CommandName Set-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 0 `
+                -Scope Context
+        }
+    }
 
-#         Describe "$($script:dscResourceName)\Test-TargetResource" {
-#             # Set up Mocks
-#             foreach ($parameter in $parameterList)
-#             {
-#                 $parameterPath = Join-Path `
-#                     -Path 'WSMan:\Localhost\' `
-#                     -ChildPath $parameter.Path
 
-#                 Mock `
-#                     -CommandName Get-Item `
-#                     -ParameterFilter {
-#                         $Path -eq $parameterPath
-#                     } `
-#                     -MockWith {
-#                         @{
-#                             Value = $parameter.Default
-#                         }
-#                     }
-#             }
+    Context 'WS-Man Config parameter <Name> is different' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
 
-#             Context 'When WS-Man Config all parameters are the same' {
-#                 It 'Should return true' {
-#                     $testTargetResourceParameters = $wsManConfigSplat.Clone()
-#                     Test-TargetResource @testTargetResourceParameters | Should -BeTrue
-#                 }
+            Mock -CommandName Set-Item
+        }
 
-#                 It 'Should call expected Mocks' {
-#                     foreach ($parameter in $parameterList)
-#                     {
-#                         $parameterPath = Join-Path `
-#                             -Path 'WSMan:\Localhost\' `
-#                             -ChildPath $parameter.Path
+        It 'Should not throw error' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                         Assert-MockCalled `
-#                             -CommandName Get-Item `
-#                             -ParameterFilter {
-#                                 $Path -eq $parameterPath
-#                             } -Exactly -Times 1
-#                     }
-#                 }
-#             }
+                {
+                    $setTargetResourceParameters = $wsManConfigSplat.Clone()
+                    $setTargetResourceParameters.$($Name) = $TestVal
+                    Set-TargetResource @setTargetResourceParameters
+                } | Should -Not -Throw
+            }
+        }
 
-#             foreach ($parameter in $parameterList)
-#             {
-#                 Context "WS-Man Config $($parameter.Name) is different" {
-#                     It 'Should return false' {
-#                         $testTargetResourceSplat = $wsManConfigSplat.Clone()
-#                         $testTargetResourceSplat.$($parameter.Name) = $parameter.TestVal
-#                         Test-TargetResource @testTargetResourceSplat | Should -BeFalse
-#                     }
+        It 'Should call expected Mocks' {
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\' `
+                -ChildPath $Path
 
-#                     It 'Should call expected Mocks' {
-#                         foreach ($parameter in $parameterList)
-#                         {
-#                             $parameterPath = Join-Path `
-#                                 -Path 'WSMan:\Localhost\' `
-#                                 -ChildPath $parameter.Path
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
 
-#                             Assert-MockCalled `
-#                                 -CommandName Get-Item `
-#                                 -ParameterFilter {
-#                                     $Path -eq $parameterPath
-#                                 } -Exactly -Times 1
-#                         }
-#                     }
-#                 }
-#             }
-#         }
-#     }
-# }
-# finally
-# {
-#     Invoke-TestCleanup
-# }
+            Should -Invoke `
+                -CommandName Set-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+}
+
+Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
+    Context 'When WS-Man Config parameter <Name> is the same' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
+        }
+        It 'Should return true' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceParameters = $wsManConfigSplat.Clone()
+                Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-Item `
+                -Exactly -Times 3 `
+                -Scope Context
+        }
+    }
+
+    Context 'WS-Man Config parameter <Name> is different' -ForEach $parameterList {
+        BeforeAll {
+            Mock `
+                -CommandName Get-Item `
+                -MockWith {
+                @{
+                    Value = $Default
+                }
+            }
+        }
+        It 'Should return false' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceSplat = $wsManConfigSplat.Clone()
+                $testTargetResourceSplat.$($Name) = $TestVal
+                Test-TargetResource @testTargetResourceSplat | Should -BeFalse
+            }
+        }
+        It 'Should call expected Mocks' {
+            $parameterPath = Join-Path `
+                -Path 'WSMan:\Localhost\' `
+                -ChildPath $Path
+
+            Should -Invoke `
+                -CommandName Get-Item `
+                -ParameterFilter {
+                $Path -eq $parameterPath
+            } -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+}
