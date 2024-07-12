@@ -31,7 +31,6 @@ BeforeDiscovery {
     }
 
     $script:dscResourceName = 'DSC_WSManListener'
-
 }
 
 BeforeAll {
