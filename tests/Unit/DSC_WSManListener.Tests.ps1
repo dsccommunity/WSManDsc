@@ -127,7 +127,7 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
                 $result = Get-TargetResource `
                     -Transport HTTP `
                     -Ensure Present `
-                    -Verbose
+                    -Verbose:$VerbosePreference
                 $result.Ensure | Should -Be 'Absent'
             }
         }
@@ -156,7 +156,7 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
                 $result = Get-TargetResource `
                     -Transport $mockListenerHTTPS.Transport `
                     -Ensure Present `
-                    -Verbose
+                    -Verbose:$VerbosePreference
 
                 $result.Ensure | Should -Be 'Absent'
             }
@@ -186,7 +186,7 @@ Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
                 $result = Get-TargetResource `
                     -Transport $mockListenerHTTP.Transport `
                     -Ensure Present `
-                    -Verbose
+                    -Verbose:$VerbosePreference
 
                 $result.Ensure | Should -Be 'Present'
                 $result.Port | Should -Be $mockListenerHTTP.Port
@@ -225,7 +225,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                 { Set-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -270,7 +270,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -310,15 +310,15 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $errorRecord = Get-InvalidArgumentRecord `
-                -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
-                    $mockListenerHTTPS.Transport, '5986') `
-                -ArgumentName 'Issuer'
+                    -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
+                        $mockListenerHTTPS.Transport, '5986') `
+                    -ArgumentName 'Issuer'
 
                 { Set-TargetResource `
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer `
-                        -Verbose } | Should -Throw $errorRecord
+                        -Verbose:$VerbosePreference } | Should -Throw $errorRecord
             }
         }
 
@@ -361,7 +361,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                 { Set-TargetResource `
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Absent'  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -406,7 +406,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -453,7 +453,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -498,7 +498,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -545,7 +545,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTPS.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -590,7 +590,7 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                         -Transport $mockListenerHTTP.Transport `
                         -Ensure 'Present' `
                         -Issuer $mockIssuer  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -630,7 +630,33 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTP.Transport `
                     -Ensure 'Present'  `
-                    -Verbose | Should -BeFalse
+                    -Verbose:$VerbosePreference | Should -BeFalse
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+    Context 'HTTP Listener does not exist and should not' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance
+        }
+
+        It 'Should return false' {
+            InModuleScope -Parameters @{
+                mockListenerHTTP = $script:mockListenerHTTP
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                Test-TargetResource `
+                    -Transport $mockListenerHTTP.Transport `
+                    -Ensure 'Absent'  `
+                    -Verbose:$VerbosePreference | Should -BeTrue
             }
         }
 
@@ -658,7 +684,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                     -Transport $mockListenerHTTPS.Transport `
                     -Ensure 'Present' `
                     -Issuer $mockIssuer  `
-                    -Verbose | Should -BeFalse
+                    -Verbose:$VerbosePreference | Should -BeFalse
             }
         }
 
@@ -686,7 +712,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTP.Transport `
                     -Ensure 'Absent'  `
-                    -Verbose | Should -BeFalse
+                    -Verbose:$VerbosePreference | Should -BeFalse
             }
         }
 
@@ -714,7 +740,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTPS.Transport `
                     -Ensure 'Absent'  `
-                    -Verbose | Should -BeFalse
+                    -Verbose:$VerbosePreference | Should -BeFalse
             }
         }
 
@@ -742,7 +768,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTP.Transport `
                     -Ensure 'Present'  `
-                    -Verbose | Should -BeTrue
+                    -Verbose:$VerbosePreference | Should -BeTrue
             }
         }
 
@@ -770,7 +796,122 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTPS.Transport `
                     -Ensure 'Present'  `
-                    -Verbose | Should -BeTrue
+                    -Verbose:$VerbosePreference | Should -BeTrue
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+    Context 'HTTP Listener exists but port is incorrect' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance -MockWith {
+                @($mockListenerHTTP)
+            }
+        }
+
+        It 'Should return true' {
+            InModuleScope -Parameters @{
+                mockListenerHTTP = $script:mockListenerHTTP
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                Test-TargetResource `
+                    -Transport $mockListenerHTTP.Transport `
+                    -Port 9999 `
+                    -Ensure 'Present'  `
+                    -Verbose:$VerbosePreference | Should -BeFalse
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+    Context 'HTTP Listener exists but address is incorrect' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance -MockWith {
+                @($mockListenerHTTP)
+            }
+        }
+
+        It 'Should return true' {
+            InModuleScope -Parameters @{
+                mockListenerHTTP = $script:mockListenerHTTP
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                Test-TargetResource `
+                    -Transport $mockListenerHTTP.Transport `
+                    -Address '192.168.1.1' `
+                    -Ensure 'Present'  `
+                    -Verbose:$VerbosePreference | Should -BeFalse
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+    Context 'HTTP Listener exists but hostname is incorrect' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance -MockWith {
+                @($mockListenerHTTPS)
+            }
+        }
+
+        It 'Should return true' {
+            InModuleScope -Parameters @{
+                mockListenerHTTPS = $script:mockListenerHTTPS
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                Test-TargetResource `
+                    -Transport $mockListenerHTTPS.Transport `
+                    -Hostname 'thewronghostname.example.local' `
+                    -Ensure 'Present'  `
+                    -Verbose:$VerbosePreference | Should -BeFalse
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-WSManInstance `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+    Context 'HTTP Listener exists but CertificateThumbprint is incorrect' {
+        BeforeAll {
+            Mock -CommandName Get-WSManInstance -MockWith {
+                @($mockListenerHTTPS)
+            }
+        }
+
+        It 'Should return true' {
+            InModuleScope -Parameters @{
+                mockListenerHTTPS = $script:mockListenerHTTPS
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                Test-TargetResource `
+                    -Transport $mockListenerHTTPS.Transport `
+                    -CertificateThumbprint '' `
+                    -Ensure 'Present'  `
+                    -Verbose:$VerbosePreference | Should -BeFalse
             }
         }
 
@@ -798,7 +939,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource `
                     -Transport $mockListenerHTTPS.Transport `
                     -Ensure 'Present'  `
-                    -Verbose | Should -BeTrue
+                    -Verbose:$VerbosePreference | Should -BeTrue
             }
         }
 
@@ -825,7 +966,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
 
                 { $script:returnedCertificate = Find-Certificate `
                         -CertificateThumbprint $mockCertificateThumbprint `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -860,7 +1001,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
 
                 { $script:returnedCertificate = Find-Certificate `
                         -CertificateThumbprint $mockCertificateThumbprint `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -899,7 +1040,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -938,7 +1079,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -978,7 +1119,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                         -SubjectFormat 'Both' `
                         -MatchAlternate $True `
                         -DN $mockDN  `
-                        -Verbose } | Should -Not -Throw
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -1012,8 +1153,8 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True  `
-                        -Verbose } | Should -Not -Throw
+                        -MatchAlternate $True `
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -1049,8 +1190,8 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True  `
-                        -Verbose } | Should -Not -Throw
+                        -MatchAlternate $True `
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
@@ -1086,8 +1227,82 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True  `
-                        -Verbose } | Should -Not -Throw
+                        -MatchAlternate $True `
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
+            }
+        }
+
+        It 'Should return expected certificate' {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-ChildItem `
+                -Exactly -Times 1 `
+                -Scope Context
+        }
+    }
+
+    Context 'SubjectFormat is Both, Certificate does not exist, DN not passed, MatchAlternate is false' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem
+        }
+
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { $script:returnedCertificate = Find-Certificate `
+                        -Issuer $mockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $false `
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
+            }
+        }
+
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke `
+                -CommandName Get-ChildItem `
+                -Exactly -Times 2 `
+                -Scope Context
+        }
+    }
+
+    Context 'SubjectFormat is Both, Certificate without DN Exists, DN not passed, MatchAlternate is false' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificate
+            }
+        }
+
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { $script:returnedCertificate = Find-Certificate `
+                        -Issuer $mockIssuer `
+                        -SubjectFormat 'Both' `
+                        -MatchAlternate $false `
+                        -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
 
