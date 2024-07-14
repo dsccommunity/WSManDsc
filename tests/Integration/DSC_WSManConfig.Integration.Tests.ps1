@@ -45,7 +45,7 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $currentWsManConfig = [PSObject] @{}
+    $script:currentWsManConfig = [PSObject] @{}
 
     foreach ($parameter in $parameterList)
     {
