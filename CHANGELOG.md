@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated HQRM and build steps to use windows-latest image.
 - WSManDsc
   - Added support for changing the hostname and/or certificate thumbprint on the listener - fixes [Issue #23](https://github.com/dsccommunity/WSManDsc/issues/23).
+  - Converted tests to Pester 5 - fixes [#99](https://github.com/dsccommunity/WSManDsc/issues/99).
 
 ### Added
 
