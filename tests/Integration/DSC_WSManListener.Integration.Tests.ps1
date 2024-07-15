@@ -274,8 +274,6 @@ Describe "$($script:dscResourceName)_Integration_Remove_HTTPS" {
     }
 }
 
-
-
 Describe "$($script:dscResourceName)_Integration_Add_HTTPS_Thumbprint" {
     BeforeAll {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTPS_Thumbprint.config.ps1"
@@ -294,7 +292,6 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS_Thumbprint" {
             )
         }
     }
-
 
     It 'Should compile and apply the MOF without throwing' {
         {
@@ -487,8 +484,6 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS_Thumbprint_Hostname" 
         $NewListener.Address            | Should -Be $configData.AllNodes[0].Address
     }
 }
-
-
 
 Describe "$($script:dscResourceName)_Integration_Remove_HTTPS" {
     BeforeAll {

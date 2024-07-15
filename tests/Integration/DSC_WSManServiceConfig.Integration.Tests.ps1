@@ -87,13 +87,18 @@ AfterAll {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
-
-
-
 Describe "$($script:dscResourceName)_Integration" {
     BeforeAll {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
         . $ConfigFile
+
+        $testdata = @{}
+        foreach ($parameter in $parameterList)
+        {
+            $testdata += @{
+                $($parameter.Name) = $($parameter.TestVal)
+            }
+        } # foreach
     }
     It 'Should compile without throwing' {
         {
@@ -105,13 +110,7 @@ Describe "$($script:dscResourceName)_Integration" {
                 )
             }
 
-            # Dynamically assemble the parameters from the parameter list (Might not work Pester 5)
-            foreach ($parameter in $parameterList)
-            {
-                $configData.AllNodes[0] += @{
-                    $($parameter.Name) = $($parameter.TestVal)
-                }
-            } # foreach
+            $configData.AllNodes[0] + $testdata
 
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `

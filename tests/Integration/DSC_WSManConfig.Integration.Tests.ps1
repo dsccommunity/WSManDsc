@@ -45,7 +45,7 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $script:currentWsManConfig = [PSObject] @{}
+    $script:currentWsManConfig = @{}
 
     foreach ($parameter in $parameterList)
     {
@@ -55,7 +55,7 @@ BeforeAll {
         $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
     } # foreach
 
-    # Make sure WS-Man is enabled
+    # Make sure WS-Man is enabled (usually enabled via azure-pipelines)
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -73,9 +73,6 @@ BeforeAll {
 
         Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
     } # foreach
-
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
-    . $ConfigFile
 }
 
 AfterAll {
@@ -92,6 +89,18 @@ AfterAll {
 }
 
 Describe "$($script:dscResourceName)_Integration" {
+    BeforeAll {
+        $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
+        . $ConfigFile
+
+        $testdata = @{}
+        foreach ($parameter in $parameterList)
+        {
+            $testdata += @{
+                $($parameter.Name) = $($parameter.TestVal)
+            }
+        } # foreach
+    }
     It 'Should compile without throwing' {
         {
             $configData = @{
@@ -102,13 +111,7 @@ Describe "$($script:dscResourceName)_Integration" {
                 )
             }
 
-            # Dynamically assemble the parameters from the parameter list (Might not work Pester 5)
-            foreach ($parameter in $parameterList)
-            {
-                $configData.AllNodes[0] += @{
-                    $($parameter.Name) = $($parameter.TestVal)
-                }
-            } # foreach
+            $configData.AllNodes[0] + $testdata
 
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `
