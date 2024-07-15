@@ -82,7 +82,8 @@ AfterAll {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\' `
             -ChildPath $parameter.Path
-        Set-Item -Path $parameterPath -Value $currentWsManConfig.$($parameter.Name) -Force
+
+        Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
     } # foreach
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
@@ -110,7 +111,6 @@ Describe "$($script:dscResourceName)_Integration" {
                     }
                 )
             }
-
             $configData.AllNodes[0] + $testdata
 
             & "$($script:dscResourceName)_Config" `
