@@ -88,17 +88,17 @@ function Set-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
-        [ValidateRange(32,4294967295)]
+        [ValidateRange(32, 4294967295)]
         [System.Uint32]
         $MaxEnvelopeSizekb,
 
         [Parameter()]
-        [ValidateRange(500,4294967295)]
+        [ValidateRange(500, 4294967295)]
         [System.Uint32]
         $MaxTimeoutms,
 
         [Parameter()]
-        [ValidateRange(1,4294967295)]
+        [ValidateRange(1, 4294967295)]
         [System.Uint32]
         $MaxBatchItems
     )
@@ -119,14 +119,14 @@ function Set-TargetResource
         $parameterNew = (Get-Variable -Name $parameter.Name).Value
 
         if ($PSBoundParameters.ContainsKey($parameter.Name) `
-            -and ($parameterCurrent -ne $parameterNew))
+                -and ($parameterCurrent -ne $parameterNew))
         {
             Set-Item -Path $parameterPath -Value $parameterNew -Force
 
             Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.WSManConfigUpdateParameterMessage) `
-                    -f $parameter.Name,$parameterCurrent,$parameterNew
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.WSManConfigUpdateParameterMessage) `
+                        -f $parameter.Name, $parameterCurrent, $parameterNew
                 ) -join '' )
         } # if
     } # foreach
@@ -160,17 +160,17 @@ function Test-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
-        [ValidateRange(32,4294967295)]
+        [ValidateRange(32, 4294967295)]
         [System.Uint32]
         $MaxEnvelopeSizekb,
 
         [Parameter()]
-        [ValidateRange(500,4294967295)]
+        [ValidateRange(500, 4294967295)]
         [System.Uint32]
         $MaxTimeoutms,
 
         [Parameter()]
-        [ValidateRange(1,4294967295)]
+        [ValidateRange(1, 4294967295)]
         [System.Uint32]
         $MaxBatchItems
     )
@@ -180,33 +180,16 @@ function Test-TargetResource
             $($script:localizedData.TestingWSManConfigMessage)
         ) -join '' )
 
-    # Flag to signal whether settings are correct
-    $desiredConfigurationMatch = $true
+    $currentSettings = Get-TargetResource `
+        -IsSingleInstance $IsSingleInstance `
+        -Verbose:$VerbosePreference
 
-    # Check each parameter
-    foreach ($parameter in $script:parameterList)
-    {
-        $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
-            -ChildPath $parameter.Path
-
-        $parameterCurrent = (Get-Item -Path $parameterPath).Value
-        $parameterNew = (Get-Variable -Name $parameter.Name).Value
-
-        if ($PSBoundParameters.ContainsKey($parameter.Name) `
-            -and ($parameterCurrent -ne $parameterNew))
-        {
-            Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.WSManConfigParameterNeedsUpdateMessage) `
-                    -f $parameter.Name,$parameterCurrent,$parameterNew
-                ) -join '' )
-
-            $desiredConfigurationMatch = $false
-        } # if
-    } # foreach
-
-    return $desiredConfigurationMatch
+    return Test-DscParameterState `
+        -CurrentValues $currentSettings `
+        -DesiredValues $PSBoundParameters `
+        -TurnOffTypeChecking `
+        -ExcludeProperties @('IsSingleInstance') `
+        -Verbose:$VerbosePreference
 } # Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource
