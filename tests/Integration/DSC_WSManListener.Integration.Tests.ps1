@@ -44,6 +44,57 @@ BeforeAll {
             -Force `
             -ErrorAction Stop
     } # if
+
+    # Create a certificate to use for the HTTPS listener
+    $CertFriendlyName = 'WS-Man HTTPS Integration Test Cert'
+
+    # Remove the certificate if it already exists
+    Get-ChildItem -Path 'Cert:\LocalMachine\My' |
+        Where-Object -Property FriendlyName -EQ $CertFriendlyName |
+        Remove-Item -Force
+
+    $script:Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+    $script:DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $script:Issuer = "CN=$Hostname, $DN"
+
+    # Create the certificate
+    if ([System.Environment]::OSVersion.Version.Major -ge 10)
+    {
+        # For Windows 10 or Windows Server 2016
+        $script:Certificate = New-SelfSignedCertificate `
+            -CertstoreLocation 'Cert:\LocalMachine\My' `
+            -Subject $Issuer `
+            -DnsName $Hostname `
+            -FriendlyName $CertFriendlyName
+    }
+    else
+    {
+        <#
+        New-SelfSignedCertificate in earlier OS versions will not make
+        a certificate that can be used for WS-Man. So we will use the
+        New-SelfSignedCertificateEx.ps1 script from the Script Center.
+        A request has been made to the author of this script to make it
+        available on PowerShellGallery.
+    #>
+        $ScriptFile = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.ps1'
+        if (-not (Test-Path -Path $ScriptFile))
+        {
+            $ScriptZip = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.zip'
+            Invoke-WebRequest `
+                -Uri 'https://gallery.technet.microsoft.com/scriptcenter/Self-signed-certificate-5920a7c6/file/101251/2/New-SelfSignedCertificateEx.zip' `
+                -OutFile $ScriptZip
+            Expand-Archive -Path $ScriptZip -DestinationPath $ENV:Temp
+            Remove-Item -Path $ScriptZip -Force
+        } # If
+        . $ScriptFile
+
+        $script:Certificate = New-SelfSignedCertificateEx `
+            -storeLocation 'LocalMachine' `
+            -Subject $Issuer `
+            -SubjectAlternativeName $($Hostname) `
+            -FriendlyName $CertFriendlyName `
+            -EnhancedKeyUsage 'Server Authentication'
+    } # if
 }
 
 AfterAll {
@@ -117,57 +168,6 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
 
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTPS.config.ps1"
         . $ConfigFile
-
-        # Create a certificate to use for the HTTPS listener
-        $CertFriendlyName = 'WS-Man HTTPS Integration Test Cert'
-
-        # Remove the certificate if it already exists
-        Get-ChildItem -Path 'Cert:\LocalMachine\My' |
-            Where-Object -Property FriendlyName -EQ $CertFriendlyName |
-            Remove-Item -Force
-
-        $Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
-        $DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
-        $Issuer = "CN=$Hostname, $DN"
-
-        # Create the certificate
-        if ([System.Environment]::OSVersion.Version.Major -ge 10)
-        {
-            # For Windows 10 or Windows Server 2016
-            New-SelfSignedCertificate `
-                -CertstoreLocation 'Cert:\LocalMachine\My' `
-                -Subject $Issuer `
-                -DnsName $Hostname `
-                -FriendlyName $CertFriendlyName
-        }
-        else
-        {
-            <#
-            New-SelfSignedCertificate in earlier OS versions will not make
-            a certificate that can be used for WS-Man. So we will use the
-            New-SelfSignedCertificateEx.ps1 script from the Script Center.
-            A request has been made to the author of this script to make it
-            available on PowerShellGallery.
-        #>
-            $ScriptFile = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.ps1'
-            if (-not (Test-Path -Path $ScriptFile))
-            {
-                $ScriptZip = Join-Path -Path $ENV:Temp -ChildPath 'New-SelfSignedCertificateEx.zip'
-                Invoke-WebRequest `
-                    -Uri 'https://gallery.technet.microsoft.com/scriptcenter/Self-signed-certificate-5920a7c6/file/101251/2/New-SelfSignedCertificateEx.zip' `
-                    -OutFile $ScriptZip
-                Expand-Archive -Path $ScriptZip -DestinationPath $ENV:Temp
-                Remove-Item -Path $ScriptZip -Force
-            } # If
-            . $ScriptFile
-
-            New-SelfSignedCertificateEx `
-                -storeLocation 'LocalMachine' `
-                -Subject $Issuer `
-                -SubjectAlternativeName $($Hostname) `
-                -FriendlyName $CertFriendlyName `
-                -EnhancedKeyUsage 'Server Authentication'
-        } # if
 
         # This is to pass to the Config
         $script:configData = @{
