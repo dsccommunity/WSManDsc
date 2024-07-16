@@ -105,6 +105,7 @@ Describe "$($script:dscResourceName)_Integration" {
             }
         } # foreach
     }
+    
     It 'Should compile without throwing' {
         {
             & "$($script:dscResourceName)_Config" `

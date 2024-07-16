@@ -99,7 +99,6 @@ Describe "$($script:dscResourceName)_Integration" {
                 }
             )
         }
-
         foreach ($parameter in $parameterList)
         {
             $configData.AllNodes[0] += @{
@@ -107,6 +106,7 @@ Describe "$($script:dscResourceName)_Integration" {
             }
         } # foreach
     }
+
     It 'Should compile without throwing' {
         {
             & "$($script:dscResourceName)_Config" `
