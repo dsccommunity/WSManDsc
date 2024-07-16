@@ -21,16 +21,15 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
+    $script:dscResourceName = 'DSC_WSManServiceConfig'
     $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
     # Load the parameter List from the data file
     $resourceData = Import-LocalizedData `
-        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManServiceConfig') `
-        -FileName 'DSC_WSManServiceConfig.data.psd1'
+        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($dscResourceName)") `
+        -FileName "$($dscResourceName).data.psd1"
 
     $script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
-
-    $script:dscResourceName = 'DSC_WSManServiceConfig'
 }
 
 BeforeAll {
@@ -44,9 +43,9 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $script:currentWsManServiceConfig = [PSObject] @{}
+    $script:currentWsManServiceConfig = @{}
 
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $script:parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -64,7 +63,7 @@ BeforeAll {
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $script:parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -76,7 +75,7 @@ BeforeAll {
 
 AfterAll {
     # Clean up by restoring all parameters
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $script:parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -92,26 +91,22 @@ Describe "$($script:dscResourceName)_Integration" {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
         . $ConfigFile
 
-        $testdata = @{}
-        foreach ($parameter in $parameterList)
+        $script:configData = @{
+            AllNodes = @(
+                @{
+                    NodeName = 'localhost'
+                }
+            )
+        }
+        foreach ($parameter in $script:parameterList)
         {
-            $testdata += @{
+            $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
             }
         } # foreach
     }
     It 'Should compile without throwing' {
         {
-            $configData = @{
-                AllNodes = @(
-                    @{
-                        NodeName = 'localhost'
-                    }
-                )
-            }
-
-            $configData.AllNodes[0] + $testdata
-
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `
                 -ConfigurationData $configData
@@ -138,6 +133,6 @@ Describe "$($script:dscResourceName)_Integration" {
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $Path
 
-        (Get-Item -Path $parameterPath).Value | Should -Be $($TestVal)
+        (Get-Item -Path $parameterPath).Value | Should -Be $TestVal
     }
 }

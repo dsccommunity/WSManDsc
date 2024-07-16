@@ -21,17 +21,15 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
+    $script:dscResourceName = 'DSC_WSManConfig'
     $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
     # Load the parameter List from the data file
     $resourceData = Import-LocalizedData `
-        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'Source\DscResources\DSC_WSManConfig') `
-        -FileName 'DSC_WSManConfig.data.psd1'
+        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($script:dscResourceName)") `
+        -FileName "$($script:dscResourceName).data.psd1"
 
     $script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
-
-    $script:dscResourceName = 'DSC_WSManConfig'
-
 }
 
 BeforeAll {
@@ -94,25 +92,23 @@ Describe "$($script:dscResourceName)_Integration" {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
         . $ConfigFile
 
-        $testdata = @{}
-        foreach ($parameter in $parameterList)
+        $script:configData = @{
+            AllNodes = @(
+                @{
+                    NodeName = 'localhost'
+                }
+            )
+        }
+
+        foreach ($parameter in $script:parameterList)
         {
-            $testdata += @{
+            $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
             }
         } # foreach
     }
     It 'Should compile without throwing' {
         {
-            $configData = @{
-                AllNodes = @(
-                    @{
-                        NodeName = 'localhost'
-                    }
-                )
-            }
-            $configData.AllNodes[0] + $testdata
-
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `
                 -ConfigurationData $configData
