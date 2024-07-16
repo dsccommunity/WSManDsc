@@ -43,15 +43,15 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $script:currentWsManConfig = @{}
+    # $script:currentWsManConfig = @{}
 
-    foreach ($parameter in $parameterList)
-    {
-        $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
-            -ChildPath $parameter.Path
-        $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
-    } # foreach
+    # foreach ($parameter in $parameterList)
+    # {
+    #     $parameterPath = Join-Path `
+    #         -Path 'WSMan:\Localhost\' `
+    #         -ChildPath $parameter.Path
+    #     $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+    # } # foreach
 
     # Make sure WS-Man is enabled (usually enabled via azure-pipelines)
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
@@ -62,27 +62,27 @@ BeforeAll {
             -ErrorAction Stop
     } # if
 
-    # Set the Config to default settings
-    foreach ($parameter in $parameterList)
-    {
-        $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
-            -ChildPath $parameter.Path
+    # # Set the Config to default settings
+    # foreach ($parameter in $parameterList)
+    # {
+    #     $parameterPath = Join-Path `
+    #         -Path 'WSMan:\Localhost\' `
+    #         -ChildPath $parameter.Path
 
-        Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
-    } # foreach
+    #     Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
+    # } # foreach
 }
 
 AfterAll {
-    # Clean up by restoring all parameters
-    foreach ($parameter in $parameterList)
-    {
-        $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
-            -ChildPath $parameter.Path
+    # # Clean up by restoring all parameters
+    # foreach ($parameter in $parameterList)
+    # {
+    #     $parameterPath = Join-Path `
+    #         -Path 'WSMan:\Localhost\' `
+    #         -ChildPath $parameter.Path
 
-        Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
-    } # foreach
+    #     Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
+    # } # foreach
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
