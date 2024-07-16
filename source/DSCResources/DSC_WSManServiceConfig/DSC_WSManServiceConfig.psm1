@@ -339,6 +339,7 @@ function Test-TargetResource
     return Test-DscParameterState `
         -CurrentValues $currentSettings `
         -DesiredValues $PSBoundParameters `
+        -TurnOffTypeChecking `
         -ExcludeProperties @('IsSingleInstance') `
         -Verbose:$VerbosePreference
 } # Test-TargetResource
