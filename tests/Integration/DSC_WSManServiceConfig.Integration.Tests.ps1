@@ -45,7 +45,7 @@ BeforeAll {
     # Backup the existing settings
     $script:currentWsManServiceConfig = @{}
 
-    foreach ($parameter in $script:parameterList)
+    foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -63,7 +63,7 @@ BeforeAll {
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in $script:parameterList)
+    foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -75,7 +75,7 @@ BeforeAll {
 
 AfterAll {
     # Clean up by restoring all parameters
-    foreach ($parameter in $script:parameterList)
+    foreach ($parameter in $parameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -98,7 +98,7 @@ Describe "$($script:dscResourceName)_Integration" {
                 }
             )
         }
-        foreach ($parameter in $script:parameterList)
+        foreach ($parameter in $parameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)

@@ -100,7 +100,7 @@ Describe "$($script:dscResourceName)_Integration" {
             )
         }
 
-        foreach ($parameter in $script:parameterList)
+        foreach ($parameter in $parameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
