@@ -160,14 +160,17 @@ function Test-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
+        [ValidateRange(32, 4294967295)]
         [System.Uint32]
         $MaxEnvelopeSizekb,
 
         [Parameter()]
+        [ValidateRange(500, 4294967295)]
         [System.Uint32]
         $MaxTimeoutms,
 
         [Parameter()]
+        [ValidateRange(1, 4294967295)]
         [System.Uint32]
         $MaxBatchItems
     )
