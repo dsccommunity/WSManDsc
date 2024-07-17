@@ -1,3 +1,12 @@
+<#
+    .SYNOPSIS
+        Integration test for DSC_WSManConfig DSC resource.
+
+    .NOTES
+#>
+
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param()
 
 BeforeDiscovery {
@@ -29,7 +38,7 @@ BeforeDiscovery {
         -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($script:dscResourceName)") `
         -FileName "$($script:dscResourceName).data.psd1"
 
-    $script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
+    $script:wsmanConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 }
 
 BeforeAll {
@@ -42,16 +51,16 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
-    # Backup the existing settings
-    # $script:currentWsManConfig = @{}
+    Backup the existing settings
+    $script:currentWsManConfig = @{}
 
-    # foreach ($parameter in $parameterList)
-    # {
-    #     $parameterPath = Join-Path `
-    #         -Path 'WSMan:\Localhost\' `
-    #         -ChildPath $parameter.Path
-    #     $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
-    # } # foreach
+    foreach ($parameter in $wsmanConfigParameterList)
+    {
+        $parameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\' `
+            -ChildPath $parameter.Path
+        $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+    } # foreach
 
     # Make sure WS-Man is enabled (usually enabled via azure-pipelines)
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
@@ -62,27 +71,27 @@ BeforeAll {
             -ErrorAction Stop
     } # if
 
-    # # Set the Config to default settings
-    # foreach ($parameter in $parameterList)
-    # {
-    #     $parameterPath = Join-Path `
-    #         -Path 'WSMan:\Localhost\' `
-    #         -ChildPath $parameter.Path
+    # Set the Config to default settings
+    foreach ($parameter in $wsmanConfigParameterList)
+    {
+        $parameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\' `
+            -ChildPath $parameter.Path
 
-    #     Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
-    # } # foreach
+        Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
+    } # foreach
 }
 
 AfterAll {
-    # # Clean up by restoring all parameters
-    # foreach ($parameter in $parameterList)
-    # {
-    #     $parameterPath = Join-Path `
-    #         -Path 'WSMan:\Localhost\' `
-    #         -ChildPath $parameter.Path
+    # Clean up by restoring all parameters
+    foreach ($parameter in $wsmanConfigParameterList)
+    {
+        $parameterPath = Join-Path `
+            -Path 'WSMan:\Localhost\' `
+            -ChildPath $parameter.Path
 
-    #     Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
-    # } # foreach
+        Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
+    } # foreach
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
@@ -92,14 +101,14 @@ Describe "$($script:dscResourceName)_Integration" {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
         . $ConfigFile
 
-        $script:configData = @{
+        $configData = @{
             AllNodes = @(
                 @{
                     NodeName = 'localhost'
                 }
             )
         }
-        foreach ($parameter in $parameterList)
+        foreach ($parameter in $wsmanConfigParameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
@@ -112,6 +121,8 @@ Describe "$($script:dscResourceName)_Integration" {
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `
                 -ConfigurationData $configData
+
+            Write-Verbose "TestDrive = $($TestDrive)"
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -130,7 +141,7 @@ Describe "$($script:dscResourceName)_Integration" {
         { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
     }
 
-    It 'Should have set the resource and all the parameters should match' -ForEach $parameterList {
+    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanConfigParameterList {
         # Get the Rule details
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\' `

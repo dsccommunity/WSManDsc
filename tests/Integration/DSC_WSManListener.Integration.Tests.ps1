@@ -1,3 +1,12 @@
+<#
+    .SYNOPSIS
+        Integration test for DSC_WSManListener DSC resource.
+
+    .NOTES
+#>
+
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param()
 
 BeforeDiscovery {

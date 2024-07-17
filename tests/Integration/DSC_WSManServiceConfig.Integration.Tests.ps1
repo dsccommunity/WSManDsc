@@ -1,4 +1,13 @@
-param ()
+<#
+    .SYNOPSIS
+        Integration test for DSC_WSManServiceConfig DSC resource.
+
+    .NOTES
+#>
+
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param()
 
 BeforeDiscovery {
     try
@@ -21,15 +30,15 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
-    $script:dscResourceName = 'DSC_WSManServiceConfig'
-    $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $dscResourceName = 'DSC_WSManServiceConfig'
+    $moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
     # Load the parameter List from the data file
     $resourceData = Import-LocalizedData `
         -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($dscResourceName)") `
         -FileName "$($dscResourceName).data.psd1"
 
-    $script:parameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
+    $script:wsmanServiceConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
 }
 
 BeforeAll {
@@ -43,9 +52,9 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $script:currentWsManServiceConfig = @{}
+    $currentWsManServiceConfig = @{}
 
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $wsmanServiceConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -63,7 +72,7 @@ BeforeAll {
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $wsmanServiceConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -75,7 +84,7 @@ BeforeAll {
 
 AfterAll {
     # Clean up by restoring all parameters
-    foreach ($parameter in $parameterList)
+    foreach ($parameter in $wsmanServiceConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
@@ -91,26 +100,28 @@ Describe "$($script:dscResourceName)_Integration" {
         $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
         . $ConfigFile
 
-        $script:configData = @{
+        $configData = @{
             AllNodes = @(
                 @{
                     NodeName = 'localhost'
                 }
             )
         }
-        foreach ($parameter in $parameterList)
+        foreach ($parameter in $wsmanServiceConfigParameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
             }
         } # foreach
     }
-    
+
     It 'Should compile without throwing' {
         {
             & "$($script:dscResourceName)_Config" `
                 -OutputPath $TestDrive `
                 -ConfigurationData $configData
+
+            Write-Verbose "TestDrive = $($TestDrive)"
 
             $startDscConfigurationParameters = @{
                 Path         = $TestDrive
@@ -129,7 +140,7 @@ Describe "$($script:dscResourceName)_Integration" {
         { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
     }
 
-    It 'Should have set the resource and all the parameters should match' -ForEach $parameterList {
+    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanServiceConfigParameterList {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Service\' `
             -ChildPath $Path
