@@ -48,10 +48,11 @@ function Get-TargetResource
 
     # Lookup the existing Listener
     $listener = Get-Listener -Transport $Transport
-    $certificate = ''
 
     if ($listener)
     {
+        $certificate = ''
+        
         # An existing listener matching the transport was found
         Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
