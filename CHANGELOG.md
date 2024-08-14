@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI Pipeline
   - Updated pipeline files to match current DSC Community patterns - fixes [Issue #103](https://github.com/dsccommunity/WSManDsc/issues/103).
   - Updated HQRM and build steps to use windows-latest image.
+  - Pin gitversion to V5.
 - WSManDsc
   - Added support for changing the hostname and/or certificate thumbprint on the listener fixes [Issue #23](https://github.com/dsccommunity/WSManDsc/issues/23).
   - Converted tests to Pester 5 - fixes [#99](https://github.com/dsccommunity/WSManDsc/issues/99).
