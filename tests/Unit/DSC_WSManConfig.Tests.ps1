@@ -21,7 +21,7 @@ BeforeDiscovery {
                 & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # This will throw an error if the dependencies have not been resolved.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -231,6 +231,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 }
             }
         }
+
         It 'Should return true' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -258,6 +259,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 }
             }
         }
+
         It 'Should return false' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -267,6 +269,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource @testTargetResourceSplat | Should -BeFalse
             }
         }
+        
         It 'Should call expected Mocks' {
             $parameterPath = Join-Path `
                 -Path 'WSMan:\Localhost\' `
