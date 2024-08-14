@@ -5,15 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- CI Pipeline
-  - Updated pipeline files to match current DSC Community patterns - fixes [Issue #103](https://github.com/dsccommunity/WSManDsc/issues/103).
-  - Updated HQRM and build steps to use windows-latest image.
-- WSManDsc
-  - Added support for changing the hostname and/or certificate thumbprint on the listener - fixes [Issue #23](https://github.com/dsccommunity/WSManDsc/issues/23).
-  - Converted tests to Pester 5 - fixes [#99](https://github.com/dsccommunity/WSManDsc/issues/99).
-
 ### Added
 
 - Added build task `Generate_Conceptual_Help` to generate conceptual help
@@ -56,6 +47,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   images - Fixes [Issue #96](https://github.com/dsccommunity/WSManDsc/issues/96).
 - Updated pipeline unit tests and integration tests to use Windows Server 2019 and
   Windows Server 2022 images - Fixes [Issue #96](https://github.com/dsccommunity/WSManDsc/issues/96).
+- CI Pipeline
+  - Updated pipeline files to match current DSC Community patterns - fixes [Issue #103](https://github.com/dsccommunity/WSManDsc/issues/103).
+  - Updated HQRM and build steps to use windows-latest image.
+- WSManDsc
+  - Added support for changing the hostname and/or certificate thumbprint on the listener fixes [Issue #23](https://github.com/dsccommunity/WSManDsc/issues/23).
+  - Converted tests to Pester 5 - fixes [#99](https://github.com/dsccommunity/WSManDsc/issues/99).
+- `DSC_WSManConfig`
+  - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
+  - Remove unused strings.
+- `DSC_WSManServiceConfig`
+  - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
+  - Remove unused strings
 
 ### Fixed
 
