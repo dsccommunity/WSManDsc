@@ -1038,7 +1038,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -DN $mockDN  `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
@@ -1077,7 +1077,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -DN $mockDN  `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
@@ -1117,7 +1117,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -DN $mockDN  `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
@@ -1153,7 +1153,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
@@ -1190,7 +1190,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }
@@ -1227,7 +1227,7 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
                 { $script:returnedCertificate = Find-Certificate `
                         -Issuer $mockIssuer `
                         -SubjectFormat 'Both' `
-                        -MatchAlternate $True `
+                        -MatchAlternate $true `
                         -Verbose:$VerbosePreference } | Should -Not -Throw
             }
         }

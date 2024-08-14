@@ -38,7 +38,7 @@ BeforeDiscovery {
         -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($script:dscResourceName)") `
         -FileName "$($script:dscResourceName).data.psd1"
 
-    $script:wsmanConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $True
+    $script:wsmanConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $true
 }
 
 BeforeAll {

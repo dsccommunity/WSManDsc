@@ -189,7 +189,7 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
                     Address        = '*'
                     Issuer         = $Issuer
                     SubjectFormat  = 'Both'
-                    MatchAlternate = $False
+                    MatchAlternate = $false
                     DN             = $DN
                     Hostname       = $Hostname
                 }
