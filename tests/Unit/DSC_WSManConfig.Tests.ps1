@@ -171,7 +171,6 @@ Describe "$($script:dscResourceName)\Set-TargetResource" {
         }
     }
 
-
     Context 'WS-Man Config parameter <Name> is different' -ForEach $parameterList {
         BeforeAll {
             Mock `
@@ -217,7 +216,6 @@ Describe "$($script:dscResourceName)\Set-TargetResource" {
                 -Scope Context
         }
     }
-
 }
 
 Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
@@ -269,7 +267,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 Test-TargetResource @testTargetResourceSplat | Should -BeFalse
             }
         }
-        
+
         It 'Should call expected Mocks' {
             $parameterPath = Join-Path `
                 -Path 'WSMan:\Localhost\' `

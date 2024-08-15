@@ -892,6 +892,7 @@ Describe "$($script:dscResourceName)\Test-TargetResource" -Tag 'Test' {
                 -Scope Context
         }
     }
+
     Context 'HTTP Listener exists but CertificateThumbprint is incorrect' {
         BeforeAll {
             Mock -CommandName Get-WSManInstance -MockWith {
@@ -1103,7 +1104,8 @@ Describe "$($script:dscResourceName)\Find-Certificate" -Tag 'Private' {
         BeforeAll {
             Mock -CommandName Get-ChildItem -MockWith {
                 $mockCertificate
-            } }
+            }
+        }
 
         It 'Should not throw error' {
             InModuleScope -Parameters @{

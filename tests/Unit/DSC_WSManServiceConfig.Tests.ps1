@@ -209,7 +209,6 @@ Describe "$($script:dscResourceName)\Set-TargetResource" -Tag 'Set' {
                 $Path -eq $parameterPath
             } -Exactly -Times 1 `
                 -Scope Context
-
         }
     }
 }
