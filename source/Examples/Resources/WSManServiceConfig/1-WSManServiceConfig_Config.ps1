@@ -33,10 +33,10 @@ Configuration WSManServiceConfig_Config
         {
             IsSingleInstance                 = 'Yes'
             MaxConnections                   = 100
-            AllowUnencrypted                 = $False
-            AuthCredSSP                      = $True
-            EnableCompatibilityHttpListener  = $True
-            EnableCompatibilityHttpsListener = $True
+            AllowUnencrypted                 = $false
+            AuthCredSSP                      = $true
+            EnableCompatibilityHttpListener  = $true
+            EnableCompatibilityHttpsListener = $true
         } # End of WSManServiceConfig Resource
     } # End of Node
 } # End of Configuration

@@ -51,6 +51,8 @@ function Get-TargetResource
 
     if ($listener)
     {
+        $certificate = ''
+        
         # An existing listener matching the transport was found
         Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
@@ -647,8 +649,6 @@ function Find-Certificate
         $Hostname
     )
 
-    [System.String] $thumbprint = ''
-
     if ($PSBoundParameters.ContainsKey('CertificateThumbprint'))
     {
         Write-Verbose -Message ( @(
@@ -659,7 +659,7 @@ function Find-Certificate
 
         $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                 ($_.Thumbprint -eq $CertificateThumbprint)
-            } | Select-Object -First 1
+        } | Select-Object -First 1
     }
     else
     {
@@ -689,7 +689,7 @@ function Find-Certificate
 
                 $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                            -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
@@ -706,10 +706,10 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             } # if
         }
 
@@ -736,11 +736,11 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             }
             else
             {
@@ -753,10 +753,10 @@ function Find-Certificate
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                                -contains 'Server Authentication') -and
+                        -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
-                    } | Select-Object -First 1
+                } | Select-Object -First 1
             } # if
         } # if
     } # if
