@@ -10,7 +10,7 @@ Configuration DSC_WSManListener_Config_Add_HTTPS {
             Issuer         = $Node.Issuer
             SubjectFormat  = $Node.SubjectFormat
             MatchAlternate = $Node.MatchAlternate
-            DN             = $Node.DN
+            BaseDN         = $Node.BaseDN
         }
     }
 }

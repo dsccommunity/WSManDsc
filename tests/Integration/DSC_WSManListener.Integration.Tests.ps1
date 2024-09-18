@@ -63,8 +63,8 @@ BeforeAll {
         Remove-Item -Force
 
     $script:Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
-    $script:DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
-    $script:Issuer = "CN=$Hostname, $DN"
+    $script:BaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $script:Issuer = "CN=$Hostname, $BaseDN"
 
     # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
@@ -190,7 +190,7 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
                     Issuer         = $Issuer
                     SubjectFormat  = 'Both'
                     MatchAlternate = $false
-                    DN             = $DN
+                    BaseDN         = $BaseDN
                     Hostname       = $Hostname
                 }
             )
