@@ -45,7 +45,6 @@ CopyPaths:
   - en-US
   - DSCResources
 Prefix: prefix.ps1
-Suffix: suffix.ps1
 Encoding: UTF8
 VersionedOutputDirectory: true
 BuiltModuleSubdirectory: builtModule
