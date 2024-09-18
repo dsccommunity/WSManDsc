@@ -216,53 +216,76 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
         }
     }
 
-    # Context 'When the system is not in the desired state' {
-    #     Context 'When property Path have the wrong value for a File audit' {
-    #         BeforeAll {
-    #             InModuleScope -ScriptBlock {
-    #                 $script:mockSqlAuditInstance = [SqlAudit] @{
-    #                     Name         = 'MockAuditName'
-    #                     InstanceName = 'NamedInstance'
-    #                     Path         = 'C:\NewFolder'
-    #                 }
+    Context 'When the system is not in the desired state' {
+        Context 'When property ''Port'' has the wrong value' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-    #                 <#
-    #                     This mocks the method GetCurrentState().
+                    $script:mockWSManListenerInstance = [WSManListener] @{
+                        Transport = 'HTTPS'
+                        Port = 5986
+                        Ensure    = 'Present'
+                    }
 
-    #                     Method Get() will call the base method Get() which will
-    #                     call back to the derived class method GetCurrentState()
-    #                     to get the result to return from the derived method Get().
-    #                 #>
-    #                 $script:mockSqlAuditInstance |
-    #                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-    #                         return [System.Collections.Hashtable] @{
-    #                             Name         = 'MockAuditName'
-    #                             InstanceName = 'NamedInstance'
-    #                             Path         = 'C:\Temp'
-    #                         }
-    #                     } -PassThru |
-    #                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-    #                         return
-    #                     }
-    #             }
-    #         }
+                    <#
+                        This mocks the method GetCurrentState().
 
-    #         It 'Should return the correct values' {
-    #             InModuleScope -ScriptBlock {
-    #                 $currentState = $script:mockSqlAuditInstance.Get()
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class method GetCurrentState()
+                        to get the result to return from the derived method Get().
+                    #>
+                    $script:mockWSManListenerInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return [System.Collections.Hashtable] @{
+                                Transport             = 'HTTPS'
+                                Port                  = 6000
+                                Address               = '*'
+                                Enabled               = 'true'
+                                URLPrefix             = 'wsman'
+                                Issuer                = $null
+                                SubjectFormat         = 'Both'
+                                MatchAlternate        = $null
+                                BaseDN                = $null
+                                CertificateThumbprint = $null
+                                Hostname              = $null
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        }
+                }
+            }
 
-    #                 $currentState.InstanceName | Should -Be 'NamedInstance'
-    #                 $currentState.Name | Should -Be 'MockAuditName'
-    #                 $currentState.ServerName | Should -Be (Get-ComputerName)
-    #                 $currentState.Credential | Should -BeNullOrEmpty
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-    #                 $currentState.Path | Should -Be 'C:\Temp'
+                    $currentState = $script:mockWSManListenerInstance.Get()
 
-    #                 $currentState.Reasons | Should -HaveCount 1
-    #                 $currentState.Reasons[0].Code | Should -Be 'SqlAudit:SqlAudit:Path'
-    #                 $currentState.Reasons[0].Phrase | Should -Be 'The property Path should be "C:\NewFolder", but was "C:\Temp"'
-    #             }
-    #         }
-    #     }
-    # }
+                    $currentState.Transport | Should -Be 'HTTPS'
+
+                    $currentState.Port | Should -Be 6000
+                    $currentState.Port | Should -BeOfType System.UInt16
+
+                    $currentState.Address | Should -Be '*'
+                    $currentState.Enabled | Should -Be $true
+                    $currentState.URLPrefix | Should -Be 'wsman'
+
+                    $currentState.Issuer | Should -BeNullOrEmpty
+                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.MatchAlternate | Should -BeNullOrEmpty
+                    $currentState.BaseDN | Should -BeNullOrEmpty
+                    $currentState.CertificateThumbprint | Should -BeNullOrEmpty
+                    $currentState.Hostname | Should -BeNullOrEmpty
+
+                    $currentState.Ensure | Should -Be 'Present'
+
+                    $currentState.Reasons | Should -HaveCount 1
+                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Port'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Port should be 5986, but was 6000'
+                }
+            }
+        }
+    }
 }
