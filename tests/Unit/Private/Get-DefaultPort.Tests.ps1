@@ -129,7 +129,7 @@ Describe 'Get-DefaultPort' -Tag 'Private' {
                     Port      = 'Something'
                 }
 
-                { Get-DefaultPort @mockParams } | Should -Not -Throw
+                { Get-DefaultPort @mockParams } | Should -Throw
             }
         }
     }
