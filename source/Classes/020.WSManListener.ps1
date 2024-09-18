@@ -116,11 +116,11 @@ class WSManListener : ResourceBase
 
         )
 
-        # Get the port if it's not provided
-        if ($this.Port)
-        {
-            $this.Port = Get-DefaultPort -Transport $this.Transport -Port $this.Port
-        }
+        # # Set subject format to default value
+        # if (-not $this.SubjectFormat)
+        # {
+        #     $this.SubjectFormat = 'Both'
+        # }
     }
 
     [WSManListener] Get()
@@ -134,6 +134,12 @@ class WSManListener : ResourceBase
     {
         $getParameters = @{
             Transport = $properties.Transport
+        }
+
+        # Get the port if it's not provided
+        if (-not $properties.Port)
+        {
+            $this.Port = Get-DefaultPort -Transport $properties.Transport
         }
 
         $getCurrentStateResult = Get-Listener @getParameters
@@ -202,6 +208,16 @@ class WSManListener : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
+        # if ($null -ne $properties.SubjectFormat)
+        # {
+        #     $errorMessage = $this.localizedData.SubjectFormatMustBeValid
+
+        #     if ($properties.SubjectFormat -inotin ('Both', 'FQDNOnly', 'NameOnly'))
+        #     {
+        #         New-InvalidArgumentException -ArgumentName 'SubjectFormat' -Message $errorMessage
+        #     }
+        # }
+
         # # The properties MaximumFiles and MaximumRolloverFiles are mutually exclusive.
         # $assertBoundParameterParameters = @{
         #     BoundParameterList     = $properties
