@@ -14,9 +14,9 @@
         Should the FQDN/Name be used to also match the certificate alternate subject for an HTTPS WS-Man
         Listener if a thumbprint is not specified.
 
-    .PARAMETER DN
-        This is a Distinguished Name component that will be used to identify the certificate to use
-        for the HTTPS WS-Man Listener if a thumbprint is not specified.
+    .PARAMETER BaseDN
+        This is the BaseDN (path part of the full Distinguished Name) used to identify the certificate
+        to use for the HTTPS WS-Man Listener if a thumbprint is not specified.
 
     .PARAMETER CertificateThumbprint
         The Thumbprint of the certificate to use for the HTTPS WS-Man Listener.
@@ -42,7 +42,7 @@ function Find-Certificate
 
         [Parameter()]
         [System.String]
-        $DN,
+        $BaseDN,
 
         [Parameter()]
         [System.String]
@@ -55,11 +55,7 @@ function Find-Certificate
 
     if ($PSBoundParameters.ContainsKey('CertificateThumbprint'))
     {
-        Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.FindCertificateByThumbprintMessage) `
-                    -f $CertificateThumbprint
-            ) -join '' )
+        Write-Verbose -Message ($script:localizedData.FindCertificate_ByThumbprintMessage -f $CertificateThumbprint)
 
         $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                 ($_.Thumbprint -eq $CertificateThumbprint)
@@ -77,19 +73,15 @@ function Find-Certificate
             }
             $Subject = "CN=$Hostname"
 
-            if ($PSBoundParameters.ContainsKey('DN'))
+            if ($PSBoundParameters.ContainsKey('BaseDN'))
             {
-                $Subject = "$Subject, $DN"
+                $Subject = "$Subject, $BaseDN"
             } # if
 
             if ($MatchAlternate)
             {
                 # Try and lookup the certificate using the subject and the alternate name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Subject, $Issuer, $Hostname
-                    ) -join '' )
+                Write-Verbose -Message ($script:localizedData.FindCertificate_AlternateMessage -f $Subject, $Issuer, $Hostname)
 
                 $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
@@ -102,11 +94,7 @@ function Find-Certificate
             else
             {
                 # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateMessage) `
-                            -f $Subject, $Issuer
-                    ) -join '' )
+                Write-Verbose -Message ($script:localizedData.FindCertificate_Message - $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
@@ -117,26 +105,21 @@ function Find-Certificate
             } # if
         }
 
-        if (-not $certificate `
-                -and ($SubjectFormat -in 'Both', 'NameOnly'))
+        if (-not $certificate -and ($SubjectFormat -in 'Both', 'NameOnly'))
         {
             # If could not find an FQDN cert, try for one issued to the computer name
             [System.String] $Hostname = $ENV:ComputerName
             [System.String] $Subject = "CN=$Hostname"
 
-            if ($PSBoundParameters.ContainsKey('DN'))
+            if ($PSBoundParameters.ContainsKey('BaseDN'))
             {
-                $Subject = "$Subject, $DN"
+                $Subject = "$Subject, $BaseDN"
             } # if
 
             if ($MatchAlternate)
             {
                 # Try and lookup the certificate using the subject and the alternate name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateAlternateMessage) `
-                            -f $Subject, $Issuer, $Hostname
-                    ) -join '' )
+                Write-Verbose -Message ($script:localizedData.FindCertificate_AlternateMessage -f $Subject, $Issuer, $Hostname)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
@@ -149,11 +132,7 @@ function Find-Certificate
             else
             {
                 # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.FindCertificateMessage) `
-                            -f $Subject, $Issuer
-                    ) -join '' )
+                Write-Verbose -Message ($script:localizedData.FindCertificate_Message - $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
@@ -167,18 +146,11 @@ function Find-Certificate
 
     if ($certificate)
     {
-        Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.CertificateFoundMessage) `
-                    -f $certificate.thumbprint
-            ) -join '' )
+        Write-Verbose -Message ($script:localizedData.FindCertificate_FoundMessage -f $certificate.thumbprint)
     }
     else
     {
-        Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $($script:localizedData.CertificateNotFoundMessage) `
-            ) -join '' )
+        Write-Verbose -Message ($script:localizedData.FindCertificate_NotFoundMessage)
     } # if
 
     return $certificate
