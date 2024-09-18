@@ -80,11 +80,15 @@ NestedModule:
     Path: ./output/RequiredModules/DscResource.Common
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
+  DscResource.Base:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Base
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
 
 ####################################################
 #          Pester Configuration (Sampler)          #
 ####################################################
-
 Pester:
   Configuration:
     Run:
@@ -105,8 +109,6 @@ Pester:
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     - Modules/DscResource.Base
-    - prefix.ps1
-    - WSManDsc.psm1
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
