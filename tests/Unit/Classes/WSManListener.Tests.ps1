@@ -105,7 +105,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $script:mockWSManListenerInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                Transport             = 'HTTP'
+                                Transport             = [WSManTransport]::HTTP
                                 Port                  = 5985
                                 Address               = '*'
                                 Enabled               = 'true'
@@ -134,6 +134,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Port | Should -Be 5985
                     $currentState.Port | Should -BeOfType System.UInt16
                     $currentState.Address | Should -Be '*'
+
                     $currentState.Enabled | Should -Be $true
                     $currentState.URLPrefix | Should -Be 'wsman'
 
@@ -170,7 +171,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $script:mockWSManListenerInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                Transport             = 'HTTPS'
+                                Transport             = [WSManTransport]::HTTPS
                                 Port                  = 5986
                                 Address               = '*'
                                 Enabled               = 'true'
@@ -224,7 +225,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     $script:mockWSManListenerInstance = [WSManListener] @{
                         Transport = 'HTTPS'
-                        Port = 5986
+                        Port      = 5986
                         Ensure    = 'Present'
                     }
 
@@ -238,7 +239,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $script:mockWSManListenerInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                Transport             = 'HTTPS'
+                                Transport             = [WSManTransport]::HTTPS
                                 Port                  = 6000
                                 Address               = '*'
                                 Enabled               = 'true'
@@ -263,7 +264,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     $currentState = $script:mockWSManListenerInstance.Get()
 
-                    $currentState.Transport | Should -Be 'HTTPS'
+                    $currentState.Transport | Should -Be HTTPS
 
                     $currentState.Port | Should -Be 6000
                     $currentState.Port | Should -BeOfType System.UInt16
