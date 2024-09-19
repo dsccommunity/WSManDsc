@@ -51,11 +51,12 @@
 class WSManListener : ResourceBase
 {
     [DscProperty(Key)]
-    [ValidateSet('HTTP', 'HTTPS')]
-    [System.String]
+    #[ValidateSet('HTTP', 'HTTPS')]
+    #[System.String]
+    [WSManTransport]
     $Transport
 
-    [DscProperty(Mandatory = $true)]
+    [DscProperty(Mandatory)]
     [Ensure]
     $Ensure
 
@@ -73,9 +74,10 @@ class WSManListener : ResourceBase
     $Issuer
 
     [DscProperty()]
-    [ValidateSet('Both', 'FQDNOnly', 'NameOnly')]
-    [System.String]
-    $SubjectFormat = 'Both'
+    #[ValidateSet('Both', 'FQDNOnly', 'NameOnly')]
+    #[System.String]
+    [WSManSubjectFormat]
+    $SubjectFormat = [WSManSubjectFormat]::Both
 
     [DscProperty()]
     [Nullable[System.Boolean]]
@@ -152,17 +154,16 @@ class WSManListener : ResourceBase
         }
 
         $state = @{
-            Transport             = $properties.Transport
+            Transport             = $getCurrentStateResult.Transport
             Port                  = [System.UInt16] $getCurrentStateResult.Port
             Address               = $getCurrentStateResult.Address
-            Enabled               = $getCurrentStateResult.Enabled
-            URLPrefix             = $getCurrentStateResult.URLPrefix
+
             Issuer                = $currentCertificate.Issuer
-            SubjectFormat         = $properties.SubjectFormat
-            MatchAlternate        = $null
-            BaseDN                = $null
             CertificateThumbprint = $getCurrentStateResult.CertificateThumbprint
             Hostname              = $getCurrentStateResult.HostName
+
+            Enabled               = $getCurrentStateResult.Enabled
+            URLPrefix             = $getCurrentStateResult.URLPrefix
         }
 
         return $state
@@ -178,22 +179,161 @@ class WSManListener : ResourceBase
         Base method Set() call this method with the properties that should be
         enforced and that are not in desired state.
     #>
-    [void] Modify([System.Collections.Hashtable] $properties)
+    hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        # <#
-        #     If the property 'EnablePollutionProtection' was present and not in desired state,
-        #     then the property name must be change for the cmdlet Set-DnsServerCache. In the
-        #     cmdlet Get-DnsServerCache the property name is 'EnablePollutionProtection', but
-        #     in the cmdlet Set-DnsServerCache the parameter is 'PollutionProtection'.
-        # #>
-        # if ($properties.ContainsKey('EnablePollutionProtection'))
-        # {
-        #     $properties['PollutionProtection'] = $properties.EnablePollutionProtection
 
-        #     $properties.Remove('EnablePollutionProtection')
-        # }
+        $remove = $false
+        $create = $false
 
-        # Set-DnsServerCache @properties
+        if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent -and $this.Ensure -eq [Ensure]::Absent)
+        {
+            # Ensure was no in desired state so the resource should be removed
+            $remove = $true
+
+        }
+        elseif ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Present -and $this.Ensure -eq [Ensure]::Present)
+        {
+            # Ensure was not in the desired state so the resource should be created
+            $create = $true
+        }
+        else
+        {
+            # Resource exists but one or more properties are not in the desired state
+            $remove = $true
+            $create = $true
+        }
+
+        if ($remove)
+        {
+            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $properties.Transport, $properties.Port)
+
+            Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @{
+                Transport = $properties.Transport
+                Address   = $properties.Address
+            }
+        }
+
+        if ($create)
+        {
+            $selectorSet = @{
+                Transport = $properties.Transport
+                Address   = $properties.Address
+            }
+            $valueSet = @{
+                Port = $properties.Port
+            }
+
+            switch ($properties.Transport)
+            {
+                HTTPS
+                {
+                    $findCertificateParams = Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
+
+                    $certificate = Find-Certificate @findCertificateParams
+                    [System.String] $thumbprint = $certificate.thumbprint
+
+                    if ($thumbprint)
+                    {
+                        $valueSet.CertificateThumbprint = $thumbprint
+
+                        if ([System.String]::IsNullOrEmpty($properties.Hostname))
+                        {
+                            $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
+                        }
+                        else
+                        {
+                            $valueSet.HostName = $properties.HostName
+                        }
+                    }
+                    else
+                    {
+                        # TODO: Extract this to assert or into a parameter set
+                        # A certificate could not be found to use for the HTTPS listener
+                        New-InvalidArgumentException `
+                            -Message ($this.localizedData.ListenerCreateFailNoCertError -f $properties.Transport, $properties.Port) `
+                            -Argument 'Issuer'
+                    } # if
+                }
+                Default
+                {
+                }
+            }
+
+            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $properties.Transport, $properties.Port)
+
+            New-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet -ValueSet @valueSet -ErrorAction Stop
+
+            #End
+
+            #     if ($Transport -eq 'HTTPS')
+            #     {
+            #         # Find the certificate to use for the HTTPS Listener
+            #         $null = $PSBoundParameters.Remove('Transport')
+            #         $null = $PSBoundParameters.Remove('Ensure')
+            #         $null = $PSBoundParameters.Remove('Port')
+            #         $null = $PSBoundParameters.Remove('Address')
+
+            #         $certificate = Find-Certificate @PSBoundParameters
+            #         [System.String] $thumbprint = $certificate.thumbprint
+
+            #         if ($thumbprint)
+            #         {
+            #             # A certificate was found, so use it to enable the HTTPS WinRM listener
+            #             Write-Verbose -Message ( @(
+            #                     "$($MyInvocation.MyCommand): "
+            #                     $($script:localizedData.CreatingListenerMessage) `
+            #                         -f $Transport, $Port
+            #                 ) -join '' )
+
+            #             if ([System.String]::IsNullOrEmpty($Hostname))
+            #             {
+            #                 $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+            #             }
+
+            #             New-WSManInstance `
+            #                 -ResourceURI 'winrm/config/Listener' `
+            #                 -SelectorSet @{
+            #                 Address   = $Address
+            #                 Transport = $Transport
+            #             } `
+            #                 -ValueSet @{
+            #                 Hostname              = $Hostname
+            #                 CertificateThumbprint = $thumbprint
+            #                 Port                  = $Port
+            #             } `
+            #                 -ErrorAction Stop
+            #         }
+            #         else
+            #         {
+            #             # A certificate could not be found to use for the HTTPS listener
+            #             New-InvalidArgumentException `
+            #                 -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
+            #                     $Transport, $Port) `
+            #                 -Argument 'Issuer'
+            #         } # if
+            #     }
+            #     else
+            #     {
+            #         # Create a plain HTTP listener
+            #         Write-Verbose -Message ( @(
+            #                 "$($MyInvocation.MyCommand): "
+            #                 $($script:localizedData.CreatingListenerMessage) `
+            #                     -f $Transport, $Port
+            #             ) -join '' )
+
+            #         New-WSManInstance `
+            #             -ResourceURI 'winrm/config/Listener' `
+            #             -SelectorSet @{
+            #             Address   = $Address
+            #             Transport = $Transport
+            #         } `
+            #             -ValueSet @{
+            #             Port = $Port
+            #         } `
+            #             -ErrorAction Stop
+            #     }
+            # }
+        }
     }
 
     [System.Boolean] Test()
