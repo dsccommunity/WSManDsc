@@ -135,13 +135,13 @@ class WSManListener : ResourceBase
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         $getParameters = @{
-            Transport = $properties.Transport
+            Transport = [WSManTransport].GetEnumName($properties.Transport)
         }
 
         # Get the port if it's not provided
         if (-not $properties.Port)
         {
-            $this.Port = Get-DefaultPort -Transport $properties.Transport
+            $this.Port = Get-DefaultPort @getParameters
         }
 
         $getCurrentStateResult = Get-Listener @getParameters
@@ -154,7 +154,7 @@ class WSManListener : ResourceBase
         }
 
         $state = @{
-            Transport             = $getCurrentStateResult.Transport
+            Transport             = [WSManTransport] $getCurrentStateResult.Transport
             Port                  = [System.UInt16] $getCurrentStateResult.Port
             Address               = $getCurrentStateResult.Address
 
@@ -185,6 +185,11 @@ class WSManListener : ResourceBase
         $remove = $false
         $create = $false
 
+        $selectorSet = @{
+            Transport = [WSManTransport].GetEnumName($properties.Transport)
+            Address   = $properties.Address
+        }
+
         if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent -and $this.Ensure -eq [Ensure]::Absent)
         {
             # Ensure was no in desired state so the resource should be removed
@@ -207,18 +212,11 @@ class WSManListener : ResourceBase
         {
             Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $properties.Transport, $properties.Port)
 
-            Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @{
-                Transport = $properties.Transport
-                Address   = $properties.Address
-            }
+            Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet
         }
 
         if ($create)
         {
-            $selectorSet = @{
-                Transport = $properties.Transport
-                Address   = $properties.Address
-            }
             $valueSet = @{
                 Port = $properties.Port
             }
