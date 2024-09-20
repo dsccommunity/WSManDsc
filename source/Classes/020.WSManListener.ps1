@@ -194,8 +194,8 @@ class WSManListener : ResourceBase
         $create = $false
 
         $selectorSet = @{
-            Transport = $properties.Transport
-            Address   = $properties.Address
+            Transport = $this.Transport
+            Address   = $this.Address
         }
 
         Write-Verbose ('$properties.ContainsKey(''Ensure'') = {0}' -f $properties.ContainsKey('Ensure'))
@@ -206,7 +206,6 @@ class WSManListener : ResourceBase
         {
             # Ensure was not in desired state so the resource should be removed
             $remove = $true
-
         }
         elseif ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Present -and $this.Ensure -eq [Ensure]::Present)
         {
@@ -222,7 +221,7 @@ class WSManListener : ResourceBase
 
         if ($remove)
         {
-            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $properties.Transport, $properties.Port)
+            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
 
             Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet
         }
@@ -234,7 +233,7 @@ class WSManListener : ResourceBase
             }
 
 
-            if ($properties.Transport -eq [WSManTransport]::HTTPS)
+            if ($this.Transport -eq [WSManTransport]::HTTPS)
             {
                 $findCertificateParams = Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
 
@@ -259,13 +258,13 @@ class WSManListener : ResourceBase
                     # TODO: Extract this to assert or into a parameter set
                     # A certificate could not be found to use for the HTTPS listener
                     New-InvalidArgumentException `
-                        -Message ($this.localizedData.ListenerCreateFailNoCertError -f $properties.Transport, $properties.Port) `
+                        -Message ($this.localizedData.ListenerCreateFailNoCertError -f $this.Transport, $this.Port) `
                         -Argument 'Issuer'
                 } # if
             }
 
 
-            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $properties.Transport, $properties.Port)
+            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
 
             New-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet -ValueSet @valueSet -ErrorAction Stop
         }

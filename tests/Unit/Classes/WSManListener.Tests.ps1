@@ -254,7 +254,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Ensure | Should -Be 'Absent'
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Transport'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was null'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was ""'
                 }
             }
         }
@@ -376,10 +376,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Ensure | Should -Be 'Absent'
 
                     $currentState.Reasons | Should -HaveCount 2
-                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Ensure'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
-                    $currentState.Reasons[1].Code | Should -Be 'WSManListener:WSManListener:Transport'
-                    $currentState.Reasons[1].Phrase | Should -Be 'The property Transport should be "HTTPS", but was null'
+                    $currentState.Reasons[1].Code | Should -Be 'WSManListener:WSManListener:Ensure'
+                    $currentState.Reasons[1].Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
+                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Transport'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTPS", but was ""'
                 }
             }
         }
