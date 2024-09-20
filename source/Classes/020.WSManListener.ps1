@@ -51,8 +51,6 @@
 class WSManListener : ResourceBase
 {
     [DscProperty(Key)]
-    #[ValidateSet('HTTP', 'HTTPS')]
-    #[System.String]
     [WSManTransport]
     $Transport
 
@@ -67,17 +65,15 @@ class WSManListener : ResourceBase
 
     [DscProperty()]
     [System.String]
-    $Address = '*'
+    $Address
 
     [DscProperty()]
     [System.String]
     $Issuer
 
     [DscProperty()]
-    #[ValidateSet('Both', 'FQDNOnly', 'NameOnly')]
-    #[System.String]
     [WSManSubjectFormat]
-    $SubjectFormat = [WSManSubjectFormat]::Both
+    $SubjectFormat
 
     [DscProperty()]
     [Nullable[System.Boolean]]
@@ -135,36 +131,48 @@ class WSManListener : ResourceBase
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         $getParameters = @{
-            Transport = [WSManTransport].GetEnumName($properties.Transport)
+            Transport = $properties.Transport
         }
 
-        # Get the port if it's not provided
-        if (-not $properties.Port)
+        # Get the port if it's not provided and resource should exist
+        if (-not $this.Port -and $this.Ensure -eq [Ensure]::Present)
         {
             $this.Port = Get-DefaultPort @getParameters
         }
 
+        # Get the Address if it's not provided and resource should exist
+        if (-not $this.Address -and $this.Ensure -eq [Ensure]::Present)
+        {
+            $this.Address = '*'
+        }
+
+
         $getCurrentStateResult = Get-Listener @getParameters
 
-        $currentCertificate = ''
-
-        if ($getCurrentStateResult.CertificateThumbprint)
+        if ($getCurrentStateResult)
         {
-            $currentCertificate = Find-Certificate -CertificateThumbprint $getCurrentStateResult.CertificateThumbprint
+            $state = @{
+                Transport             = [WSManTransport] $getCurrentStateResult.Transport
+                Port                  = [System.UInt16] $getCurrentStateResult.Port
+                Address               = $getCurrentStateResult.Address
+
+                CertificateThumbprint = $getCurrentStateResult.CertificateThumbprint
+                Hostname              = $getCurrentStateResult.Hostname
+
+                Enabled               = $getCurrentStateResult.Enabled
+                URLPrefix             = $getCurrentStateResult.URLPrefix
+            }
+
+            if ($getCurrentStateResult.CertificateThumbprint)
+            {
+                $state.Issuer = (Find-Certificate -CertificateThumbprint $getCurrentStateResult.CertificateThumbprint).Issuer
+            }
+        }
+        else
+        {
+            $state = @{}
         }
 
-        $state = @{
-            Transport             = [WSManTransport] $getCurrentStateResult.Transport
-            Port                  = [System.UInt16] $getCurrentStateResult.Port
-            Address               = $getCurrentStateResult.Address
-
-            Issuer                = $currentCertificate.Issuer
-            CertificateThumbprint = $getCurrentStateResult.CertificateThumbprint
-            Hostname              = $getCurrentStateResult.HostName
-
-            Enabled               = $getCurrentStateResult.Enabled
-            URLPrefix             = $getCurrentStateResult.URLPrefix
-        }
 
         return $state
     }
@@ -186,13 +194,17 @@ class WSManListener : ResourceBase
         $create = $false
 
         $selectorSet = @{
-            Transport = [WSManTransport].GetEnumName($properties.Transport)
+            Transport = $properties.Transport
             Address   = $properties.Address
         }
 
+        Write-Verbose ('$properties.ContainsKey(''Ensure'') = {0}' -f $properties.ContainsKey('Ensure'))
+        Write-Verbose ('$properties.Ensure = {0}' -f $properties.Ensure)
+        Write-Verbose ('$this.Ensure = {0}' -f $this.Ensure)
+
         if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent -and $this.Ensure -eq [Ensure]::Absent)
         {
-            # Ensure was no in desired state so the resource should be removed
+            # Ensure was not in desired state so the resource should be removed
             $remove = $true
 
         }
@@ -221,116 +233,41 @@ class WSManListener : ResourceBase
                 Port = $properties.Port
             }
 
-            switch ($properties.Transport)
+
+            if ($properties.Transport -eq [WSManTransport]::HTTPS)
             {
-                HTTPS
+                $findCertificateParams = Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
+
+                $certificate = Find-Certificate @findCertificateParams
+                [System.String] $thumbprint = $certificate.thumbprint
+
+                if ($thumbprint)
                 {
-                    $findCertificateParams = Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
+                    $valueSet.CertificateThumbprint = $thumbprint
 
-                    $certificate = Find-Certificate @findCertificateParams
-                    [System.String] $thumbprint = $certificate.thumbprint
-
-                    if ($thumbprint)
+                    if ([System.String]::IsNullOrEmpty($properties.Hostname))
                     {
-                        $valueSet.CertificateThumbprint = $thumbprint
-
-                        if ([System.String]::IsNullOrEmpty($properties.Hostname))
-                        {
-                            $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
-                        }
-                        else
-                        {
-                            $valueSet.HostName = $properties.HostName
-                        }
+                        $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
                     }
                     else
                     {
-                        # TODO: Extract this to assert or into a parameter set
-                        # A certificate could not be found to use for the HTTPS listener
-                        New-InvalidArgumentException `
-                            -Message ($this.localizedData.ListenerCreateFailNoCertError -f $properties.Transport, $properties.Port) `
-                            -Argument 'Issuer'
-                    } # if
+                        $valueSet.HostName = $properties.HostName
+                    }
                 }
-                Default
+                else
                 {
-                }
+                    # TODO: Extract this to assert or into a parameter set
+                    # A certificate could not be found to use for the HTTPS listener
+                    New-InvalidArgumentException `
+                        -Message ($this.localizedData.ListenerCreateFailNoCertError -f $properties.Transport, $properties.Port) `
+                        -Argument 'Issuer'
+                } # if
             }
+
 
             Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $properties.Transport, $properties.Port)
 
             New-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet -ValueSet @valueSet -ErrorAction Stop
-
-            #End
-
-            #     if ($Transport -eq 'HTTPS')
-            #     {
-            #         # Find the certificate to use for the HTTPS Listener
-            #         $null = $PSBoundParameters.Remove('Transport')
-            #         $null = $PSBoundParameters.Remove('Ensure')
-            #         $null = $PSBoundParameters.Remove('Port')
-            #         $null = $PSBoundParameters.Remove('Address')
-
-            #         $certificate = Find-Certificate @PSBoundParameters
-            #         [System.String] $thumbprint = $certificate.thumbprint
-
-            #         if ($thumbprint)
-            #         {
-            #             # A certificate was found, so use it to enable the HTTPS WinRM listener
-            #             Write-Verbose -Message ( @(
-            #                     "$($MyInvocation.MyCommand): "
-            #                     $($script:localizedData.CreatingListenerMessage) `
-            #                         -f $Transport, $Port
-            #                 ) -join '' )
-
-            #             if ([System.String]::IsNullOrEmpty($Hostname))
-            #             {
-            #                 $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
-            #             }
-
-            #             New-WSManInstance `
-            #                 -ResourceURI 'winrm/config/Listener' `
-            #                 -SelectorSet @{
-            #                 Address   = $Address
-            #                 Transport = $Transport
-            #             } `
-            #                 -ValueSet @{
-            #                 Hostname              = $Hostname
-            #                 CertificateThumbprint = $thumbprint
-            #                 Port                  = $Port
-            #             } `
-            #                 -ErrorAction Stop
-            #         }
-            #         else
-            #         {
-            #             # A certificate could not be found to use for the HTTPS listener
-            #             New-InvalidArgumentException `
-            #                 -Message ($script:localizedData.ListenerCreateFailNoCertError -f `
-            #                     $Transport, $Port) `
-            #                 -Argument 'Issuer'
-            #         } # if
-            #     }
-            #     else
-            #     {
-            #         # Create a plain HTTP listener
-            #         Write-Verbose -Message ( @(
-            #                 "$($MyInvocation.MyCommand): "
-            #                 $($script:localizedData.CreatingListenerMessage) `
-            #                     -f $Transport, $Port
-            #             ) -join '' )
-
-            #         New-WSManInstance `
-            #             -ResourceURI 'winrm/config/Listener' `
-            #             -SelectorSet @{
-            #             Address   = $Address
-            #             Transport = $Transport
-            #         } `
-            #             -ValueSet @{
-            #             Port = $Port
-            #         } `
-            #             -ErrorAction Stop
-            #     }
-            # }
         }
     }
 
