@@ -13,7 +13,7 @@ BeforeDiscovery {
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # This will throw an error if the dependencies have not been resolved.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -31,6 +31,54 @@ BeforeAll {
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+
+    # Create the Mock Objects that will be used for running tests
+    $script:mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
+    $mockFQDN = 'SERVER1.CONTOSO.COM'
+    $mockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+    $script:mockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
+    $script:mockDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $mockCertificate = @{
+        Thumbprint  = $mockCertificateThumbprint
+        Subject     = "CN=$mockHostName"
+        Issuer      = $mockIssuer
+        Extensions  = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+        DNSNameList = @{ Unicode = $mockHostName }
+    }
+
+    $script:mockCertificateDN = @{
+        Thumbprint  = $mockCertificateThumbprint
+        Subject     = "CN=$mockHostName, $mockDN"
+        Issuer      = $mockIssuer
+        Extensions  = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
+        DNSNameList = @{ Unicode = $mockHostName }
+    }
+
+    $script:mockListenerHTTP = @{
+        cfg                   = 'http://schemas.microsoft.com/wbem/wsman/1/config/listener'
+        xsi                   = 'http://www.w3.org/2001/XMLSchema-instance'
+        lang                  = 'en-US'
+        Address               = '*'
+        Transport             = 'HTTP'
+        Port                  = 5985
+        Hostname              = ''
+        Enabled               = 'true'
+        URLPrefix             = 'wsman'
+        CertificateThumbprint = ''
+    }
+
+    $script:mockListenerHTTPS = @{
+        cfg                   = 'http://schemas.microsoft.com/wbem/wsman/1/config/listener'
+        xsi                   = 'http://www.w3.org/2001/XMLSchema-instance'
+        lang                  = 'en-US'
+        Address               = '*'
+        Transport             = 'HTTPS'
+        Port                  = 5986
+        Hostname              = $mockFQDN
+        Enabled               = 'true'
+        URLPrefix             = 'wsman'
+        CertificateThumbprint = $mockCertificateThumbprint
+    }
 }
 
 AfterAll {
@@ -43,26 +91,23 @@ AfterAll {
 }
 
 Describe 'Find-Certificate' -Tag 'Private' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            $script:mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-        }
-    }
     Context 'CertificateThumbprint is passed but does not exist' {
         BeforeAll {
             Mock -CommandName Get-ChildItem
         }
 
         It 'Should not throw error' {
-            InModuleScope -ScriptBlock {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $findParameters = @{
-                    CertificateThumbprint = $script:mockCertificateThumbprint
+                $findCertificateParams = @{
+                    CertificateThumbprint = $mockCertificateThumbprint
                     Verbose               = $VerbosePreference
                 }
 
-                $script:returnedCertificate = Find-Certificate @findParameters
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
                 { $script:returnedCertificate } | Should -Not -Throw
             }
@@ -74,7 +119,9 @@ Describe 'Find-Certificate' -Tag 'Private' {
 
                 $script:returnedCertificate | Should -BeNullOrEmpty
             }
+        }
 
+        It 'Should call expected Mocks' {
             Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope Context
         }
     }
@@ -82,339 +129,357 @@ Describe 'Find-Certificate' -Tag 'Private' {
     Context 'CertificateThumbprint is passed and does exist' {
         BeforeAll {
             Mock -CommandName Get-ChildItem -MockWith {
-                @{
-                    Thumbprint  = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-                    Subject     = "CN=$([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname), O=Contoso Inc, S=Pennsylvania, C=US"
-                    Issuer      = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-                    Extensions  = @{ EnhancedKeyUsages = @{ FriendlyName = 'Server Authentication' } }
-                    DNSNameList = @{ Unicode = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname) }
-                }
+                $mockCertificateDN
             }
         }
 
         It 'Should not throw error' {
-            InModuleScope -ScriptBlock {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $findParameters = @{
-                    CertificateThumbprint = $script:mockCertificateThumbprint
+                $findCertificateParams = @{
+                    CertificateThumbprint = $mockCertificateThumbprint
                     Verbose               = $VerbosePreference
                 }
 
-                $script:returnedCertificate = Find-Certificate @findParameters
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
                 { $script:returnedCertificate } | Should -Not -Throw
             }
         }
 
         It 'Should return expected certificate' {
-            InModuleScope -ScriptBlock {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:returnedCertificate.Thumbprint | Should -Be $script:mockCertificateThumbprint
+                $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
             }
+        }
 
+        It 'Should call expected Mocks' {
             Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope Context
         }
     }
 
-    # Context 'When SubjectFormat is ''Both''' {
-    #     Context 'Certificate does not exist, DN passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem
-    #         }
+    Context 'SubjectFormat is Both, Certificate does not exist, DN passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #                 mockDN     = $script:mockDN
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+                mockDN     = $script:mockDN
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -DN $mockDN  `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    BaseDN         = $mockDN
+                    Verbose        = $VerbosePreference
+                }
 
-    #         It 'Should return null' {
-    #             InModuleScope -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #                 $script:returnedCertificate | Should -BeNullOrEmpty
-    #             }
-    #         }
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 2 `
-    #                 -Scope Context
-    #         }
-    #     }
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #     Context 'Certificate with DN Exists, DN passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem -MockWith {
-    #                 $mockCertificateDN
-    #             }
-    #         }
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #                 mockDN     = $script:mockDN
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope Context
+        }
+    }
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -DN $mockDN  `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+    Context 'SubjectFormat is Both, Certificate with DN Exists, DN passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificateDN
+            }
+        }
 
-    #         It 'Should return expected certificate' {
-    #             InModuleScope -Parameters @{
-    #                 mockCertificateThumbprint = $script:mockCertificateThumbprint
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+                mockDN     = $script:mockDN
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
-    #             }
-    #         }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    BaseDN         = $mockDN
+                    Verbose        = $VerbosePreference
+                }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 1 `
-    #                 -Scope Context
-    #         }
-    #     }
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #     Context 'Certificate without DN Exists, DN passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem -MockWith {
-    #                 $mockCertificate
-    #             }
-    #         }
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #                 mockDN     = $script:mockDN
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should return expected certificate' {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -DN $mockDN  `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+                $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+            }
+        }
 
-    #         It 'Should return null' {
-    #             InModuleScope -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope Context
+        }
+    }
 
-    #                 $script:returnedCertificate | Should -BeNullOrEmpty
-    #             }
-    #         }
+    Context 'SubjectFormat is Both, Certificate without DN Exists, DN passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificate
+            }
+        }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 2 `
-    #                 -Scope Context
-    #         }
-    #     }
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+                mockDN     = $script:mockDN
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #     Context 'Certificate does not exist, DN not passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem
-    #         }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    BaseDN         = $mockDN
+                    Verbose        = $VerbosePreference
+                }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #         It 'Should return null' {
-    #             InModuleScope -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 $script:returnedCertificate | Should -BeNullOrEmpty
-    #             }
-    #         }
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 2 `
-    #                 -Scope Context
-    #         }
-    #     }
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope Context
+        }
+    }
 
-    #     Context 'Certificate with DN Exists, DN not passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem -MockWith {
-    #                 $mockCertificateDN
-    #             }
-    #         }
+    Context 'SubjectFormat is Both, Certificate does not exist, DN not passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    Verbose        = $VerbosePreference
+                }
 
-    #         It 'Should return null' {
-    #             InModuleScope -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #                 $script:returnedCertificate | Should -BeNullOrEmpty
-    #             }
-    #         }
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 2 `
-    #                 -Scope Context
-    #         }
-    #     }
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #     Context 'Certificate without DN Exists, DN not passed' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem -MockWith {
-    #                 $mockCertificate
-    #             }
-    #         }
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope Context
+        }
+    }
 
-    #                 { $script:returnedCertificate = Find-Certificate `
-    #                         -Issuer $mockIssuer `
-    #                         -SubjectFormat 'Both' `
-    #                         -MatchAlternate $true `
-    #                         -Verbose:$VerbosePreference } | Should -Not -Throw
-    #             }
-    #         }
+    Context 'SubjectFormat is Both, Certificate with DN Exists, DN not passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificateDN
+            }
+        }
 
-    #         It 'Should return expected certificate' {
-    #             InModuleScope -Parameters @{
-    #                 mockCertificateThumbprint = $script:mockCertificateThumbprint
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
-    #             }
-    #         }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    Verbose        = $VerbosePreference
+                }
 
-    #         It 'Should call expected Mocks' {
-    #             Should -Invoke `
-    #                 -CommandName Get-ChildItem `
-    #                 -Exactly -Times 1 `
-    #                 -Scope Context
-    #         }
-    #     }
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #     Context 'Certificate does not exist, DN not passed, MatchAlternate is false' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem
-    #         }
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 $findParameters = @{
-    #                     Issuer         = $mockIssuer
-    #                     SubjectFormat  = 'Both'
-    #                     MatchAlternate = $false
-    #                     Verbose        = $VerbosePreference
-    #                 }
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
 
-    #                 { $script:returnedCertificate = Find-Certificate @findParameters } | Should -Not -Throw
-    #             }
-    #         }
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope Context
+        }
+    }
 
-    #         It 'Should return null' {
-    #             InModuleScope -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+    Context 'SubjectFormat is Both, Certificate without DN Exists, DN not passed' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificate
+            }
+        }
 
-    #                 $script:returnedCertificate | Should -BeNullOrEmpty
-    #             }
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #             Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope It
-    #         }
-    #     }
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $true
+                    Verbose        = $VerbosePreference
+                }
 
-    #     Context 'Certificate without DN Exists, DN not passed, MatchAlternate is false' {
-    #         BeforeAll {
-    #             Mock -CommandName Get-ChildItem -MockWith {
-    #                 $mockCertificate
-    #             }
-    #         }
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
 
-    #         It 'Should not throw error' {
-    #             InModuleScope -Parameters @{
-    #                 mockIssuer = $script:mockIssuer
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
 
-    #                 $findParameters = @{
-    #                     Issuer         = $mockIssuer
-    #                     SubjectFormat  = 'Both'
-    #                     MatchAlternate = $false
-    #                     Verbose        = $VerbosePreference
-    #                 }
+        It 'Should return expected certificate' {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-    #                 { $script:returnedCertificate = Find-Certificate @findParameters } | Should -Not -Throw
-    #             }
-    #         }
+                $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+            }
+        }
 
-    #         It 'Should return expected certificate' {
-    #             InModuleScope -Parameters @{
-    #                 mockCertificateThumbprint = $script:mockCertificateThumbprint
-    #             } -ScriptBlock {
-    #                 Set-StrictMode -Version 1.0
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope Context
+        }
+    }
 
-    #                 $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
-    #             }
+    Context 'SubjectFormat is Both, Certificate does not exist, DN not passed, MatchAlternate is false' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem
+        }
 
-    #             Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope It
-    #         }
-    #     }
-    # }
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $false
+                    Verbose        = $VerbosePreference
+                }
+
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
+
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
+
+        It 'Should return null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:returnedCertificate | Should -BeNullOrEmpty
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 2 -Scope Context
+        }
+    }
+
+    Context 'SubjectFormat is Both, Certificate without DN Exists, DN not passed, MatchAlternate is false' {
+        BeforeAll {
+            Mock -CommandName Get-ChildItem -MockWith {
+                $mockCertificate
+            }
+        }
+
+        It 'Should not throw error' {
+            InModuleScope -Parameters @{
+                mockIssuer = $script:mockIssuer
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $findCertificateParams = @{
+                    Issuer         = $mockIssuer
+                    SubjectFormat  = 'Both'
+                    MatchAlternate = $false
+                    Verbose        = $VerbosePreference
+                }
+
+                $script:returnedCertificate = Find-Certificate @findCertificateParams
+
+                { $script:returnedCertificate } | Should -Not -Throw
+            }
+        }
+
+        It 'Should return expected certificate' {
+            InModuleScope -Parameters @{
+                mockCertificateThumbprint = $script:mockCertificateThumbprint
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:returnedCertificate.Thumbprint | Should -Be $mockCertificateThumbprint
+            }
+        }
+
+        It 'Should call expected Mocks' {
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope Context
+        }
+    }
 }
