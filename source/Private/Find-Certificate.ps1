@@ -94,7 +94,7 @@ function Find-Certificate
             else
             {
                 # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ($script:localizedData.FindCertificate_Message - $Subject, $Issuer)
+                Write-Verbose -Message ($script:localizedData.FindCertificate_Message -f $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
@@ -132,7 +132,7 @@ function Find-Certificate
             else
             {
                 # Try and lookup the certificate using the subject name
-                Write-Verbose -Message ($script:localizedData.FindCertificate_Message - $Subject, $Issuer)
+                Write-Verbose -Message ($script:localizedData.FindCertificate_Message -f $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
                         ($_.Extensions.EnhancedKeyUsages.FriendlyName `
