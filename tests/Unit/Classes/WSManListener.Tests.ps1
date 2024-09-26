@@ -90,7 +90,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockWSManListenerInstance = [WSManListener] @{
+                    $script:mockInstance = [WSManListener] @{
                         Transport = 'HTTP'
                         Ensure    = 'Present'
                     }
@@ -102,14 +102,14 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         call back to the derived class method GetCurrentState()
                         to get the result to return from the derived method Get().
                     #>
-                    $script:mockWSManListenerInstance |
+                    $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                Transport             = [WSManTransport] 'HTTP'
-                                Port                  = [System.UInt16] 5985
-                                Address               = '*'
-                                Enabled               = 'true'
-                                URLPrefix             = 'wsman'
+                            return @{
+                                Transport = [WSManTransport] 'HTTP'
+                                Port      = [System.UInt16] 5985
+                                Address   = '*'
+                                Enabled   = 'true'
+                                URLPrefix = 'wsman'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -122,7 +122,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $currentState = $script:mockWSManListenerInstance.Get()
+                    $currentState = $script:mockInstance.Get()
 
                     $currentState.Transport | Should -Be 'HTTP'
                     $currentState.Port | Should -Be 5985
@@ -150,7 +150,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockWSManListenerInstance = [WSManListener] @{
+                    $script:mockInstance = [WSManListener] @{
                         Transport = 'HTTPS'
                         Ensure    = 'Present'
                     }
@@ -162,14 +162,14 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         call back to the derived class method GetCurrentState()
                         to get the result to return from the derived method Get().
                     #>
-                    $script:mockWSManListenerInstance |
+                    $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                Transport             = [WSManTransport] 'HTTPS'
-                                Port                  = [System.UInt16] 5986
-                                Address               = '*'
-                                Enabled               = 'true'
-                                URLPrefix             = 'wsman'
+                            return @{
+                                Transport = [WSManTransport] 'HTTPS'
+                                Port      = [System.UInt16] 5986
+                                Address   = '*'
+                                Enabled   = 'true'
+                                URLPrefix = 'wsman'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -182,7 +182,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $currentState = $script:mockWSManListenerInstance.Get()
+                    $currentState = $script:mockInstance.Get()
 
                     $currentState.Transport | Should -Be 'HTTPS'
                     $currentState.Port | Should -Be 5986
@@ -209,7 +209,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockWSManListenerInstance = [WSManListener] @{
+                    $script:mockInstance = [WSManListener] @{
                         Transport = 'HTTP'
                         Ensure    = 'Absent'
                     }
@@ -221,9 +221,9 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         call back to the derived class method GetCurrentState()
                         to get the result to return from the derived method Get().
                     #>
-                    $script:mockWSManListenerInstance |
+                    $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{}
+                            return @{}
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
@@ -235,7 +235,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $currentState = $script:mockWSManListenerInstance.Get()
+                    $currentState = $script:mockInstance.Get()
 
                     $currentState.Transport | Should -Be 'HTTP'
                     $currentState.Port | Should -BeNullOrEmpty
@@ -254,7 +254,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Ensure | Should -Be 'Absent'
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Transport'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was ""'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was null'
                 }
             }
         }
@@ -266,7 +266,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockWSManListenerInstance = [WSManListener] @{
+                    $script:mockInstance = [WSManListener] @{
                         Transport = 'HTTPS'
                         Port      = 5986
                         Ensure    = 'Present'
@@ -279,14 +279,14 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         call back to the derived class method GetCurrentState()
                         to get the result to return from the derived method Get().
                     #>
-                    $script:mockWSManListenerInstance |
+                    $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                Transport             = [WSManTransport] 'HTTPS'
-                                Port                  = [System.UInt16] 6000
-                                Address               = '*'
-                                Enabled               = 'true'
-                                URLPrefix             = 'wsman'
+                            return @{
+                                Transport = [WSManTransport] 'HTTPS'
+                                Port      = [System.UInt16] 6000
+                                Address   = '*'
+                                Enabled   = 'true'
+                                URLPrefix = 'wsman'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -299,7 +299,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $currentState = $script:mockWSManListenerInstance.Get()
+                    $currentState = $script:mockInstance.Get()
 
                     $currentState.Transport | Should -Be 'HTTPS'
 
@@ -326,70 +326,12 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
             }
         }
 
-        Context 'When the listener exists' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $script:mockWSManListenerInstance = [WSManListener] @{
-                        Transport = 'HTTPS'
-                        Ensure    = 'Present'
-                    }
-
-                    <#
-                        This mocks the method GetCurrentState().
-
-                        Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
-                    #>
-                    $script:mockWSManListenerInstance |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{}
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                            return
-                        }
-                }
-            }
-
-            It 'Should return the correct values' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $currentState = $script:mockWSManListenerInstance.Get()
-
-                    $currentState.Transport | Should -Be 'HTTPS'
-                    $currentState.Port | Should -BeNullOrEmpty
-
-                    $currentState.Address | Should -BeNullOrEmpty
-                    $currentState.Enabled | Should -BeFalse
-                    $currentState.URLPrefix | Should -BeNullOrEmpty
-
-                    $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
-                    $currentState.MatchAlternate | Should -BeNullOrEmpty
-                    $currentState.BaseDN | Should -BeNullOrEmpty
-                    $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-                    $currentState.Hostname | Should -BeNullOrEmpty
-
-                    $currentState.Ensure | Should -Be 'Absent'
-
-                    $currentState.Reasons | Should -HaveCount 2
-                    $currentState.Reasons[1].Code | Should -Be 'WSManListener:WSManListener:Ensure'
-                    $currentState.Reasons[1].Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
-                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Transport'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTPS", but was ""'
-                }
-            }
-        }
-
         Context 'When the listener exists but should not' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockWSManListenerInstance = [WSManListener] @{
+                    $script:mockInstance = [WSManListener] @{
                         Transport = 'HTTP'
                         Ensure    = 'Absent'
                     }
@@ -401,7 +343,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         call back to the derived class method GetCurrentState()
                         to get the result to return from the derived method Get().
                     #>
-                    $script:mockWSManListenerInstance |
+                    $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
                                 Transport             = [WSManTransport] 'HTTP'
@@ -426,7 +368,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $currentState = $script:mockWSManListenerInstance.Get()
+                    $currentState = $script:mockInstance.Get()
 
                     $currentState.Transport | Should -Be 'HTTP'
                     $currentState.Port | Should -Be 5985
@@ -448,6 +390,262 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Ensure'
                     $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
                 }
+            }
+        }
+    }
+}
+
+Describe 'WSManListener\Set()' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockInstance = [WSManListener] @{
+                Transport = 'HTTP'
+                Port      = 5000
+                Ensure    = 'Present'
+            } |
+                # Mock method Modify which is called by the case method Set().
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
+                    $script:methodModifyCallCount += 1
+                } -PassThru
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:methodModifyCallCount = 0
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    }
+            }
+        }
+
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Set()
+
+                $script:methodModifyCallCount | Should -Be 0
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @(
+                            @{
+                                Property      = 'Port'
+                                ExpectedValue = 5000
+                                ActualValue   = 5985
+                            }
+                        )
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    }
+            }
+        }
+
+        It 'Should call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Set()
+
+                $script:methodModifyCallCount | Should -Be 1
+            }
+        }
+    }
+}
+
+Describe 'WSManListener\Test()' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockInstance = [WSManListener] @{
+                Transport             = 'HTTPS'
+                Port                  = 5986
+                CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
+                HostName              = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                Ensure                = 'Present'
+            }
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance.Test() | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @(
+                            @{
+                                Property      = 'Port'
+                                ExpectedValue = 5986
+                                ActualValue   = 443
+                            })
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    }
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Test() | Should -BeFalse
+            }
+        }
+    }
+}
+
+Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
+    Context 'When object is missing in the current state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                #     $script:mockInstance = [DnsServerCache] @{
+                #         DnsServer = 'localhost'
+                #     }
+            }
+
+            # Mock -CommandName Get-DnsServerCache
+        }
+    }
+
+    It 'Should return the correct values' {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            # $currentState = $script:mockInstance.GetCurrentState(
+            #     @{
+            #         DnsServer = 'localhost'
+            #     }
+            # )
+
+            # $currentState.DnsServer | Should -Be 'localhost'
+            # $currentState.IgnorePolicies | Should -BeFalse
+            # $currentState.LockingPercent | Should -Be 0
+            # $currentState.MaxKBSize | Should -Be 0
+            # $currentState.MaxNegativeTtl | Should -BeNullOrEmpty
+            # $currentState.MaxTtl | Should -BeNullOrEmpty
+            # $currentState.EnablePollutionProtection | Should -BeFalse
+            # $currentState.StoreEmptyAuthenticationResponse | Should -BeFalse
+        }
+
+        #Should -Invoke -CommandName Get-DnsServerCache -Exactly -Times 1 -Scope It
+    }
+
+    Context 'When the object is present in the current state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                #     $script:mockInstance = [DnsServerCache] @{
+                #         DnsServer = 'SomeHost'
+                #     }
+                # }
+
+                # Mock -CommandName Get-DnsServerCache -MockWith {
+                #     return New-CimInstance -ClassName 'DnsServerCache' -Namespace 'root/Microsoft/Windows/DNS' -ClientOnly -Property @{
+                #         IgnorePolicies                   = $true
+                #         LockingPercent                   = 100
+                #         MaxKBSize                        = 0
+                #         MaxNegativeTtl                   = '00:15:00'
+                #         MaxTtl                           = '1.00:00:00'
+                #         EnablePollutionProtection        = $true
+                #         StoreEmptyAuthenticationResponse = $true
+                #     }
+                # }
+            }
+        }
+
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                # $currentState = $script:mockInstance.GetCurrentState(
+                #     @{
+                #         DnsServer = 'SomeHost'
+                #     }
+                # )
+
+                # $currentState.DnsServer | Should -Be 'SomeHost'
+                # $currentState.IgnorePolicies | Should -BeTrue
+                # $currentState.LockingPercent | Should -Be 100
+                # $currentState.MaxKBSize | Should -Be 0
+                # $currentState.MaxNegativeTtl | Should -Be '00:15:00'
+                # $currentState.MaxTtl | Should -Be '1.00:00:00'
+                # $currentState.EnablePollutionProtection | Should -BeTrue
+                # $currentState.StoreEmptyAuthenticationResponse | Should -BeTrue
+            }
+
+            #Should -Invoke -CommandName Get-DnsServerCache -Exactly -Times 1 -Scope It
+        }
+    }
+}
+
+Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+
             }
         }
     }
