@@ -243,7 +243,7 @@ class WSManListener : ResourceBase
 
         if ($this.Transport -eq [WSManTransport]::HTTPS)
         {
-            $findCertificateParams = $this | Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
+            $findCertificateParams = $this | Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address') -HasValue
 
             $certificate = Find-Certificate @findCertificateParams
             [System.String] $thumbprint = $certificate.Thumbprint
