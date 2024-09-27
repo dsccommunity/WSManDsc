@@ -782,13 +782,11 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                     # Mock method NewInstance which is called by the case method Modify().
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NewInstance' -Value {
                         $script:methodNewInstanceCallCount += 1
-                    } -PassThru
-                    |
+                    } -PassThru |
                     # Mock method RemoveInstance which is called by the case method Modify().
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'RemoveInstance' -Value {
                         $script:methodRemoveInstanceCallCount += 1
-                    } -PassThru
-                    |
+                    } -PassThru |
                     # Mock method SetInstance which is called by the case method Modify().
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'SetInstance' -Value {
                         $script:methodSetInstanceCallCount += 1
@@ -897,7 +895,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
         BeforeAll {
             Mock -CommandName Get-DscProperty
         }
-        
+
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
