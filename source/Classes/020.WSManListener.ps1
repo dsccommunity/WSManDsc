@@ -89,7 +89,7 @@ class WSManListener : ResourceBase
 
     [DscProperty()]
     [System.String]
-    $Hostname
+    $HostName
 
     [DscProperty(NotConfigurable)]
     [System.Boolean]
@@ -189,84 +189,30 @@ class WSManListener : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-
-        $remove = $false
-        $create = $false
-
-        $selectorSet = @{
-            Transport = $this.Transport
-            Address   = $this.Address
-        }
-
-        Write-Verbose ('$properties.ContainsKey(''Ensure'') = {0}' -f $properties.ContainsKey('Ensure'))
-        Write-Verbose ('$properties.Ensure = {0}' -f $properties.Ensure)
-        Write-Verbose ('$this.Ensure = {0}' -f $this.Ensure)
+        #Write-Verbose ('$properties.ContainsKey(''Ensure'') = {0}' -f $properties.ContainsKey('Ensure'))
+        #Write-Verbose ('$properties.Ensure = {0}' -f $properties.Ensure)
+        #Write-Verbose ('$this.Ensure = {0}' -f $this.Ensure)
 
         if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent -and $this.Ensure -eq [Ensure]::Absent)
         {
             # Ensure was not in desired state so the resource should be removed
-            $remove = $true
+            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
+
+            $this.RemoveInstance()
         }
         elseif ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Present -and $this.Ensure -eq [Ensure]::Present)
         {
             # Ensure was not in the desired state so the resource should be created
-            $create = $true
+            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
+
+            $this.NewInstance()
         }
         else
         {
             # Resource exists but one or more properties are not in the desired state
-            $remove = $true
-            $create = $true
-        }
+            Write-Verbose -Message ($this.localizedData.ModifyingListenerMessage -f $this.Transport, $this.Port)
 
-        if ($remove)
-        {
-            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
-
-            Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet
-        }
-
-        if ($create)
-        {
-            $valueSet = @{
-                Port = $properties.Port
-            }
-
-
-            if ($this.Transport -eq [WSManTransport]::HTTPS)
-            {
-                $findCertificateParams = Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
-
-                $certificate = Find-Certificate @findCertificateParams
-                [System.String] $thumbprint = $certificate.thumbprint
-
-                if ($thumbprint)
-                {
-                    $valueSet.CertificateThumbprint = $thumbprint
-
-                    if ([System.String]::IsNullOrEmpty($properties.Hostname))
-                    {
-                        $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
-                    }
-                    else
-                    {
-                        $valueSet.HostName = $properties.HostName
-                    }
-                }
-                else
-                {
-                    # TODO: Extract this to assert or into a parameter set
-                    # A certificate could not be found to use for the HTTPS listener
-                    New-InvalidArgumentException `
-                        -Message ($this.localizedData.ListenerCreateFailNoCertError -f $this.Transport, $this.Port) `
-                        -Argument 'Issuer'
-                } # if
-            }
-
-
-            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
-
-            New-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet @selectorSet -ValueSet @valueSet -ErrorAction Stop
+            $this.SetInstance($properties)
         }
     }
 
@@ -281,28 +227,75 @@ class WSManListener : ResourceBase
         a value.
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
+    {}
+
+    hidden [void] NewInstance()
     {
-        # if ($null -ne $properties.SubjectFormat)
-        # {
-        #     $errorMessage = $this.localizedData.SubjectFormatMustBeValid
+        $selectorSet = @{
+            Transport = $this.Transport
+            Address   = $this.Address
+        }
 
-        #     if ($properties.SubjectFormat -inotin ('Both', 'FQDNOnly', 'NameOnly'))
-        #     {
-        #         New-InvalidArgumentException -ArgumentName 'SubjectFormat' -Message $errorMessage
-        #     }
-        # }
+        $valueSet = @{
+            Port = $this.Port
+        }
 
-        # # The properties MaximumFiles and MaximumRolloverFiles are mutually exclusive.
-        # $assertBoundParameterParameters = @{
-        #     BoundParameterList     = $properties
-        #     MutuallyExclusiveList1 = @(
-        #         'MaximumFiles'
-        #     )
-        #     MutuallyExclusiveList2 = @(
-        #         'MaximumRolloverFiles'
-        #     )
-        # }
 
-        # Assert-BoundParameter @assertBoundParameterParameters
+        if ($this.Transport -eq [WSManTransport]::HTTPS)
+        {
+            $findCertificateParams = $this | Get-DscProperty -Attribute @('Optional') -ExcludeName @('Port', 'Address')
+
+            $certificate = Find-Certificate @findCertificateParams
+            [System.String] $thumbprint = $certificate.Thumbprint
+
+            if ($thumbprint)
+            {
+                $valueSet.CertificateThumbprint = $thumbprint
+
+                if ([System.String]::IsNullOrEmpty($this.Hostname))
+                {
+                    $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
+                }
+                else
+                {
+                    $valueSet.HostName = $this.HostName
+                }
+            }
+            else
+            {
+                # A certificate could not be found to use for the HTTPS listener
+                New-InvalidArgumentException -Message (
+                    $this.localizedData.ListenerCreateFailNoCertError -f $this.Transport, $this.Port
+                ) -Argument 'Issuer'
+            } # if
+        }
+
+        New-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet -ValueSet $valueSet -ErrorAction Stop
+    }
+
+    hidden [void] RemoveInstance()
+    {
+        $selectorSet = @{
+            Transport = $this.Transport
+            Address   = $this.Address
+        }
+
+        Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet
+    }
+
+    hidden [void] SetInstance([System.Collections.Hashtable] $properties)
+    {
+        $selectorSet = @{
+            Transport = $this.Transport
+            Address   = $this.Address
+        }
+
+        $valueSet = @{}
+
+        foreach ($property in $properties) {
+            $valueSet.$property.Key = $property.Value
+        }
+
+        Set-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet -ValueSet $valueSet
     }
 }
