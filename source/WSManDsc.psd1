@@ -1,6 +1,6 @@
 @{
     # Script module or binary module file associated with this manifest.
-    # RootModule = ''
+    RootModule            = 'WSManDsc.psm1'
 
     # Version number of this module.
     ModuleVersion         = '0.0.1'
@@ -21,16 +21,7 @@
     Description           = 'DSC resources for configuring WS-Man.'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion     = '4.0'
-
-    # Name of the Windows PowerShell host required by this module
-    # PowerShellHostName = ''
-
-    # Minimum version of the Windows PowerShell host required by this module
-    # PowerShellHostVersion = ''
-
-    # Minimum version of Microsoft .NET Framework required by this module
-    # DotNetFrameworkVersion = ''
+    PowerShellVersion     = '5.0'
 
     # Minimum version of the common language runtime (CLR) required by this module
     CLRVersion            = '4.0'
@@ -53,9 +44,6 @@
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess      = @()
 
-    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    # NestedModules = @()
-
     # Functions to export from this module
     FunctionsToExport     = @()
 
@@ -69,7 +57,7 @@
     AliasesToExport       = @()
 
     # DSC resources to export from this module
-    DscResourcesToExport  = @('WSManListener', 'WSManConfig', 'WSManServiceConfig')
+    DscResourcesToExport  = @()
 
     # List of all modules packaged with this module
     # ModuleList = @()
@@ -101,10 +89,4 @@
         } # End of PSData hashtable
 
     } # End of PrivateData hashtable
-
-    # HelpInfo URI of this module
-    # HelpInfoURI = ''
-
-    # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
-    # DefaultCommandPrefix = ''
 }
