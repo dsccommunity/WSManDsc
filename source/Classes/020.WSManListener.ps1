@@ -111,14 +111,13 @@ class WSManListener : ResourceBase
             'SubjectFormat'
             'MatchAlternate'
             'BaseDN'
-
         )
 
-        # # Set subject format to default value
-        # if (-not $this.SubjectFormat)
-        # {
-        #     $this.SubjectFormat = 'Both'
-        # }
+        # Set subject format to default value
+        if (-not $this.SubjectFormat)
+        {
+            $this.SubjectFormat = [WSManSubjectFormat]::Both
+        }
     }
 
     [WSManListener] Get()
