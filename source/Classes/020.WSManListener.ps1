@@ -189,30 +189,21 @@ class WSManListener : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        #Write-Verbose ('$properties.ContainsKey(''Ensure'') = {0}' -f $properties.ContainsKey('Ensure'))
-        #Write-Verbose ('$properties.Ensure = {0}' -f $properties.Ensure)
-        #Write-Verbose ('$this.Ensure = {0}' -f $this.Ensure)
-
         if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent -and $this.Ensure -eq [Ensure]::Absent)
         {
             # Ensure was not in desired state so the resource should be removed
-            Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
-
             $this.RemoveInstance()
         }
         elseif ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Present -and $this.Ensure -eq [Ensure]::Present)
         {
             # Ensure was not in the desired state so the resource should be created
-            Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
-
             $this.NewInstance()
         }
         else
         {
             # Resource exists but one or more properties are not in the desired state
-            Write-Verbose -Message ($this.localizedData.ModifyingListenerMessage -f $this.Transport, $this.Port)
-
-            $this.SetInstance($properties)
+            $this.RemoveInstance()
+            $this.NewInstance()
         }
     }
 
@@ -227,10 +218,14 @@ class WSManListener : ResourceBase
         a value.
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
-    {}
+    {
+        #TODO: if HTTPS, CertificateThumbprint and Issuer, SubjectFormat, MatchAlternate, BaseDN are mutually exclusive
+    }
 
     hidden [void] NewInstance()
     {
+        Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
+
         $selectorSet = @{
             Transport = $this.Transport
             Address   = $this.Address
@@ -275,27 +270,13 @@ class WSManListener : ResourceBase
 
     hidden [void] RemoveInstance()
     {
+        Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
+
         $selectorSet = @{
             Transport = $this.Transport
             Address   = $this.Address
         }
 
         Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet
-    }
-
-    hidden [void] SetInstance([System.Collections.Hashtable] $properties)
-    {
-        $selectorSet = @{
-            Transport = $this.Transport
-            Address   = $this.Address
-        }
-
-        $valueSet = @{}
-
-        foreach ($property in $properties) {
-            $valueSet.$property.Key = $property.Value
-        }
-
-        Set-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet -ValueSet $valueSet
     }
 }

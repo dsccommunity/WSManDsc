@@ -841,7 +841,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
         }
 
         Context 'When the resource does exist but properties are incorrect' {
-            It 'Should call method SetInstance()' {
+            It 'Should call method RemoveInstance() and NewInstance()' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
@@ -854,7 +854,8 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
 
                     $script:mockInstance.Modify($mockProperties)
 
-                    $script:methodSetInstanceCallCount | Should -Be 1
+                    $script:methodRemoveInstanceCallCount | Should -Be 1
+                    $script:methodNewInstanceCallCount | Should -Be 1
                 }
             }
         }
@@ -1001,5 +1002,3 @@ Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
         Should -Invoke -CommandName Remove-WSManInstance -Exactly -Times 1 -Scope It
     }
 }
-
-#Describe 'WSManListener\SetInstance()' -Tag 'HiddenMember' {}
