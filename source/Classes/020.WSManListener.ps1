@@ -73,7 +73,7 @@ class WSManListener : ResourceBase
 
     [DscProperty()]
     [WSManSubjectFormat]
-    $SubjectFormat
+    $SubjectFormat = [WSManSubjectFormat]::Both
 
     [DscProperty()]
     [Nullable[System.Boolean]]
@@ -112,12 +112,6 @@ class WSManListener : ResourceBase
             'MatchAlternate'
             'BaseDN'
         )
-
-        # Set subject format to default value
-        if (-not $this.SubjectFormat)
-        {
-            $this.SubjectFormat = [WSManSubjectFormat]::Both
-        }
     }
 
     [WSManListener] Get()
