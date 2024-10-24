@@ -28,7 +28,7 @@ function Get-DefaultPort
         if (-not $Port)
         {
             # Set the default port because none was provided
-            if ($Transport -eq 'HTTP')
+            if ($Transport -eq [WSManTransport]::HTTP)
             {
                 $Port = 5985
             }
