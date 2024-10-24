@@ -32,9 +32,8 @@ function Find-Certificate
         $Issuer,
 
         [Parameter()]
-        [ValidateSet('Both', 'FQDNOnly', 'NameOnly')]
-        [System.String]
-        $SubjectFormat = 'Both',
+        [WSManSubjectFormat]
+        $SubjectFormat = [WSManSubjectFormat]::Both,
 
         [Parameter()]
         [System.Boolean]
@@ -64,7 +63,7 @@ function Find-Certificate
     else
     {
         # First try and find a certificate that is used to the FQDN of the machine
-        if ($SubjectFormat -in 'Both', 'FQDNOnly')
+        if ($SubjectFormat -in [WSManSubjectFormat]::Both, [WSManSubjectFormat]::FQDNOnly)
         {
             # Lookup the certificate using the FQDN of the machine
             if ([System.String]::IsNullOrEmpty($Hostname))
@@ -105,7 +104,7 @@ function Find-Certificate
             } # if
         }
 
-        if (-not $certificate -and ($SubjectFormat -in 'Both', 'NameOnly'))
+        if (-not $certificate -and ($SubjectFormat -in [WSManSubjectFormat]::Both, [WSManSubjectFormat]::NameOnly))
         {
             # If could not find an FQDN cert, try for one issued to the computer name
             [System.String] $Hostname = $ENV:ComputerName
