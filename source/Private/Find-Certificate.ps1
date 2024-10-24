@@ -122,8 +122,7 @@ function Find-Certificate
                 Write-Verbose -Message ($script:localizedData.FindCertificate_AlternateMessage -f $Subject, $Issuer, $Hostname)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                        -contains 'Server Authentication') -and
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
