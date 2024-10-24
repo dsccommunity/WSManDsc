@@ -12,8 +12,7 @@ function Get-Listener
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('HTTP', 'HTTPS')]
-        [System.String]
+        [WSManTransport]
         $Transport
     )
 

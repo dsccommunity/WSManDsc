@@ -15,8 +15,7 @@ function Get-DefaultPort
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('HTTP', 'HTTPS')]
-        [System.String]
+        [WSManTransport]
         $Transport,
 
         [Parameter()]
