@@ -3,6 +3,22 @@
         The `WSManListener` DSC resource is used to create, modify, or remove
         WSMan listeners.
 
+    .DESCRIPTION
+        This resource is used to create, edit or remove WS-Management HTTP/HTTPS listeners.
+
+        ### SubjectFormat Parameter Notes
+
+        The subject format is used to determine how the certificate for the listener
+        will be identified. It must be one of the following:
+
+        - **Both**: Look for a certificate with a subject matching the computer FQDN.
+            If one can't be found the flat computer name will be used. If neither
+            can be found then the listener will not be created.
+        - **FQDN**: Look for a certificate with a subject matching the computer FQDN
+            only. If one can't be found then the listener will not be created.
+        - **ComputerName**: Look for a certificate with a subject matching the computer
+        FQDN only. If one can't be found then the listener will not be created.
+
     .PARAMETER Transport
         The transport type of WS-Man Listener.
 
@@ -139,6 +155,7 @@ class WSManListener : ResourceBase
             $this.Address = '*'
         }
 
+        $state = @{}
 
         $getCurrentStateResult = Get-Listener @getParameters
 
@@ -161,11 +178,6 @@ class WSManListener : ResourceBase
                 $state.Issuer = (Find-Certificate -CertificateThumbprint $getCurrentStateResult.CertificateThumbprint).Issuer
             }
         }
-        else
-        {
-            $state = @{}
-        }
-
 
         return $state
     }
@@ -192,7 +204,7 @@ class WSManListener : ResourceBase
             # Ensure was not in the desired state so the resource should be created
             $this.NewInstance()
         }
-        else
+        elseif ($this.Ensure -eq [Ensure]::Present)
         {
             # Resource exists but one or more properties are not in the desired state
             $this.RemoveInstance()
@@ -212,7 +224,19 @@ class WSManListener : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        #TODO: if HTTPS, CertificateThumbprint and Issuer, SubjectFormat, MatchAlternate, BaseDN are mutually exclusive
+        $assertBoundParameterParameters = @{
+            BoundParameterList     = $properties
+            MutuallyExclusiveList1 = @(
+                'Issuer'
+                'BaseDN'
+            )
+            MutuallyExclusiveList2 = @(
+                'CertificateThumbprint'
+                'Hostname'
+            )
+        }
+
+        Assert-BoundParameter @assertBoundParameterParameters
     }
 
     hidden [void] NewInstance()
@@ -263,11 +287,16 @@ class WSManListener : ResourceBase
 
     hidden [void] RemoveInstance()
     {
-        Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Port)
+        Write-Verbose -Message ($this.localizedData.ListenerExistsRemoveMessage -f $this.Transport, $this.Address)
 
         $selectorSet = @{
-            Transport = $this.Transport
-            Address   = $this.Address
+            Transport = [System.String] $this.Transport
+            Address   = '*'
+        }
+
+        if ($this.Address)
+        {
+            $selectorSet.Address = $this.Address
         }
 
         Remove-WSManInstance -ResourceURI 'winrm/config/Listener' -SelectorSet $selectorSet
