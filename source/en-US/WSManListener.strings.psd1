@@ -11,7 +11,7 @@ ConvertFrom-StringData @'
     # None
 
     ## Strings directly used by the derived class WSManListener.
-    ListenerExistsRemoveMessage = Removing {0} Listener on port {1} (WSML0001).
+    ListenerExistsRemoveMessage = Removing {0} Listener on address {1} (WSML0001).
     ListenerCreateFailNoCertError = Failed to create {0} Listener on port {1} because an applicable certificate could not be found (WSM0002).
     CreatingListenerMessage = Creating {0} Listener on port {1} (WSML0003).
 '@
