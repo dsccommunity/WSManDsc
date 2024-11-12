@@ -786,10 +786,6 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                     # Mock method RemoveInstance which is called by the case method Modify().
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'RemoveInstance' -Value {
                         $script:methodRemoveInstanceCallCount += 1
-                    } -PassThru |
-                    # Mock method SetInstance which is called by the case method Modify().
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'SetInstance' -Value {
-                        $script:methodSetInstanceCallCount += 1
                     } -PassThru
             }
         }
@@ -800,7 +796,6 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
 
                 $script:methodNewInstanceCallCount = 0
                 $script:methodRemoveInstanceCallCount = 0
-                $script:methodSetInstanceCallCount = 0
             }
         }
 
@@ -845,7 +840,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance.Ensure = 'Absent'
+                    $script:mockInstance.Ensure = 'Present'
 
                     $mockProperties = @{
                         Transport = 'HTTP'
@@ -1002,3 +997,16 @@ Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
         Should -Invoke -CommandName Remove-WSManInstance -Exactly -Times 1 -Scope It
     }
 }
+
+# Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
+#     Context 'When passing mutually exclusive parameters' {
+#         Context 'When passing '
+#         BeforeAll {
+#             InModuleScope -ScriptBlock {
+#                 $script:mockInstance = [WSManListener] @{
+
+#                 }
+#             }
+#         }
+#     }
+# }
