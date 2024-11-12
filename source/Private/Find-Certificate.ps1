@@ -83,8 +83,7 @@ function Find-Certificate
                 Write-Verbose -Message ($script:localizedData.FindCertificate_AlternateMessage -f $Subject, $Issuer, $Hostname)
 
                 $certificate = (Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                            -contains 'Server Authentication') -and
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($Hostname -in $_.DNSNameList.Unicode) -and
                         ($_.Subject -eq $Subject)
@@ -96,8 +95,7 @@ function Find-Certificate
                 Write-Verbose -Message ($script:localizedData.FindCertificate_Message -f $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                        ($_.Extensions.EnhancedKeyUsages.FriendlyName `
-                        -contains 'Server Authentication') -and
+                        ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
                         ($_.Issuer -eq $Issuer) -and
                         ($_.Subject -eq $Subject)
                 } | Select-Object -First 1
@@ -133,9 +131,9 @@ function Find-Certificate
                 Write-Verbose -Message ($script:localizedData.FindCertificate_Message -f $Subject, $Issuer)
 
                 $certificate = Get-ChildItem -Path Cert:\localmachine\my | Where-Object -FilterScript {
-                    $_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication'
-                    -and $_.Issuer -eq $Issuer
-                    -and $_.Subject -eq $Subject
+                    ($_.Extensions.EnhancedKeyUsages.FriendlyName -contains 'Server Authentication') -and
+                    $_.Issuer -eq $Issuer -and
+                    $_.Subject -eq $Subject
                 } | Select-Object -First 1
             } # if
         } # if
