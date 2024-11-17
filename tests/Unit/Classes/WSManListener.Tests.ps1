@@ -998,15 +998,37 @@ Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
     }
 }
 
-# Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
-#     Context 'When passing mutually exclusive parameters' {
-#         Context 'When passing '
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 $script:mockInstance = [WSManListener] @{
+Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockInstance = [WSManListener] @{}
+        }
+    }
+    Context 'When passing mutually exclusive parameters' {
+        Context 'When passing Issuer and Hostname' {
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    {
+                        $mockInstance.AssertProperties(@{
+                                Issuer   = 'SomeIssuer'
+                                HostName = 'TheHostname'
+                            })
+                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                }
+            }
+        }
 
-#                 }
-#             }
-#         }
-#     }
-# }
+    }
+    Context 'When passing BaseDN and CertificateThumbprint' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                {
+                    $mockInstance.AssertProperties(@{
+                            BaseDN                = 'SomeBaseDN'
+                            CertificateThumbprint = 'certificateThumbprint'
+                        })
+                } | Should -Throw -ExpectedMessage '*DRC0010*'
+            }
+        }
+    }
+}
