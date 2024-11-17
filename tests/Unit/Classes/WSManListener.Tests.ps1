@@ -1001,13 +1001,18 @@ Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
 Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
     BeforeAll {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockInstance = [WSManListener] @{}
         }
     }
+
     Context 'When passing mutually exclusive parameters' {
         Context 'When passing Issuer and Hostname' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     {
                         $mockInstance.AssertProperties(@{
                                 Issuer   = 'SomeIssuer'
@@ -1017,11 +1022,13 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
                 }
             }
         }
-
     }
+
     Context 'When passing BaseDN and CertificateThumbprint' {
         It 'Should throw the correct error' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 {
                     $mockInstance.AssertProperties(@{
                             BaseDN                = 'SomeBaseDN'
