@@ -59,9 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DSC_WSManConfig`
   - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
   - Remove unused strings.
+  - Removed Export-ModuleMember.
 - `DSC_WSManServiceConfig`
   - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
   - Remove unused strings
+  - Removed Export-ModuleMember.
 - `DSC_WSManListener`
   - Converted to Class Resource
   - Extracted private functions to own files
