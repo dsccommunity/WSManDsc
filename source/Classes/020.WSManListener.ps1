@@ -229,6 +229,8 @@ class WSManListener : ResourceBase
             MutuallyExclusiveList1 = @(
                 'Issuer'
                 'BaseDN'
+                'SubjectFormat'
+                'MatchAlternate'
             )
             MutuallyExclusiveList2 = @(
                 'CertificateThumbprint'
