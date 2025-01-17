@@ -88,7 +88,8 @@ class WSManListener : ResourceBase
     $Issuer
 
     [DscProperty()]
-    [Nullable[WSManSubjectFormat]]
+    [ValidateSet('Both', 'FQDNOnly', 'NameOnly')]
+    [System.String]
     $SubjectFormat
 
     [DscProperty()]
