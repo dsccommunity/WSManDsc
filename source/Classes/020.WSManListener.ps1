@@ -88,8 +88,8 @@ class WSManListener : ResourceBase
     $Issuer
 
     [DscProperty()]
-    [WSManSubjectFormat]
-    $SubjectFormat = [WSManSubjectFormat]::Both
+    [Nullable[WSManSubjectFormat]]
+    $SubjectFormat
 
     [DscProperty()]
     [Nullable[System.Boolean]]

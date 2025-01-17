@@ -133,7 +133,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.URLPrefix | Should -Be 'wsman'
 
                     $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.SubjectFormat | Should -BeNullOrEmpty
                     $currentState.MatchAlternate | Should -BeNullOrEmpty
                     $currentState.BaseDN | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
@@ -192,7 +192,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.URLPrefix | Should -Be 'wsman'
 
                     $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.SubjectFormat | Should -BeNullOrEmpty
                     $currentState.MatchAlternate | Should -BeNullOrEmpty
                     $currentState.BaseDN | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
@@ -245,7 +245,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.URLPrefix | Should -BeNullOrEmpty
 
                     $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.SubjectFormat | Should -BeNullOrEmpty
                     $currentState.MatchAlternate | Should -BeNullOrEmpty
                     $currentState.BaseDN | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
@@ -320,7 +320,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.URLPrefix | Should -Be 'wsman'
 
                     $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.SubjectFormat | Should -BeNullOrEmpty
                     $currentState.MatchAlternate | Should -BeNullOrEmpty
                     $currentState.BaseDN | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
@@ -387,7 +387,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.URLPrefix | Should -Be 'wsman'
 
                     $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 'Both'
+                    $currentState.SubjectFormat | Should -BeNullOrEmpty
                     $currentState.MatchAlternate | Should -BeNullOrEmpty
                     $currentState.BaseDN | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
