@@ -5,6 +5,6 @@
 
 enum WSManTransport
 {
-    HTTP
+    HTTP = 1
     HTTPS
 }

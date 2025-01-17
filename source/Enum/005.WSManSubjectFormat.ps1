@@ -5,7 +5,7 @@
 
 enum WSManSubjectFormat
 {
-    Both
+    Both = 1
     FQDNOnly
     NameOnly
 }
