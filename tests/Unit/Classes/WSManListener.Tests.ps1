@@ -1027,11 +1027,11 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
                     CertificateThumbprint = 'certificateThumbprint'
                 }
                 @{
-                    SubjectFormat = 'SubjectFormat'
+                    SubjectFormat = 1
                     HostName      = 'TheHostname'
                 }
                 @{
-                    SubjectFormat         = 'SubjectFormat'
+                    SubjectFormat         = 1
                     CertificateThumbprint = 'certificateThumbprint'
                 }
                 @{
@@ -1051,7 +1051,12 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
             } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage '*DRC0010*'
+                if ($mockProperties.SubjectFormat)
+                {
+                    $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
+                }
+
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0010' + '*')
             }
         }
     }
@@ -1062,7 +1067,7 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
                 @{
                     Issuer         = 'SomeIssuer'
                     BaseDN         = 'SomeBaseDN'
-                    SubjectFormat  = 'SubjectFormat'
+                    SubjectFormat  = 0
                     MatchAlternate = 'MatchAlternate'
                 }
                 @{
@@ -1078,6 +1083,11 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
                 mockProperties = $_
             } -ScriptBlock {
                 Set-StrictMode -Version 1.0
+
+                if ($mockProperties.SubjectFormat)
+                {
+                    $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
+                }
 
                 { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
             }
