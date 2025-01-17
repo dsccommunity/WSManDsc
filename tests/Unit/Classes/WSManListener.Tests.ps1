@@ -499,7 +499,7 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                 Transport             = 'HTTPS'
                 Port                  = 5986
                 CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-                Hostname              = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                Hostname              = Get-ComputerName
                 Ensure                = 'Present'
             }
         }
@@ -624,7 +624,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                         Address               = '*'
 
                         CertificateThumbprint = $null
-                        Hostname              = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                        Hostname              = Get-ComputerName
 
                         Enabled               = $true
                         URLPrefix             = 'wsman'
@@ -648,7 +648,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                     $currentState.Address | Should -Be '*'
                     $currentState.Issuer | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-                    $currentState.Hostname | Should -Be $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                    $currentState.Hostname | Should -Be (Get-ComputerName)
                     $currentState.Enabled | Should -BeTrue
                     $currentState.URLPrefix | Should -Be 'wsman'
                 }
@@ -675,7 +675,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                         Address               = '*'
 
                         CertificateThumbprint = $null
-                        Hostname              = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                        Hostname              = Get-ComputerName
 
                         Enabled               = $true
                         URLPrefix             = 'wsman'
@@ -701,7 +701,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                     $currentState.Address | Should -Be '*'
                     $currentState.Issuer | Should -BeNullOrEmpty
                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-                    $currentState.Hostname | Should -Be $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                    $currentState.Hostname | Should -Be (Get-ComputerName)
                     $currentState.Enabled | Should -BeTrue
                     $currentState.URLPrefix | Should -Be 'wsman'
                 }
@@ -731,7 +731,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                         Address               = '*'
 
                         CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-                        Hostname              = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                        Hostname              = Get-ComputerName
 
                         Enabled               = $true
                         URLPrefix             = 'wsman'
@@ -757,7 +757,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                     $currentState.Address | Should -Be '*'
                     $currentState.Issuer | Should -Be 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
                     $currentState.CertificateThumbprint | Should -Be '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-                    $currentState.Hostname | Should -Be $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
+                    $currentState.Hostname | Should -Be (Get-ComputerName)
                     $currentState.Enabled | Should -BeTrue
                     $currentState.URLPrefix | Should -Be 'wsman'
                 }
@@ -941,7 +941,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
                     Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName New-WSManInstance -ParameterFilter {
-                        $ValueSet.HostName -eq [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
+                        $ValueSet.HostName -eq (Get-ComputerName)
                     } -Exactly -Times 1 -Scope It
                 }
             }

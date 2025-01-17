@@ -68,7 +68,7 @@ function Find-Certificate
             # Lookup the certificate using the FQDN of the machine
             if ([System.String]::IsNullOrEmpty($Hostname))
             {
-                $Hostname = [System.Net.Dns]::GetHostByName($ENV:computerName).Hostname
+                $Hostname = Get-ComputerName
             }
             $Subject = "CN=$Hostname"
 
