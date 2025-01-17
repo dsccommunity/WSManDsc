@@ -229,7 +229,7 @@ class WSManListener : ResourceBase
             MutuallyExclusiveList1 = @(
                 'Issuer'
                 'BaseDN'
-                'SubjectFormat'
+                #'SubjectFormat'
                 'MatchAlternate'
             )
             MutuallyExclusiveList2 = @(
