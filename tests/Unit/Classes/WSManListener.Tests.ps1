@@ -1008,33 +1008,78 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
     }
 
     Context 'When passing mutually exclusive parameters' {
-        Context 'When passing Issuer and Hostname' {
-            It 'Should throw the correct error' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    {
-                        $mockInstance.AssertProperties(@{
-                                Issuer   = 'SomeIssuer'
-                                HostName = 'TheHostname'
-                            })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    Issuer   = 'SomeIssuer'
+                    HostName = 'TheHostname'
                 }
+                @{
+                    Issuer                = 'SomeIssuer'
+                    CertificateThumbprint = 'certificateThumbprint'
+                }
+                @{
+                    BaseDN   = 'SomeBaseDN'
+                    HostName = 'TheHostname'
+                }
+                @{
+                    BaseDN                = 'SomeBaseDN'
+                    CertificateThumbprint = 'certificateThumbprint'
+                }
+                @{
+                    SubjectFormat = 'SubjectFormat'
+                    HostName      = 'TheHostname'
+                }
+                @{
+                    SubjectFormat         = 'SubjectFormat'
+                    CertificateThumbprint = 'certificateThumbprint'
+                }
+                @{
+                    MatchAlternate = 'MatchAlternate'
+                    HostName       = 'TheHostname'
+                }
+                @{
+                    MatchAlternate        = 'MatchAlternate'
+                    CertificateThumbprint = 'certificateThumbprint'
+                }
+            )
+        }
+
+        It 'Should throw the correct error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage '*DRC0010*'
             }
         }
     }
 
-    Context 'When passing BaseDN and CertificateThumbprint' {
-        It 'Should throw the correct error' {
-            InModuleScope -ScriptBlock {
+    Context 'When passing mutually inclusive parameters' {
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    Issuer         = 'SomeIssuer'
+                    BaseDN         = 'SomeBaseDN'
+                    SubjectFormat  = 'SubjectFormat'
+                    MatchAlternate = 'MatchAlternate'
+                }
+                @{
+
+                    HostName              = 'TheHostname'
+                    CertificateThumbprint = 'certificateThumbprint'
+                }
+            )
+        }
+
+        It 'Should not throw an error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
-                    $mockInstance.AssertProperties(@{
-                            BaseDN                = 'SomeBaseDN'
-                            CertificateThumbprint = 'certificateThumbprint'
-                        })
-                } | Should -Throw -ExpectedMessage '*DRC0010*'
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
             }
         }
     }
