@@ -234,7 +234,7 @@ class WSManListener : ResourceBase
             )
             MutuallyExclusiveList2 = @(
                 'CertificateThumbprint'
-                'Hostname'
+                'HostName'
             )
         }
 
