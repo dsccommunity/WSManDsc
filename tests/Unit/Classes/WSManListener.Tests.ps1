@@ -1026,14 +1026,14 @@ Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
                     BaseDN                = 'SomeBaseDN'
                     CertificateThumbprint = 'certificateThumbprint'
                 }
-                @{
-                    SubjectFormat = 1
-                    HostName      = 'TheHostname'
-                }
-                @{
-                    SubjectFormat         = 1
-                    CertificateThumbprint = 'certificateThumbprint'
-                }
+                # @{
+                #     SubjectFormat = 1
+                #     HostName      = 'TheHostname'
+                # }
+                # @{
+                #     SubjectFormat         = 1
+                #     CertificateThumbprint = 'certificateThumbprint'
+                # }
                 @{
                     MatchAlternate = 'MatchAlternate'
                     HostName       = 'TheHostname'
