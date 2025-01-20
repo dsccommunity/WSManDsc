@@ -281,7 +281,7 @@ class WSManListener : ResourceBase
 
                 if ([System.String]::IsNullOrEmpty($this.Hostname))
                 {
-                    $valueSet.HostName = Get-ComputerName
+                    $valueSet.HostName = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).Hostname
                 }
                 else
                 {
