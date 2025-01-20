@@ -35,7 +35,7 @@ BeforeAll {
     # Create the Mock Objects that will be used for running tests
     $script:mockCertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
     $mockFQDN = 'SERVER1.CONTOSO.COM'
-    $mockHostName = Get-ComputerName
+    $mockHostName = $([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
     $script:mockIssuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
     $script:mockDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
     $mockCertificate = @{
