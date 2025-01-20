@@ -62,7 +62,7 @@ BeforeAll {
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
-    $script:Hostname = Get-ComputerName
+    $script:Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
     $script:BaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
     $script:Issuer = "CN=$Hostname, $BaseDN"
 
