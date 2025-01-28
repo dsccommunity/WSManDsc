@@ -191,5 +191,3 @@ function Test-TargetResource
         -ExcludeProperties @('IsSingleInstance') `
         -Verbose:$VerbosePreference
 } # Test-TargetResource
-
-Export-ModuleMember -Function *-TargetResource
