@@ -34,8 +34,6 @@ BeforeAll {
 
     Import-Module -Name $script:dscModuleName
 
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '../../TestHelpers/CommonTestHelper.psm1')
-
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
@@ -48,9 +46,6 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
-
-    # Remove module common test helper.
-    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
 Describe 'WSManListener' {

@@ -53,8 +53,6 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
@@ -79,9 +77,6 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
-
-    # Remove module common test helper.
-    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
 Describe "$($script:dscResourceName)\Get-TargetResource" -Tag 'Get' {
