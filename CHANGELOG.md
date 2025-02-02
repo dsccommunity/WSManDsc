@@ -5,6 +5,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `WSManReason`
+  - Used in Class Resources
+- `WSManSubjectFormat` Enum
+- `WSManTransport` Enum
+- `RequiredModules`
+  - Added `DscResource.Base` class.
+
+### Changed
+
+- `DSC_WSManListener`
+  - Converted to Class Resource.
+  - Extracted private functions to individual files.
+  - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
+- `DSC_WSManConfig`
+  - Removed Export-ModuleMember.
+- `DSC_WSManServiceConfig`
+  - Removed Export-ModuleMember.
+
+### Removed
+
+- `Get-InvalidOperationRecord`
+  - This is now provided by `DscResource.Test`
+
 ## [3.2.0] - 2025-01-19
 
 ### Added
@@ -13,8 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for the DSC resource.
 - Added build task `Generate_Wiki_Content` to generate the wiki content
   that can be used to update the GitHub Wiki.
-- `WSManReason`
-  - Used in Class Resources
 
 ### Changed
 
@@ -61,26 +84,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DSC_WSManConfig`
   - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
   - Remove unused strings.
-  - Removed Export-ModuleMember.
 - `DSC_WSManServiceConfig`
   - Refactor `Test-TargetResource` to use `Test-DscParameterState`.
   - Remove unused strings
-  - Removed Export-ModuleMember.
-- `DSC_WSManListener`
-  - Converted to Class Resource
-  - Extracted private functions to own files
-  - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
-- `RequiredModules`
-  - Added `DscResource.Base` class
 
 ### Fixed
 
 - Fixed pipeline by replacing the GitVersion task in the `azure-pipelines.yml`
   with a script.
-
-### Removed
-- `Get-InvalidOperationRecord`
-  - This is now provided by `DscResource.Test`
 
 ## [3.1.1] - 2020-01-31
 
