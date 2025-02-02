@@ -121,6 +121,9 @@ class WSManListener : ResourceBase
 
     WSManListener () : base ($PSScriptRoot)
     {
+        # Enable use of Enums as optional properties
+        $this.FeatureOptionalEnums = $true
+
         # These properties will not be enforced.
         $this.ExcludeDscProperties = @(
             'Issuer'
@@ -224,21 +227,8 @@ class WSManListener : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # Filter Out Keys that are enums AND have value of 0 (assumed default)
-        # https://learn.microsoft.com/en-us/powershell/dsc/concepts/class-based-resources?view=dsc-2.0#use-enums-instead-of-validateset
-        $FilteredBoundParameters = @{}
-        foreach ($key in $properties.Keys)
-        {
-            $value = $properties.$key
-            if ($value -is [System.Enum] -and [System.Int32]$value.value__ -eq 0)
-            {
-                continue
-            }
-            $FilteredBoundParameters.Add($key, $properties.$key)
-        }
-
         $assertBoundParameterParameters = @{
-            BoundParameterList     = $FilteredBoundParameters
+            BoundParameterList     = $properties
             MutuallyExclusiveList1 = @(
                 'Issuer'
                 'BaseDN'
