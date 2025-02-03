@@ -28,6 +28,11 @@
     'Indented.ScriptAnalyzerRules' = 'latest'
 
     # Prerequisite modules for documentation.
-    'DscResource.DocGenerator'     = 'latest'
+    'DscResource.DocGenerator'     = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
     PlatyPS                        = 'latest'
 }
