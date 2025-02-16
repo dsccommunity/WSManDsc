@@ -146,18 +146,6 @@ class WSManListener : ResourceBase
             Transport = $properties.Transport
         }
 
-        # Get the port if it's not provided and resource should exist
-        if (-not $this.Port -and $this.Ensure -eq [Ensure]::Present)
-        {
-            $this.Port = Get-DefaultPort @getParameters
-        }
-
-        # Get the Address if it's not provided and resource should exist
-        if (-not $this.Address -and $this.Ensure -eq [Ensure]::Present)
-        {
-            $this.Address = '*'
-        }
-
         $state = @{}
 
         $getCurrentStateResult = Get-Listener @getParameters
@@ -246,6 +234,18 @@ class WSManListener : ResourceBase
 
     hidden [void] NewInstance()
     {
+        # Get the port if it's not provided
+        if (-not $this.Port)
+        {
+            $this.Port = Get-DefaultPort -Transport $this.Transport
+        }
+
+        # Get the Address if it's not provided
+        if (-not $this.Address)
+        {
+            $this.Address = '*'
+        }
+
         Write-Verbose -Message ($this.localizedData.CreatingListenerMessage -f $this.Transport, $this.Port)
 
         $selectorSet = @{

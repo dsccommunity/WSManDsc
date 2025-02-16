@@ -599,7 +599,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
     }
 
     Context 'When the object is present in the current state' {
-        Context 'When ''Port'' and ''Address'' are supplied for HTTP Transport' {
+        Context 'When getting a HTTP Transport' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
@@ -652,61 +652,7 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
             }
         }
 
-        Context 'When ''Port'' and ''Address'' are not supplied for HTTP Transport' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $script:mockInstance = [WSManListener] @{
-                        Transport = 'HTTP'
-                        Ensure    = 'Present'
-                    }
-                }
-
-                Mock -CommandName Get-Listener -MockWith {
-                    return @{
-                        Transport             = 'HTTP'
-                        Port                  = [System.UInt16] 5985
-                        Address               = '*'
-
-                        CertificateThumbprint = $null
-                        Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-
-                        Enabled               = $true
-                        URLPrefix             = 'wsman'
-                    }
-                }
-
-                Mock -CommandName Get-DefaultPort -MockWith { return [System.UInt16] 5985 }
-            }
-
-            It 'Should return the correct values' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $currentState = $script:mockInstance.GetCurrentState(
-                        @{
-                            Transport = 'HTTP'
-                            Ensure    = [Ensure]::Present
-                        }
-                    )
-
-                    $currentState.Transport | Should -Be 'HTTP'
-                    $currentState.Port | Should -Be 5985
-                    $currentState.Address | Should -Be '*'
-                    $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-                    $currentState.Hostname | Should -Be ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
-                    $currentState.Enabled | Should -BeTrue
-                    $currentState.URLPrefix | Should -Be 'wsman'
-                }
-
-                Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Get-DefaultPort -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When ''Port'' and ''Address'' are supplied for HTTPS Transport' {
+        Context 'When getting a HTTPS Transport' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
@@ -726,14 +672,16 @@ Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
                         Address               = '*'
 
                         CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-                        Hostname              = ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
+                        Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
 
                         Enabled               = $true
                         URLPrefix             = 'wsman'
                     }
                 }
 
-                Mock -CommandName Find-Certificate -MockWith { return @{ Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' } }
+                Mock -CommandName Find-Certificate -MockWith {
+                    return @{ Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' }
+                }
             }
 
             It 'Should return the correct values' {
@@ -962,6 +910,34 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
                 Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
             }
+        }
+    }
+
+    Context 'When the parameters ''Port'' and ''Address'' is not set' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance = [WSManListener] @{
+                    Transport = 'HTTP'
+                    Ensure    = 'Present'
+                }
+            }
+
+            Mock -CommandName Get-DefaultPort -MockWith {
+                return [System.UInt16] 5985
+            }
+        }
+
+        It 'Should create the listener correctly' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.NewInstance()
+            }
+
+            Should -Invoke -CommandName New-WSManInstance -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-DefaultPort -Exactly -Times 1 -Scope It
         }
     }
 }
