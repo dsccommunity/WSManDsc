@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `WSManReason`
-  - Used in Class Resources
-- `WSManSubjectFormat` Enum
-- `WSManTransport` Enum
+  - Used in Class Resources.
+- `WSManSubjectFormat` Enum.
+- `WSManTransport` Enum.
 - `RequiredModules`
   - Added `DscResource.Base` class.
 
