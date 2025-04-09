@@ -109,7 +109,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
@@ -169,7 +172,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
@@ -222,7 +228,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
@@ -295,7 +304,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
@@ -364,7 +376,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                             return
-                        }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
                 }
             }
 
@@ -436,7 +451,10 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return
-                    }
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
             }
         }
 
@@ -469,7 +487,10 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return
-                    }
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
             }
         }
 
@@ -512,7 +533,10 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return
-                    }
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
             }
 
             It 'Should return $true' {
@@ -542,7 +566,10 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return
-                    }
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
             }
         }
 
