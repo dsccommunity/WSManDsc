@@ -61,7 +61,7 @@ stages:
         displayName: 'HQRM'
         pool:
           vmImage: 'windows-latest'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -90,7 +90,7 @@ stages:
         displayName: 'Unit (Windows Server 2019)'
         pool:
           vmImage: 'windows-2019'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -98,6 +98,18 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
+          - task: PowerShell@2
+            name: patch_module
+            displayName: 'Patch module ModuleBuilder'
+            inputs:
+              targetType: 'inline'
+              script: |
+                ./build.ps1 -Task noop
+                Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
+                Install-ModulePatch -Uri 'https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json' -Force
+              pwsh: true
 
           - task: PowerShell@2
             name: test
@@ -127,7 +139,7 @@ stages:
         dependsOn: Test_Unit_2019
         pool:
           vmImage: 'ubuntu-latest'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -158,7 +170,7 @@ stages:
         displayName: 'Integration (Windows Server 2019)'
         pool:
           vmImage: 'windows-2019'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -195,7 +207,7 @@ stages:
         displayName: 'Unit (Windows Server 2022)'
         pool:
           vmImage: 'windows-2022'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -203,6 +215,18 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
+          - task: PowerShell@2
+            name: patch_module
+            displayName: 'Patch module ModuleBuilder'
+            inputs:
+              targetType: 'inline'
+              script: |
+                ./build.ps1 -Task noop
+                Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
+                Install-ModulePatch -Uri 'https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json' -Force
+              pwsh: true
 
           - task: PowerShell@2
             name: test
@@ -224,7 +248,7 @@ stages:
         displayName: 'Integration (Windows Server 2022)'
         pool:
           vmImage: 'windows-2022'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
