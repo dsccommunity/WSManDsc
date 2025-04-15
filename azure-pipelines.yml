@@ -99,18 +99,6 @@ stages:
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
 
-          # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
-          - task: PowerShell@2
-            name: patch_module
-            displayName: 'Patch module ModuleBuilder'
-            inputs:
-              targetType: 'inline'
-              script: |
-                ./build.ps1 -Task noop
-                Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
-                Install-ModulePatch -Uri 'https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json' -Force
-              pwsh: true
-
           - task: PowerShell@2
             name: test
             displayName: 'Run Unit Test'
@@ -215,18 +203,6 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-
-          # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
-          - task: PowerShell@2
-            name: patch_module
-            displayName: 'Patch module ModuleBuilder'
-            inputs:
-              targetType: 'inline'
-              script: |
-                ./build.ps1 -Task noop
-                Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
-                Install-ModulePatch -Uri 'https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json' -Force
-              pwsh: true
 
           - task: PowerShell@2
             name: test
