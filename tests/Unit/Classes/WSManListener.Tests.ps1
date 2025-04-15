@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Unit test for DSC_WSManListener DSC resource.
+        Unit test for WSManListener DSC resource.
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
