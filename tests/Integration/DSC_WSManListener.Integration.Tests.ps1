@@ -18,7 +18,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # This will throw an error if the dependencies have not been resolved.
@@ -62,9 +62,9 @@ BeforeAll {
         Where-Object -Property FriendlyName -EQ $CertFriendlyName |
         Remove-Item -Force
 
-    $script:Hostname = ([System.Net.Dns]::GetHostByName($ENV:computerName).Hostname)
-    $script:DN = 'O=Contoso Inc, S=Pennsylvania, C=US'
-    $script:Issuer = "CN=$Hostname, $DN"
+    $script:Hostname = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
+    $script:BaseDN = 'O=Contoso Inc, S=Pennsylvania, C=US'
+    $script:Issuer = "CN=$Hostname, $BaseDN"
 
     # Create the certificate
     if ([System.Environment]::OSVersion.Version.Major -ge 10)
@@ -190,7 +190,7 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
                     Issuer         = $Issuer
                     SubjectFormat  = 'Both'
                     MatchAlternate = $false
-                    DN             = $DN
+                    BaseDN         = $BaseDN
                     Hostname       = $Hostname
                 }
             )

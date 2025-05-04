@@ -5,6 +5,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `WSManReason`
+  - Used in Class Resources.
+- `WSManSubjectFormat` Enum.
+- `WSManTransport` Enum.
+- `RequiredModules`
+  - Added `DscResource.Base` class.
+
+### Changed
+
+- `DSC_WSManListener`
+  - Converted to Class Resource.
+  - Extracted private functions to individual files.
+  - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
+- `DSC_WSManConfig`
+  - Removed Export-ModuleMember.
+- `DSC_WSManServiceConfig`
+  - Removed Export-ModuleMember.
+
+### Removed
+
+- `CommonTestHelper`
+  - This is now provided by `DscResource.Test`
+
 ## [3.2.0] - 2025-01-19
 
 ### Added

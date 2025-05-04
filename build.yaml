@@ -45,7 +45,6 @@ CopyPaths:
   - en-US
   - DSCResources
 Prefix: prefix.ps1
-Suffix: suffix.ps1
 Encoding: UTF8
 VersionedOutputDirectory: true
 BuiltModuleSubdirectory: builtModule
@@ -80,11 +79,15 @@ NestedModule:
     Path: ./output/RequiredModules/DscResource.Common
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
+  DscResource.Base:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Base
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
 
 ####################################################
 #          Pester Configuration (Sampler)          #
 ####################################################
-
 Pester:
   Configuration:
     Run:
@@ -105,8 +108,6 @@ Pester:
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     - Modules/DscResource.Base
-    - prefix.ps1
-    - WSManDsc.psm1
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
@@ -169,7 +170,7 @@ DscResource.DocGenerator:
       - '\*(.+?)\*' # Match Italic (asterisk)
   Publish_GitHub_Wiki_Content:
     Debug: false
-  Generate_Wiki_Content:
+  Generate_Markdown_For_DSC_Resources:
     MofResourceMetadata:
       Type: MofResource
       Category: Resources

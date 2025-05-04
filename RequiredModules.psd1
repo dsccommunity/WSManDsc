@@ -1,5 +1,5 @@
 @{
-    PSDependOptions             = @{
+    PSDependOptions                = @{
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
@@ -21,12 +21,18 @@
 
     # Build dependencies needed for using the module
     'DscResource.Common'           = 'latest'
+    'DscResource.Base'             = 'latest'
 
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
     'Indented.ScriptAnalyzerRules' = 'latest'
 
     # Prerequisite modules for documentation.
-    'DscResource.DocGenerator'     = 'latest'
+    'DscResource.DocGenerator'     = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
     PlatyPS                        = 'latest'
 }
