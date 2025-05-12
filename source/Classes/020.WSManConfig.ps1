@@ -8,9 +8,6 @@
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER Ensure
-        Specifies whether the WS-Man settings should exist.
-
     .PARAMETER MaxEnvelopeSizekb
         Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.
 
@@ -32,43 +29,24 @@ class WSManConfig : ResourceBase
     [System.String]
     $IsSingleInstance
 
-    [DscProperty(Mandatory)]
-    [Ensure]
-    $Ensure
-
     [DscProperty()]
     [ValidateRange(32, 4294967295)]
-    [System.Uint32]
+    [Nullable[System.Uint32]]
     $MaxEnvelopeSizekb
 
     [DscProperty()]
     [ValidateRange(500, 4294967295)]
-    [System.Uint32]
+    [Nullable[System.Uint32]]
     $MaxTimeoutms
 
     [DscProperty()]
     [ValidateRange(1, 4294967295)]
-    [System.Uint32]
+    [Nullable[System.Uint32]]
     $MaxBatchItems
 
     [DscProperty(NotConfigurable)]
     [WSManReason[]]
     $Reasons
-
-    $defaultValues = @{
-        MaxEnvelopeSizekb = @{
-            TypeName     = 'System.Uint32'
-            DefaultValue = 500
-        }
-        MaxTimeoutms      = @{
-            TypeName     = 'System.Uint32'
-            DefaultValue = 60000
-        }
-        MaxBatchItems     = @{
-            TypeName     = 'System.Uint32'
-            DefaultValue = 32000
-        }
-    }
 
     WSManConfig () : base ($PSScriptRoot)
     {
@@ -93,13 +71,13 @@ class WSManConfig : ResourceBase
         $props = $this | Get-DscProperty -Attribute @('Optional') -HasValue
 
         # Get the desired state, only check the properties that are set as some will be set to a default value.
-        $currentState = Get-ChildItem WSMan:\localhost\* | Where-Object { $_.Name -in $props }
+        $currentState = Get-ChildItem -Path WSMan:\localhost\* | Where-Object { $_.Name -in $props.Keys }
 
         foreach ($property in $currentState)
         {
-            $state[$property.Name] = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
+            $state.($property.Name) = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
                 $property.Value,
-                $this.$($property.Name).GetType().FullName
+                $this.($property.Name).GetType().FullName
             )
         }
 
