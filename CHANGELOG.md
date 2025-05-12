@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
 - `DSC_WSManConfig`
   - Removed Export-ModuleMember.
+  - Converted to Class Resource.
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
 
