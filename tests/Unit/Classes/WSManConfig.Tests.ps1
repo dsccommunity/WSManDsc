@@ -78,848 +78,452 @@ Describe 'WSManConfig' {
     }
 }
 
-# Describe 'WSManConfig\Get()' -Tag 'Get' {
-#     Context 'When the system is in the desired state' {
-#         Context 'When getting a HTTP listener' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTP'
-#                         Ensure    = 'Present'
-#                     }
-
-#                     <#
-#                         This mocks the method GetCurrentState().
-
-#                         Method Get() will call the base method Get() which will
-#                         call back to the derived class method GetCurrentState()
-#                         to get the result to return from the derived method Get().
-#                     #>
-#                     $script:mockInstance |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-#                             return @{
-#                                 Transport = [WSManTransport] 'HTTP'
-#                                 Port      = [System.UInt16] 5985
-#                                 Address   = '*'
-#                                 Enabled   = 'true'
-#                                 URLPrefix = 'wsman'
-#                             }
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                             return
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                             return
-#                         } -PassThru
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.Get()
-
-#                     $currentState.Transport | Should -Be 'HTTP'
-#                     $currentState.Port | Should -Be 5985
-#                     $currentState.Port | Should -BeOfType System.UInt16
-#                     $currentState.Address | Should -Be '*'
-
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.SubjectFormat | Should -Be 0
-#                     $currentState.MatchAlternate | Should -BeNullOrEmpty
-#                     $currentState.BaseDN | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -BeNullOrEmpty
-
-#                     $currentState.Ensure | Should -Be 'Present'
-#                     $currentState.Reasons | Should -BeNullOrEmpty
-#                 }
-#             }
-#         }
-
-#         Context 'When getting a HTTPS listener' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTPS'
-#                         Ensure    = 'Present'
-#                     }
-
-#                     <#
-#                         This mocks the method GetCurrentState().
-
-#                         Method Get() will call the base method Get() which will
-#                         call back to the derived class method GetCurrentState()
-#                         to get the result to return from the derived method Get().
-#                     #>
-#                     $script:mockInstance |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-#                             return @{
-#                                 Transport = [WSManTransport] 'HTTPS'
-#                                 Port      = [System.UInt16] 5986
-#                                 Address   = '*'
-#                                 Enabled   = 'true'
-#                                 URLPrefix = 'wsman'
-#                             }
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                             return
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                             return
-#                         } -PassThru
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.Get()
-
-#                     $currentState.Transport | Should -Be 'HTTPS'
-#                     $currentState.Port | Should -Be 5986
-#                     $currentState.Port | Should -BeOfType System.UInt16
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.SubjectFormat | Should -Be 0
-#                     $currentState.MatchAlternate | Should -BeNullOrEmpty
-#                     $currentState.BaseDN | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -BeNullOrEmpty
-
-#                     $currentState.Ensure | Should -Be 'Present'
-#                     $currentState.Reasons | Should -BeNullOrEmpty
-#                 }
-#             }
-#         }
-
-#         Context 'When no listener should exist' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTP'
-#                         Ensure    = 'Absent'
-#                     }
-
-#                     <#
-#                         This mocks the method GetCurrentState().
-
-#                         Method Get() will call the base method Get() which will
-#                         call back to the derived class method GetCurrentState()
-#                         to get the result to return from the derived method Get().
-#                     #>
-#                     $script:mockInstance |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-#                             return @{}
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                             return
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                             return
-#                         } -PassThru
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.Get()
-
-#                     $currentState.Transport | Should -Be 'HTTP'
-#                     $currentState.Port | Should -BeNullOrEmpty
-#                     $currentState.Address | Should -BeNullOrEmpty
-
-#                     $currentState.Enabled | Should -BeFalse
-#                     $currentState.URLPrefix | Should -BeNullOrEmpty
-
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.SubjectFormat | Should -Be 0
-#                     $currentState.MatchAlternate | Should -BeNullOrEmpty
-#                     $currentState.BaseDN | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -BeNullOrEmpty
-
-#                     $currentState.Ensure | Should -Be 'Absent'
-#                     $currentState.Reasons | Should -HaveCount 1
-#                     $currentState.Reasons[0].Code | Should -Be 'WSManConfig:WSManConfig:Transport'
-
-#                     # PS6+ treats empty enum as null
-#                     if ($PSVersionTable.PSVersion.Major -gt 5)
-#                     {
-#                         $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was null'
-#                     }
-#                     else
-#                     {
-#                         $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was ""'
-#                     }
-#                 }
-#             }
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state' {
-#         Context 'When property ''Port'' has the wrong value' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTPS'
-#                         Port      = 5986
-#                         Ensure    = 'Present'
-#                     }
-
-#                     <#
-#                         This mocks the method GetCurrentState().
-
-#                         Method Get() will call the base method Get() which will
-#                         call back to the derived class method GetCurrentState()
-#                         to get the result to return from the derived method Get().
-#                     #>
-#                     $script:mockInstance |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-#                             return @{
-#                                 Transport = [WSManTransport] 'HTTPS'
-#                                 Port      = [System.UInt16] 6000
-#                                 Address   = '*'
-#                                 Enabled   = 'true'
-#                                 URLPrefix = 'wsman'
-#                             }
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                             return
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                             return
-#                         } -PassThru
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.Get()
-
-#                     $currentState.Transport | Should -Be 'HTTPS'
-
-#                     $currentState.Port | Should -Be 6000
-#                     $currentState.Port | Should -BeOfType System.UInt16
-
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Enabled | Should -Be $true
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.SubjectFormat | Should -Be 0
-#                     $currentState.MatchAlternate | Should -BeNullOrEmpty
-#                     $currentState.BaseDN | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -BeNullOrEmpty
-
-#                     $currentState.Ensure | Should -Be 'Present'
-
-#                     $currentState.Reasons | Should -HaveCount 1
-#                     $currentState.Reasons[0].Code | Should -Be 'WSManConfig:WSManConfig:Port'
-#                     $currentState.Reasons[0].Phrase | Should -Be 'The property Port should be 5986, but was 6000'
-#                 }
-#             }
-#         }
-
-#         Context 'When the listener exists but should not' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTP'
-#                         Ensure    = 'Absent'
-#                     }
-
-#                     <#
-#                         This mocks the method GetCurrentState().
-
-#                         Method Get() will call the base method Get() which will
-#                         call back to the derived class method GetCurrentState()
-#                         to get the result to return from the derived method Get().
-#                     #>
-#                     $script:mockInstance |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-#                             return [System.Collections.Hashtable] @{
-#                                 Transport             = [WSManTransport] 'HTTP'
-#                                 Port                  = [System.UInt16] 5985
-#                                 Address               = '*'
-#                                 Enabled               = 'true'
-#                                 URLPrefix             = 'wsman'
-#                                 Issuer                = $null
-#                                 MatchAlternate        = $null
-#                                 BaseDN                = $null
-#                                 CertificateThumbprint = $null
-#                                 Hostname              = $null
-#                             }
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                             return
-#                         } -PassThru |
-#                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                             return
-#                         } -PassThru
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.Get()
-
-#                     $currentState.Transport | Should -Be 'HTTP'
-#                     $currentState.Port | Should -Be 5985
-
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.SubjectFormat | Should -Be 0
-#                     $currentState.MatchAlternate | Should -BeNullOrEmpty
-#                     $currentState.BaseDN | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -BeNullOrEmpty
-
-#                     $currentState.Ensure | Should -Be 'Present'
-
-#                     $currentState.Reasons | Should -HaveCount 1
-#                     $currentState.Reasons[0].Code | Should -Be 'WSManConfig:WSManConfig:Ensure'
-#                     $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
-#                 }
-#             }
-#         }
-#     }
-# }
-
-# Describe 'WSManConfig\Set()' -Tag 'Set' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance = [WSManConfig] @{
-#                 Transport = 'HTTP'
-#                 Port      = 5000
-#                 Ensure    = 'Present'
-#             } |
-#                 # Mock method Modify which is called by the case method Set().
-#                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
-#                     $script:methodModifyCallCount += 1
-#                 } -PassThru
-#         }
-#     }
-
-#     BeforeEach {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:methodModifyCallCount = 0
-#         }
-#     }
-
-#     Context 'When the system is in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance |
-#                     # Mock method Compare() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-#                         return $null
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                         return
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                         return
-#                     } -PassThru
-#             }
-#         }
-
-#         It 'Should not call method Modify()' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance.Set()
-
-#                 $script:methodModifyCallCount | Should -Be 0
-#             }
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance |
-#                     # Mock method Compare() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-#                         return @(
-#                             @{
-#                                 Property      = 'Port'
-#                                 ExpectedValue = 5000
-#                                 ActualValue   = 5985
-#                             }
-#                         )
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                         return
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                         return
-#                     } -PassThru
-#             }
-#         }
-
-#         It 'Should call method Modify()' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance.Set()
-
-#                 $script:methodModifyCallCount | Should -Be 1
-#             }
-#         }
-#     }
-# }
-
-# Describe 'WSManConfig\Test()' -Tag 'Test' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance = [WSManConfig] @{
-#                 Transport             = 'HTTPS'
-#                 Port                  = 5986
-#                 CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                 Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-#                 Ensure                = 'Present'
-#             }
-#         }
-#     }
-
-#     Context 'When the system is in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance |
-#                     # Mock method Compare() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-#                         return $null
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                         return
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                         return
-#                     } -PassThru
-#             }
-
-#             It 'Should return $true' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance.Test() | Should -BeTrue
-#                 }
-#             }
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance |
-#                     # Mock method Compare() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-#                         return @(
-#                             @{
-#                                 Property      = 'Port'
-#                                 ExpectedValue = 5986
-#                                 ActualValue   = 443
-#                             })
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-#                         return
-#                     } -PassThru |
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-#                         return
-#                     } -PassThru
-#             }
-#         }
-
-#         It 'Should return $false' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance.Test() | Should -BeFalse
-#             }
-#         }
-#     }
-# }
-
-# Describe 'WSManConfig\GetCurrentState()' -Tag 'HiddenMember' {
-#     Context 'When object is missing in the current state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance = [WSManConfig] @{
-#                     Transport = 'HTTP'
-#                     Port      = 5985
-#                     Address   = '*'
-#                     Ensure    = 'Present'
-#                 }
-#             }
-
-#             Mock -CommandName Get-Listener
-#         }
-
-#         It 'Should return the correct values' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $currentState = $script:mockInstance.GetCurrentState(
-#                     @{
-#                         Transport = 'HTTP'
-#                         Ensure    = [Ensure]::Present
-#                     }
-#                 )
-
-#                 $currentState.Transport | Should -BeNullOrEmpty
-#                 $currentState.Port | Should -BeNullOrEmpty
-#                 $currentState.Address | Should -BeNullOrEmpty
-#                 $currentState.Issuer | Should -BeNullOrEmpty
-#                 $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                 $currentState.Hostname | Should -BeNullOrEmpty
-#                 $currentState.Enabled | Should -BeFalse
-#                 $currentState.URLPrefix | Should -BeNullOrEmpty
-#             }
-
-#             Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the object is present in the current state' {
-#         Context 'When getting a HTTP Transport' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTP'
-#                         Port      = 5985
-#                         Address   = '*'
-#                         Ensure    = 'Present'
-#                     }
-#                 }
-
-#                 Mock -CommandName Get-Listener -MockWith {
-#                     return @{
-#                         Transport             = 'HTTP'
-#                         Port                  = [System.UInt16] 5985
-#                         Address               = '*'
-
-#                         CertificateThumbprint = $null
-#                         Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-
-#                         Enabled               = $true
-#                         URLPrefix             = 'wsman'
-#                     }
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.GetCurrentState(
-#                         @{
-#                             Transport = 'HTTP'
-#                             Ensure    = [Ensure]::Present
-#                         }
-#                     )
-
-#                     $currentState.Transport | Should -Be 'HTTP'
-#                     $currentState.Port | Should -Be 5985
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -Be ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-#                 }
-
-#                 Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#             }
-#         }
-
-#         Context 'When getting a HTTPS Transport' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance = [WSManConfig] @{
-#                         Transport = 'HTTPS'
-#                         Port      = 5986
-#                         Address   = '*'
-#                         Ensure    = 'Present'
-#                     }
-#                 }
-
-#                 Mock -CommandName Get-Listener -MockWith {
-#                     return @{
-#                         Transport             = 'HTTPS'
-#                         Port                  = [System.UInt16] 5986
-#                         Address               = '*'
-
-#                         CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                         Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-
-#                         Enabled               = $true
-#                         URLPrefix             = 'wsman'
-#                     }
-#                 }
-
-#                 Mock -CommandName Find-Certificate -MockWith {
-#                     return @{ Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' }
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.GetCurrentState(
-#                         @{
-#                             Transport = 'HTTPS'
-#                             Ensure    = [Ensure]::Present
-#                         }
-#                     )
-
-#                     $currentState.Transport | Should -Be 'HTTPS'
-#                     $currentState.Port | Should -Be 5986
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Issuer | Should -Be 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-#                     $currentState.CertificateThumbprint | Should -Be '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                     $currentState.Hostname | Should -Be ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-#                 }
-
-#                 Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#                 Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
-#             }
-#         }
-#     }
-# }
-
-# Describe 'WSManConfig\Modify()' -Tag 'HiddenMember' {
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance = [WSManConfig] @{
-#                     IsSingleInstance = 'Yes'
-#                     Ensure           = 'Present'
-#                 } |
-#                     # Mock method NewInstance which is called by the case method Modify().
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NewInstance' -Value {
-#                         $script:methodNewInstanceCallCount += 1
-#                     } -PassThru |
-#                     # Mock method RemoveInstance which is called by the case method Modify().
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'RemoveInstance' -Value {
-#                         $script:methodRemoveInstanceCallCount += 1
-#                     } -PassThru
-#             }
-#         }
-
-#         BeforeEach {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:methodNewInstanceCallCount = 0
-#                 $script:methodRemoveInstanceCallCount = 0
-#             }
-#         }
-
-#         Context 'When the resource does not exist' {
-#             It 'Should call method NewInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockProperties = @{
-#                         IsSingleInstance = 'Yes'
-#                         Ensure           = 'Present'
-#                     }
-
-#                     $script:mockInstance.Modify($mockProperties)
-
-#                     $script:methodNewInstanceCallCount | Should -Be 1
-#                 }
-#             }
-#         }
-
-#         Context 'When the resource does exist' {
-#             It 'Should call method RemoveInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance.Ensure = 'Absent'
-
-#                     $mockProperties = @{
-#                         IsSingleInstance = 'Yes'
-#                         Ensure           = 'Absent'
-#                     }
-
-#                     $script:mockInstance.Modify($mockProperties)
-
-#                     $script:methodRemoveInstanceCallCount | Should -Be 1
-#                 }
-#             }
-#         }
-
-#         Context 'When the resource does exist but properties are incorrect' {
-#             It 'Should call method RemoveInstance() and NewInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $script:mockInstance.Ensure = 'Present'
-
-#                     $mockProperties = @{
-#                         IsSingleInstance = 'Yes'
-#                         Port             = 5000
-#                     }
-
-#                     $script:mockInstance.Modify($mockProperties)
-
-#                     $script:methodRemoveInstanceCallCount | Should -Be 1
-#                     $script:methodNewInstanceCallCount | Should -Be 1
-#                 }
-#             }
-#         }
-#     }
-# }
-
-# Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance = [WSManListener] @{}
-#         }
-#     }
-
-#     Context 'When passing mutually exclusive parameters' {
-#         BeforeDiscovery {
-#             $testCases = @(
-#                 @{
-#                     Issuer   = 'SomeIssuer'
-#                     HostName = 'TheHostname'
-#                 }
-#                 @{
-#                     Issuer                = 'SomeIssuer'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     BaseDN   = 'SomeBaseDN'
-#                     HostName = 'TheHostname'
-#                 }
-#                 @{
-#                     BaseDN                = 'SomeBaseDN'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     SubjectFormat = 1
-#                     HostName      = 'TheHostname'
-#                 }
-#                 @{
-#                     SubjectFormat         = 1
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     MatchAlternate = 'MatchAlternate'
-#                     HostName       = 'TheHostname'
-#                 }
-#                 @{
-#                     MatchAlternate        = 'MatchAlternate'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#             )
-#         }
-
-#         It 'Should throw the correct error' -ForEach $testCases {
-#             InModuleScope -Parameters @{
-#                 mockProperties = $_
-#             } -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 if ($mockProperties.SubjectFormat)
-#                 {
-#                     $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
-#                 }
-
-#                 { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0010' + '*')
-#             }
-#         }
-#     }
-
-#     Context 'When passing mutually inclusive parameters' {
-#         BeforeDiscovery {
-#             $testCases = @(
-#                 @{
-#                     Issuer         = 'SomeIssuer'
-#                     BaseDN         = 'SomeBaseDN'
-#                     SubjectFormat  = 0
-#                     MatchAlternate = 'MatchAlternate'
-#                 }
-#                 @{
-
-#                     HostName              = 'TheHostname'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#             )
-#         }
-
-#         It 'Should not throw an error' -ForEach $testCases {
-#             InModuleScope -Parameters @{
-#                 mockProperties = $_
-#             } -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 if ($mockProperties.SubjectFormat)
-#                 {
-#                     $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
-#                 }
-
-#                 { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
-#             }
-#         }
-#     }
-# }
+Describe 'WSManConfig\Get()' -Tag 'Get' {
+    Context 'When the system is in the desired state' {
+        Context 'When getting the WSMan configuration' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [WSManConfig] @{
+                        IsSingleInstance  = 'Yes'
+                        MaxEnvelopeSizekb = 500
+                        MaxTimeoutms      = 60000
+                        MaxBatchItems     = 32000
+                    }
+
+                    <#
+                        This mocks the method GetCurrentState().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class method GetCurrentState()
+                        to get the result to return from the derived method Get().
+                    #>
+                    $script:mockInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return @{
+                                IsSingleInstance  = 'Yes'
+                                MaxEnvelopeSizekb = [System.UInt32] 500
+                                MaxTimeoutms      = [System.UInt32] 60000
+                                MaxBatchItems     = [System.UInt32] 32000
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.Get()
+
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
+                    $currentState.MaxEnvelopeSizekb | Should -Be 500
+                    $currentState.MaxEnvelopeSizekb | Should -BeOfType System.UInt32
+                    $currentState.MaxTimeoutms | Should -Be 60000
+                    $currentState.MaxTimeoutms | Should -BeOfType System.UInt32
+                    $currentState.MaxBatchItems | Should -Be 32000
+                    $currentState.MaxBatchItems | Should -BeOfType System.UInt32
+
+                    $currentState.Reasons | Should -BeNullOrEmpty
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When property ''MaxEnvelopeSizekb'' has the wrong value' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [WSManConfig] @{
+                        IsSingleInstance  = 'Yes'
+                        MaxEnvelopeSizekb = 8000
+                    }
+
+                    <#
+                        This mocks the method GetCurrentState().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class method GetCurrentState()
+                        to get the result to return from the derived method Get().
+                    #>
+                    $script:mockInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return @{
+                                IsSingleInstance  = 'Yes'
+                                MaxEnvelopeSizekb = [System.UInt32] 500
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.Get()
+
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
+
+                    $currentState.MaxEnvelopeSizekb | Should -Be 500
+                    $currentState.MaxEnvelopeSizekb | Should -BeOfType System.UInt32
+
+                    $currentState.Reasons | Should -HaveCount 1
+                    $currentState.Reasons[0].Code | Should -Be 'WSManConfig:WSManConfig:MaxEnvelopeSizekb'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property MaxEnvelopeSizekb should be 8000, but was 500'
+                }
+            }
+        }
+    }
+}
+
+Describe 'WSManConfig\Set()' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockInstance = [WSManConfig] @{
+                IsSingleInstance  = 'Yes'
+                MaxEnvelopeSizekb = 500
+                MaxTimeoutms      = 60000
+                MaxBatchItems     = 32000
+            } |
+                # Mock method Modify which is called by the case method Set().
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
+                    $script:methodModifyCallCount += 1
+                } -PassThru
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:methodModifyCallCount = 0
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
+            }
+        }
+
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Set()
+
+                $script:methodModifyCallCount | Should -Be 0
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @(
+                            @{
+                                Property      = 'MaxTimeoutms'
+                                ExpectedValue = 60000
+                                ActualValue   = 30000
+                            }
+                        )
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
+            }
+        }
+
+        It 'Should call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Set()
+
+                $script:methodModifyCallCount | Should -Be 1
+            }
+        }
+    }
+}
+
+Describe 'WSManConfig\Test()' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockInstance = [WSManConfig] @{
+                IsSingleInstance  = 'Yes'
+                MaxEnvelopeSizekb = 500
+                MaxTimeoutms      = 60000
+                MaxBatchItems     = 32000
+            }
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance.Test() | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @(
+                            @{
+                                Property      = 'MaxEnvelopeSizekb'
+                                ExpectedValue = 500
+                                ActualValue   = 800
+                            })
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    } -PassThru
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance.Test() | Should -BeFalse
+            }
+        }
+    }
+}
+
+Describe 'WSManConfig\GetCurrentState()' -Tag 'HiddenMember' {
+    Context 'When object is present in the current state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance = [WSManConfig] @{
+                    IsSingleInstance  = 'Yes'
+                    MaxEnvelopeSizekb = 500
+                }
+            }
+
+            Mock -CommandName Get-DscProperty -MockWith {
+                @{
+                    MaxEnvelopeSizekb = 500
+                }
+            }
+
+            Mock -CommandName Get-ChildItem -MockWith {
+                @(
+                    [PSCustomObject] @{
+                        Name          = 'MaxEnvelopeSizekb'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 500
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxTimeoutms'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 60000
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxBatchItems'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 32000
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxProviderRequests'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 4294967295
+                    }
+                )
+            }
+        }
+
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $currentState = $script:mockInstance.GetCurrentState(
+                    @{
+                        IsSingleInstance = 'Yes'
+                    }
+                )
+
+                $currentState.IsSingleInstance | Should -BeNullOrEmpty
+                $currentState.MaxEnvelopeSizekb | Should -Be 500
+                $currentState.MaxEnvelopeSizekb | Should -BeOfType System.Uint32
+
+                $currentState.MaxTimeoutms | Should -BeNullOrEmpty
+                $currentState.MaxBatchItems | Should -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope It
+        }
+    }
+}
+
+Describe 'WSManConfig\Modify()' -Tag 'HiddenMember' {
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance = [WSManConfig] @{
+                    IsSingleInstance  = 'Yes'
+                    MaxEnvelopeSizekb = 500
+                    MaxTimeoutms      = 60000
+                    MaxBatchItems     = 32000
+                }
+
+                Mock -CommandName Set-WSManInstance
+            }
+        }
+
+        Context 'When the properties are incorrect' {
+            It 'Should call the expected mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockProperties = @{
+                        MaxEnvelopeSizekb = 600
+                        MaxTimeoutms      = 50000
+                        MaxBatchItems     = 32001
+                    }
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Set-WSManInstance -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'WSManConfig\AssertProperties()' -Tag 'AssertProperties' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:mockInstance = [WSManConfig] @{}
+        }
+    }
+
+    Context 'When required parameters are missing' {
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    IsSingleInstance = 'Yes'
+                }
+            )
+        }
+
+        It 'Should throw the correct error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0050' + '*')
+            }
+        }
+    }
+
+    Context 'When passing required parameters' {
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    MaxEnvelopeSizekb = 10
+                    MaxTimeoutms      = 10
+                    MaxBatchItems     = 10
+                }
+                @{
+                    MaxEnvelopeSizekb = 10
+                    MaxTimeoutms      = 10
+                }
+                @{
+                    MaxEnvelopeSizekb = 10
+                }
+            )
+        }
+
+        It 'Should not throw an error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
+            }
+        }
+    }
+}
