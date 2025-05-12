@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Converted to Class Resource.
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
+  - Updated variable scope in integration test.
 
 ### Removed
 
