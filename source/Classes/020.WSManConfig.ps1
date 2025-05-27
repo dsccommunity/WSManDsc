@@ -5,9 +5,6 @@
     .DESCRIPTION
         This resource is used to create, edit or remove WS-Management HTTP/HTTPS listeners.
 
-    .PARAMETER IsSingleInstance
-        Specifies the resource is a single instance, the value must be 'Yes'.
-
     .PARAMETER MaxEnvelopeSizekb
         Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.
 
@@ -16,19 +13,11 @@
 
     .PARAMETER MaxBatchItems
         Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.
-
-    .PARAMETER Reasons
-        Returns the reason a property is not in desired state.
 #>
 
 [DscResource()]
-class WSManConfig : ResourceBase
+class WSManConfig : WSManConfigBase
 {
-    [DscProperty(Key)]
-    [ValidateSet('Yes')]
-    [System.String]
-    $IsSingleInstance
-
     [DscProperty()]
     [ValidateRange(32, 4294967295)]
     [Nullable[System.Uint32]]
@@ -44,16 +33,9 @@ class WSManConfig : ResourceBase
     [Nullable[System.Uint32]]
     $MaxBatchItems
 
-    [DscProperty(NotConfigurable)]
-    [WSManReason[]]
-    $Reasons
-
-    WSManConfig () : base ($PSScriptRoot)
+    WSManConfig () : base ()
     {
-        # These properties will not be enforced.
-        $this.ExcludeDscProperties = @(
-            'IsSingleInstance'
-        )
+        $this.ResourceURI = 'winrm/config'
     }
 
     [WSManConfig] Get()
@@ -62,48 +44,10 @@ class WSManConfig : ResourceBase
         return ([ResourceBase] $this).Get()
     }
 
-    # Base method Get() call this method to get the current state as a Hashtable.
-    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
-    {
-        $state = @{}
-
-        # Get the properties that have a value. Assert has checked at least one property is set.
-        $props = $this | Get-DscProperty -Attribute @('Optional') -HasValue
-
-        # Get the desired state, only check the properties that are set as some will be set to a default value.
-        $currentState = Get-ChildItem -Path WSMan:\localhost\* | Where-Object { $_.Name -in $props.Keys }
-
-        foreach ($property in $currentState)
-        {
-            $state.($property.Name) = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
-                $property.Value,
-                $this.($property.Name).GetType().FullName
-            )
-        }
-
-        return $state
-    }
-
     [void] Set()
     {
         # Call the base method to enforce the properties.
         ([ResourceBase] $this).Set()
-    }
-
-    <#
-        Base method Set() call this method with the properties that should be
-        enforced and that are not in desired state.
-    #>
-    hidden [void] Modify([System.Collections.Hashtable] $properties)
-    {
-        $valueSet = @{}
-
-        foreach ($property in $properties.Keys)
-        {
-            $valueSet[$property] = $properties[$property]
-        }
-
-        Set-WSManInstance -ResourceURI winrm/config -ValueSet $valueSet
     }
 
     [System.Boolean] Test()
