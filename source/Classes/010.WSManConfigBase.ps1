@@ -60,11 +60,9 @@ class WSManConfigBase : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        $uri = ('WSMan:\{0}' -f $this.ResourceURI)
-
         foreach ($property in $properties.Keys)
         {
-            Set-Item -Path $uri -Value $properties.$property
+            Set-Item -Path ('WSMan:\{0}\{1}' -f $this.ResourceURI, $property) -Value $properties.$property -WhatIf
         }
     }
 }
