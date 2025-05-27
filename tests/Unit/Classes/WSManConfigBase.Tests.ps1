@@ -97,32 +97,12 @@ Describe 'WSManConfigBase\GetCurrentState()' -Tag 'HiddenMember' {
             }
 
             Mock -CommandName Get-WSManInstance -MockWith {
-                @(
-                    [PSCustomObject] @{
-                        Name          = 'MaxEnvelopeSizekb'
-                        SourceOfValue = $null
-                        Type          = 'System.String'
-                        Value         = 500
-                    }
-                    [PSCustomObject] @{
-                        Name          = 'MaxTimeoutms'
-                        SourceOfValue = $null
-                        Type          = 'System.String'
-                        Value         = 60000
-                    }
-                    [PSCustomObject] @{
-                        Name          = 'MaxBatchItems'
-                        SourceOfValue = $null
-                        Type          = 'System.String'
-                        Value         = 32000
-                    }
-                    [PSCustomObject] @{
-                        Name          = 'MaxProviderRequests'
-                        SourceOfValue = $null
-                        Type          = 'System.String'
-                        Value         = 4294967295
-                    }
-                )
+                [PSCustomObject] @{
+                    MaxEnvelopeSizekb   = 500
+                    MaxTimeoutms        = 60000
+                    MaxBatchItems       = 32000
+                    MaxProviderRequests = 4294967295
+                }
             }
         }
 
