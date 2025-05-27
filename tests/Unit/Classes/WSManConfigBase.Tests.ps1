@@ -96,13 +96,33 @@ Describe 'WSManConfigBase\GetCurrentState()' -Tag 'HiddenMember' {
                 }
             }
 
-            Mock -CommandName Get-WSManInstance -MockWith {
-                [PSCustomObject] @{
-                    MaxEnvelopeSizekb   = 500
-                    MaxTimeoutms        = 60000
-                    MaxBatchItems       = 32000
-                    MaxProviderRequests = 4294967295
-                }
+            Mock -CommandName Get-ChildItem -MockWith {
+                @(
+                    [PSCustomObject] @{
+                        Name          = 'MaxEnvelopeSizekb'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 500
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxTimeoutms'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 60000
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxBatchItems'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 32000
+                    }
+                    [PSCustomObject] @{
+                        Name          = 'MaxProviderRequests'
+                        SourceOfValue = $null
+                        Type          = 'System.String'
+                        Value         = 4294967295
+                    }
+                )
             }
         }
 
@@ -125,7 +145,7 @@ Describe 'WSManConfigBase\GetCurrentState()' -Tag 'HiddenMember' {
             }
 
             Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-WSManInstance -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-ChildItem -Exactly -Times 1 -Scope It
         }
     }
 }
@@ -143,7 +163,7 @@ Describe 'WSManConfigBase\Modify()' -Tag 'HiddenMember' {
                     MaxBatchItems     = 32000
                 }
 
-                Mock -CommandName Set-WSManInstance
+                Mock -CommandName Set-Item
             }
         }
 
@@ -161,7 +181,7 @@ Describe 'WSManConfigBase\Modify()' -Tag 'HiddenMember' {
                     $script:mockInstance.Modify($mockProperties)
                 }
 
-                Should -Invoke -CommandName Set-WSManInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Set-Item -Exactly -Times 3 -Scope It
             }
         }
     }

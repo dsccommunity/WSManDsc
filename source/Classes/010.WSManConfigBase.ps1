@@ -6,7 +6,7 @@
         Specifies the resource is a single instance, the value must be 'Yes'.
 
     .PARAMETER Reasons
-    Returns the reason a property is not in desired state.
+        Returns the reason a property is not in desired state.
 #>
 
 class WSManConfigBase : ResourceBase
@@ -38,10 +38,10 @@ class WSManConfigBase : ResourceBase
         # Get the properties that have a value. Assert has checked at least one property is set.
         $props = $this | Get-DscProperty -Attribute @('Optional') -HasValue
 
-        # Get the desired state, only check the properties that are set as some will be set to a default value.
-        $currentState = Get-WSManInstance -ResourceURI $this.ResourceURI
+        $uri = ('WSMan:\{0}' -f $this.ResourceURI)
 
-        $currentState = $currentState.PSObject.Properties | Where-Object {$_.Name -in $props.Keys}
+        # Get the desired state, only check the properties that are set as some will be set to a default value.
+        $currentState = Get-ChildItem -Path $uri | Where-Object { $_.Name -in $props.Keys }
 
         foreach ($property in $currentState)
         {
@@ -60,13 +60,11 @@ class WSManConfigBase : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        $valueSet = @{}
+        $uri = ('WSMan:\{0}' -f $this.ResourceURI)
 
         foreach ($property in $properties.Keys)
         {
-            $valueSet[$property] = $properties[$property]
+            Set-Item -Path $uri -Value $properties.$property
         }
-
-        Set-WSManInstance -ResourceURI $this.ResourceURI -ValueSet $valueSet
     }
 }
