@@ -38,13 +38,10 @@ class WSManConfigBase : ResourceBase
         # Get the properties that have a value. Assert has checked at least one property is set.
         $props = $this | Get-DscProperty -Attribute @('Optional') -HasValue
 
-        foreach ($property in $props.Keys)
-        {
-            Write-Verbose -Message ('Props: {0} = {1}' -f $property, $props[$property])
-        }
-
         # Get the desired state, only check the properties that are set as some will be set to a default value.
-        $currentState = Get-WSManInstance -ResourceURI $this.ResourceURI | Where-Object { $_.Name -in $props.Keys }
+        $currentState = Get-WSManInstance -ResourceURI $this.ResourceURI
+
+        $currentState = $currentState.PSObject.Properties | Where-Object {$_.Name -in $props.Keys}
 
         foreach ($property in $currentState)
         {
