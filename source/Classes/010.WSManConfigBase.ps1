@@ -62,7 +62,7 @@ class WSManConfigBase : ResourceBase
     {
         foreach ($property in $properties.Keys)
         {
-            Set-Item -Path ('WSMan:\{0}\{1}' -f $this.ResourceURI, $property) -Value $properties.$property -WhatIf
+            Set-Item -Path ('WSMan:\{0}\{1}' -f $this.ResourceURI, $property) -Value $properties.$property -Force
         }
     }
 }
