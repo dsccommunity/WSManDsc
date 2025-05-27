@@ -35,7 +35,7 @@ class WSManConfig : WSManConfigBase
 
     WSManConfig () : base ()
     {
-        $this.ResourceURI = 'winrm/config'
+        $this.ResourceURI = 'localhost'
     }
 
     [WSManConfig] Get()
