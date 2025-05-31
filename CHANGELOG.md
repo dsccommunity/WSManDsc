@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed Export-ModuleMember.
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
+- `azure-pipelines.yml`
+  - Remove windows 2019 image add windows 2025 fixes [#112](https://github.com/dsccommunity/WSManDsc/issues/112).
 
 ### Removed
 
