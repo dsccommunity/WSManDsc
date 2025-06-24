@@ -168,6 +168,57 @@ Describe "$($script:dscResourceName)_Integration_Add_HTTP" {
     }
 }
 
+Describe "$($script:dscResourceName)_Integration_Add_HTTP_NoPort" {
+    BeforeAll {
+        $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Add_HTTP_NoPort.config.ps1"
+        . $ConfigFile
+
+        $script:configData = @{
+            AllNodes = @(
+                @{
+                    NodeName  = 'localhost'
+                    Transport = 'HTTP'
+                    Ensure    = 'Present'
+                }
+            )
+        }
+    }
+
+    It 'Should compile without throwing' {
+        {
+            & "$($script:dscResourceName)_Config_Add_HTTP_NoPort" `
+                -OutputPath $TestDrive `
+                -ConfigurationData $configData
+
+            Start-DscConfiguration `
+                -Path $TestDrive `
+                -ComputerName localhost `
+                -Wait `
+                -Verbose `
+                -Force `
+                -ErrorAction Stop
+        } | Should -Not -Throw
+    }
+
+    It 'Should compile and apply the MOF without throwing' {
+        { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+    }
+
+    It 'Should have set the resource and all the parameters should match' {
+        # Get the Rule details
+        $Listeners = @(Get-WSManInstance `
+                -ResourceURI winrm/config/Listener `
+                -Enumerate)
+        if ($Listeners)
+        {
+            $NewListener = $Listeners.Where( { $_.Transport -eq $configData.AllNodes[0].Transport } )
+        }
+        $NewListener                    | Should -Not -Be $null
+        $NewListener.Port               | Should -Be 5985
+        $NewListener.Address            | Should -Be '*'
+    }
+}
+
 Describe "$($script:dscResourceName)_Integration_Add_HTTPS" {
     BeforeAll {
         <#
