@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Converted to Class Resource.
   - Extracted private functions to individual files.
   - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
+  - Added Integration test when a port or address is not supplied.
 - `DSC_WSManConfig`
   - Removed Export-ModuleMember.
 - `DSC_WSManServiceConfig`
