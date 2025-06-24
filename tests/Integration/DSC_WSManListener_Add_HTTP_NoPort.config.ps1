@@ -1,4 +1,4 @@
-Configuration DSC_WSManListener_Config_Add_HTTP {
+Configuration DSC_WSManListener_Config_Add_HTTP_NoPort {
     Import-DscResource -ModuleName WSManDsc
 
     node localhost {
