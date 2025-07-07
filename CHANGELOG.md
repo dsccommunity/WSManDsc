@@ -20,12 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Converted to Class Resource.
   - Extracted private functions to individual files.
   - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
+  - Update tests to pass using v2 base class.
 - `DSC_WSManConfig`
   - Removed Export-ModuleMember.
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
 - `azure-pipelines.yml`
   - Remove windows 2019 image add windows 2025 fixes [#112](https://github.com/dsccommunity/WSManDsc/issues/112).
+- `RequiredModules`
+  - Use preview `DscResource.Base`.
 
 ### Removed
 
