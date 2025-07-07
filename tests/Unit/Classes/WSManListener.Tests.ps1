@@ -92,10 +92,11 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     <#
                         This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
 
                         Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
+                        call back to the derived class methods.
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
@@ -107,10 +108,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                                 URLPrefix = 'wsman'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -155,10 +156,11 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     <#
                         This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
 
                         Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
+                        call back to the derived class methods.
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
@@ -170,10 +172,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                                 URLPrefix = 'wsman'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -217,19 +219,20 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     <#
                         This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
 
                         Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
+                        call back to the derived class methods.
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{}
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -256,18 +259,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     $currentState.Hostname | Should -BeNullOrEmpty
 
                     $currentState.Ensure | Should -Be 'Absent'
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Transport'
-
-                    # PS6+ treats empty enum as null
-                    if ($PSVersionTable.PSVersion.Major -gt 5)
-                    {
-                        $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was null'
-                    }
-                    else
-                    {
-                        $currentState.Reasons[0].Phrase | Should -Be 'The property Transport should be "HTTP", but was ""'
-                    }
+                    $currentState.Reasons | Should -HaveCount 0
                 }
             }
         }
@@ -287,10 +279,11 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     <#
                         This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
 
                         Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
+                        call back to the derived class methods.
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
@@ -302,10 +295,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                                 URLPrefix = 'wsman'
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -354,10 +347,11 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     <#
                         This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
 
                         Method Get() will call the base method Get() which will
-                        call back to the derived class method GetCurrentState()
-                        to get the result to return from the derived method Get().
+                        call back to the derived class methods.
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
@@ -374,10 +368,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                                 Hostname              = $null
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -435,6 +429,7 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
+            $script:methodTestCallCount = 0
             $script:methodModifyCallCount = 0
         }
     }
@@ -445,16 +440,12 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $true
+                    }
+
             }
         }
 
@@ -464,6 +455,7 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
 
                 $script:mockInstance.Set()
 
+                $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 0
             }
         }
@@ -475,22 +467,19 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @(
-                            @{
-                                Property      = 'Port'
-                                ExpectedValue = 5000
-                                ActualValue   = 5985
-                            }
-                        )
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $false
+                    }
+
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Port'
+                        ExpectedValue = 5000
+                        ActualValue   = 5985
+                    }
+                )
             }
         }
 
@@ -500,6 +489,7 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
 
                 $script:mockInstance.Set()
 
+                $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 1
             }
         }
@@ -521,22 +511,24 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
         }
     }
 
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:getMethodCallCount = 0
+        }
+    }
+
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
             }
 
             It 'Should return $true' {
@@ -544,6 +536,8 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockInstance.Test() | Should -BeTrue
+
+                    $script:getMethodCallCount | Should -Be 1
                 }
             }
         }
@@ -555,21 +549,18 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @(
-                            @{
-                                Property      = 'Port'
-                                ExpectedValue = 5986
-                                ActualValue   = 443
-                            })
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
+
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'Port'
+                        ExpectedValue = 5986
+                        ActualValue   = 443
+                    }
+                )
             }
         }
 
@@ -578,6 +569,8 @@ Describe 'WSManListener\Test()' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance.Test() | Should -BeFalse
+
+                $script:getMethodCallCount | Should -Be 1
             }
         }
     }
@@ -782,6 +775,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                     $script:mockInstance.Modify($mockProperties)
 
                     $script:methodNewInstanceCallCount | Should -Be 1
+                    $script:methodRemoveInstanceCallCount | Should -Be 0
                 }
             }
         }
@@ -800,6 +794,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
 
                     $script:mockInstance.Modify($mockProperties)
 
+                    $script:methodNewInstanceCallCount | Should -Be 0
                     $script:methodRemoveInstanceCallCount | Should -Be 1
                 }
             }
