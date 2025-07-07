@@ -121,9 +121,6 @@ class WSManListener : ResourceBase
 
     WSManListener () : base ($PSScriptRoot)
     {
-        # Enable use of Enums as optional properties
-        $this.FeatureOptionalEnums = $true
-
         # These properties will not be enforced.
         $this.ExcludeDscProperties = @(
             'Issuer'
