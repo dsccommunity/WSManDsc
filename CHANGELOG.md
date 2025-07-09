@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `WSManTransport` Enum.
 - `RequiredModules`
   - Added `DscResource.Base` class.
+- `WSManConfigBase`
+  - Base class for WSMan*Config Resources fixes [#44](https://github.com/dsccommunity/WSManDsc/issues/44).
 
 ### Changed
 
@@ -23,8 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update tests to pass using v2 base class.
 - `DSC_WSManConfig`
   - Removed Export-ModuleMember.
+  - Converted to class-based resource.
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
+  - Updated variable scope in integration test.
 - `azure-pipelines.yml`
   - Remove windows 2019 image add windows 2025 fixes [#112](https://github.com/dsccommunity/WSManDsc/issues/112).
 - `RequiredModules`
