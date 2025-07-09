@@ -117,6 +117,34 @@ class WSManServiceConfig : WSManConfigBase
     WSManServiceConfig () : base ()
     {
         $this.ResourceURI = 'localhost\Service'
+
+        $this.ResourceMap = = @{
+            AuthBasic             = 'Auth\Basic'
+            AuthKerberos          = 'Auth\Kerberos'
+            AuthNegotiate         = 'Auth\Negotiate'
+            AuthCertificate       = 'Auth\Certificate'
+            AuthCredSSP           = 'Auth\CredSSP'
+            AuthCbtHardeningLevel = 'Auth\CbtHardeningLevel'
+        }
+
+        <#
+
+        # Configure Service Authentication
+            Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $false # Configured by default
+            Set-Item -Path WSMan:\localhost\Service\Auth\Digest -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Service\Auth\Kerberos -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Service\Auth\Negotiate -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Service\Auth\Certificate -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Service\Auth\CredSSP -Value $false # Configured by default
+
+        # Configure Client
+            Set-Item -Path WSMan:\localhost\Client\Auth\Basic -Value $false # Configured by default
+            Set-Item -Path WSMan:\localhost\Client\Auth\Digest -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Client\Auth\Kerberos -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Client\Auth\Negotiate -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Client\Auth\Certificate -Value $true # Configured by default
+            Set-Item -Path WSMan:\localhost\Client\Auth\CredSSP -Value $false # Configured by default
+        #>
     }
 
     [WSManServiceConfig] Get()
@@ -164,5 +192,9 @@ class WSManServiceConfig : WSManConfigBase
         }
 
         Assert-BoundParameter @assertBoundParameterParameters
+
+        # Validate SDDL?
+
+
     }
 }
