@@ -3,7 +3,7 @@
         The `WSManConfig` DSC resource is used to configure general WS-Man settings.
 
     .DESCRIPTION
-        This resource is used to create, edit or remove WS-Management HTTP/HTTPS listeners.
+        This resource is used to edit WS-Management configuration.
 
     .PARAMETER MaxEnvelopeSizekb
         Specifies the WS-Man maximum envelope size in KB. The minimum value is 32 and the maximum is 4294967295.
