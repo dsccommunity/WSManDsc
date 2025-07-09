@@ -21,7 +21,12 @@
 
     # Build dependencies needed for using the module
     'DscResource.Common'           = 'latest'
-    'DscResource.Base'             = 'latest'
+    'DscResource.Base'             = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
