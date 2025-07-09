@@ -13,6 +13,12 @@
 
     .PARAMETER MaxBatchItems
         Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.
+
+    .NOTES
+        Used Functions:
+            Name                  | Module
+            --------------------- |-------------------
+            Assert-BoundParameter | DscResource.Common
 #>
 
 [DscResource()]
@@ -63,13 +69,13 @@ class WSManConfig : WSManConfigBase
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
         $assertBoundParameterParameters = @{
-            BoundParameterList     = $properties
-            RequiredParameter = @(
+            BoundParameterList = $properties
+            RequiredParameter  = @(
                 'MaxEnvelopeSizekb'
                 'MaxTimeoutms'
                 'MaxBatchItems'
             )
-            RequiredBehavior = 'Any'
+            RequiredBehavior   = 'Any'
         }
 
         Assert-BoundParameter @assertBoundParameterParameters
