@@ -108,10 +108,10 @@ Describe 'WSManConfig\Get()' -Tag 'Get' {
                                 MaxBatchItems     = [System.UInt32] 32000
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -124,10 +124,13 @@ Describe 'WSManConfig\Get()' -Tag 'Get' {
                     $currentState = $script:mockInstance.Get()
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
+
                     $currentState.MaxEnvelopeSizekb | Should -Be 500
                     $currentState.MaxEnvelopeSizekb | Should -BeOfType System.UInt32
+
                     $currentState.MaxTimeoutms | Should -Be 60000
                     $currentState.MaxTimeoutms | Should -BeOfType System.UInt32
+
                     $currentState.MaxBatchItems | Should -Be 32000
                     $currentState.MaxBatchItems | Should -BeOfType System.UInt32
 
@@ -162,10 +165,10 @@ Describe 'WSManConfig\Get()' -Tag 'Get' {
                                 MaxEnvelopeSizekb = [System.UInt32] 500
                             }
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
                         } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
                             return
                         } -PassThru
                 }
@@ -213,6 +216,7 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
+            $script:methodTestCallCount = 0
             $script:methodModifyCallCount = 0
         }
     }
@@ -223,16 +227,12 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $true
+                    }
+
             }
         }
 
@@ -242,6 +242,7 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
 
                 $script:mockInstance.Set()
 
+                $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 0
             }
         }
@@ -253,22 +254,19 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @(
-                            @{
-                                Property      = 'MaxTimeoutms'
-                                ExpectedValue = 60000
-                                ActualValue   = 30000
-                            }
-                        )
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $false
+                    }
+
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'MaxTimeoutms'
+                        ExpectedValue = 60000
+                        ActualValue   = 30000
+                    }
+                )
             }
         }
 
@@ -278,6 +276,7 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
 
                 $script:mockInstance.Set()
 
+                $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 1
             }
         }
@@ -298,22 +297,24 @@ Describe 'WSManConfig\Test()' -Tag 'Test' {
         }
     }
 
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $script:getMethodCallCount = 0
+        }
+    }
+
     Context 'When the system is in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
             }
 
             It 'Should return $true' {
@@ -321,6 +322,8 @@ Describe 'WSManConfig\Test()' -Tag 'Test' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockInstance.Test() | Should -BeTrue
+
+                    $script:getMethodCallCount | Should -Be 1
                 }
             }
         }
@@ -332,21 +335,18 @@ Describe 'WSManConfig\Test()' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @(
-                            @{
-                                Property      = 'MaxEnvelopeSizekb'
-                                ExpectedValue = 500
-                                ActualValue   = 800
-                            })
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    } -PassThru
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
+
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'MaxEnvelopeSizekb'
+                        ExpectedValue = 500
+                        ActualValue   = 800
+                    }
+                )
             }
         }
 
@@ -355,6 +355,8 @@ Describe 'WSManConfig\Test()' -Tag 'Test' {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance.Test() | Should -BeFalse
+
+                $script:getMethodCallCount | Should -Be 1
             }
         }
     }
