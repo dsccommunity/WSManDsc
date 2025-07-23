@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Integration test for DSC_WSManConfig DSC resource.
+        Integration test for WSManConfig DSC resource.
 
     .NOTES
 #>
@@ -31,14 +31,32 @@ BeforeDiscovery {
     }
 
     $script:dscResourceName = 'DSC_WSManConfig'
-    $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-    # Load the parameter List from the data file
-    $resourceData = Import-LocalizedData `
-        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($script:dscResourceName)") `
-        -FileName "$($script:dscResourceName).data.psd1"
+    $ParameterList = @(
+        @{
+            Name    = 'MaxEnvelopeSizekb'
+            Path    = 'MaxEnvelopeSizekb'
+            Type    = 'Uint32'
+            Default = 500
+            TestVal = 501
+        },
+        @{
+            Name    = 'MaxTimeoutms'
+            Path    = 'MaxTimeoutms'
+            Type    = 'Uint32'
+            Default = 60000
+            TestVal = 60001
+        },
+        @{
+            Name    = 'MaxBatchItems'
+            Path    = 'MaxBatchItems'
+            Type    = 'Uint32'
+            Default = 32000
+            TestVal = 32001
+        }
+    )
 
-    $script:wsmanConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $true
+    $script:wsmanConfigParameterList = $ParameterList
 }
 
 BeforeAll {

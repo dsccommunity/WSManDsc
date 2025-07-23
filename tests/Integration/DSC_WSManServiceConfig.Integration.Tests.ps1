@@ -35,7 +35,7 @@ BeforeDiscovery {
 
     # Load the parameter List from the data file
     $resourceData = Import-LocalizedData `
-        -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath "Source\DscResources\$($dscResourceName)") `
+        -BaseDirectory (Join-Path -Path $moduleRoot -ChildPath "Source\DscResources\$($dscResourceName)") `
         -FileName "$($dscResourceName).data.psd1"
 
     $script:wsmanServiceConfigParameterList = $resourceData.ParameterList | Where-Object -Property IntTest -eq $true
