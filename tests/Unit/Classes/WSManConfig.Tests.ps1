@@ -232,7 +232,6 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
                         $script:methodTestCallCount += 1
                         return $true
                     }
-
             }
         }
 
