@@ -278,7 +278,7 @@ class WSManListener : ResourceBase
             else
             {
                 # A certificate could not be found to use for the HTTPS listener
-                New-InvalidArgumentException -Message (
+                New-ArgumentException -Message (
                     $this.localizedData.ListenerCreateFailNoCertError -f $this.Transport, $this.Port
                 ) -Argument 'Issuer'
             } # if
