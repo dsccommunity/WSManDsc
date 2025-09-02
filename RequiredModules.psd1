@@ -20,7 +20,12 @@
     xDscResourceDesigner           = 'latest'
 
     # Build dependencies needed for using the module
-    'DscResource.Common'           = 'latest'
+    'DscResource.Common'           = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
     'DscResource.Base'             = @{
         Version    = 'latest'
         Parameters = @{
