@@ -445,7 +445,6 @@ Describe 'WSManListener\Set()' -Tag 'Set' {
                         $script:methodTestCallCount += 1
                         return $true
                     }
-
             }
         }
 
