@@ -47,12 +47,6 @@
 
     .PARAMETER EnableCompatibilityHttpsListener
         Specifies whether the compatibility HTTPS listener is enabled.
-
-    .NOTES
-        Used Functions:
-            Name                  | Module
-            --------------------- |-------------------
-            Assert-BoundParameter | DscResource.Common
 #>
 
 [DscResource()]

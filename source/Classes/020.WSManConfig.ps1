@@ -13,12 +13,6 @@
 
     .PARAMETER MaxBatchItems
         Specifies the WS-Man maximum batch items. The minimum value is 1 and the maximum is 4294967295.
-
-    .NOTES
-        Used Functions:
-            Name                  | Module
-            --------------------- |-------------------
-            Assert-BoundParameter | DscResource.Common
 #>
 
 [DscResource()]
