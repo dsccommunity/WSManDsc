@@ -312,22 +312,22 @@ Describe 'WSManConfigBase\GetCurrentState()' -Tag 'HiddenMember' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockInstance = [WSManServiceConfig] @{
-                        IsSingleInstance                 = 'Yes'
-                        AuthBasic                        = $false
-                        AuthKerberos                     = $true
-                        AuthNegotiate                    = $true
-                        AuthCertificate                  = $true
-                        AuthCredSSP                      = $false
+                        IsSingleInstance = 'Yes'
+                        AuthBasic        = $false
+                        AuthKerberos     = $true
+                        AuthNegotiate    = $true
+                        AuthCertificate  = $true
+                        AuthCredSSP      = $false
                     }
                 }
 
                 Mock -CommandName Get-DscProperty -MockWith {
                     @{
-                        AuthBasic                        = $false
-                        AuthKerberos                     = $true
-                        AuthNegotiate                    = $true
-                        AuthCertificate                  = $true
-                        AuthCredSSP                      = $false
+                        AuthBasic       = $false
+                        AuthKerberos    = $true
+                        AuthNegotiate   = $true
+                        AuthCertificate = $true
+                        AuthCredSSP     = $false
                     }
                 }
 
@@ -606,9 +606,9 @@ Describe 'WSManConfigBase\Modify()' -Tag 'HiddenMember' {
                             MaxTimeoutms      = 60000
                             MaxBatchItems     = 32000
                         }
-
-                        Mock -CommandName Set-Item
                     }
+
+                    Mock -CommandName Set-Item
                 }
 
                 Context 'When the properties are incorrect' {
@@ -654,10 +654,10 @@ Describe 'WSManConfigBase\Modify()' -Tag 'HiddenMember' {
                             EnableCompatibilityHttpListener  = $false
                             EnableCompatibilityHttpsListener = $false
                         }
-
-                        Mock -CommandName Set-Item -ParameterFilter { $Path -like '*Auth*' }
-                        Mock -CommandName Set-Item -ParameterFilter { $Path -notlike '*Auth*' }
                     }
+
+                    Mock -CommandName Set-Item -ParameterFilter { $Path -like '*Auth*' }
+                    Mock -CommandName Set-Item -ParameterFilter { $Path -notlike '*Auth*' }
                 }
 
                 Context 'When the properties are incorrect' {
@@ -707,10 +707,10 @@ Describe 'WSManConfigBase\Modify()' -Tag 'HiddenMember' {
                             EnableCompatibilityHttpListener  = $false
                             EnableCompatibilityHttpsListener = $false
                         }
-
-                        Mock -CommandName Set-Item -ParameterFilter { $Path -like '*Auth*' }
-                        Mock -CommandName Set-Item -ParameterFilter { $Path -notlike '*Auth*' }
                     }
+
+                    Mock -CommandName Set-Item -ParameterFilter { $Path -like '*Auth*' }
+                    Mock -CommandName Set-Item -ParameterFilter { $Path -notlike '*Auth*' }
                 }
 
                 Context 'When the properties are incorrect' {
