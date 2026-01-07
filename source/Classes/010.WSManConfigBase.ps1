@@ -48,11 +48,8 @@ class WSManConfigBase : ResourceBase
         if ($this.HasAuthContainer)
         {
             $childProperties = @(Get-ChildItem -Path ('{0}\Auth' -f $uri))
-            $mappedProperties = $this.MapFromAuthContainer($childProperties).Where({ $_.Name -in $props.Keys })
-            if ($mappedProperties)
-            {
-                $currentState.AddRange($mappedProperties)
-            }
+            $mappedProperties = @($this.MapFromAuthContainer($childProperties).Where({ $_.Name -in $props.Keys }))
+            $currentState.AddRange($mappedProperties)
         }
 
         foreach ($property in $currentState)
