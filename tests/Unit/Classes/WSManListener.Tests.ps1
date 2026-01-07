@@ -771,7 +771,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                         Ensure    = 'Present'
                     }
 
-                    $script:mockInstance.Modify($mockProperties)
+                    $null = $script:mockInstance.Modify($mockProperties)
 
                     $script:methodNewInstanceCallCount | Should -Be 1
                     $script:methodRemoveInstanceCallCount | Should -Be 0
@@ -791,7 +791,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                         Ensure    = 'Absent'
                     }
 
-                    $script:mockInstance.Modify($mockProperties)
+                    $null = $script:mockInstance.Modify($mockProperties)
 
                     $script:methodNewInstanceCallCount | Should -Be 0
                     $script:methodRemoveInstanceCallCount | Should -Be 1
@@ -811,7 +811,7 @@ Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
                         Port      = 5000
                     }
 
-                    $script:mockInstance.Modify($mockProperties)
+                    $null = $script:mockInstance.Modify($mockProperties)
 
                     $script:methodRemoveInstanceCallCount | Should -Be 1
                     $script:methodNewInstanceCallCount | Should -Be 1
@@ -844,7 +844,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance.NewInstance()
+                $null = $script:mockInstance.NewInstance()
             }
 
             Should -Invoke -CommandName New-WSManInstance -Exactly -Times 1 -Scope It
@@ -883,7 +883,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
 
                         $script:mockInstance.HostName = 'somehost'
 
-                        $script:mockInstance.NewInstance()
+                        $null = $script:mockInstance.NewInstance()
                     }
 
                     Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
@@ -899,7 +899,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $script:mockInstance.NewInstance()
+                        $null = $script:mockInstance.NewInstance()
                     }
 
                     Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
@@ -954,7 +954,7 @@ Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance.NewInstance()
+                $null = $script:mockInstance.NewInstance()
             }
 
             Should -Invoke -CommandName New-WSManInstance -Exactly -Times 1 -Scope It
@@ -983,7 +983,7 @@ Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            $script:mockInstance.RemoveInstance()
+            $null = $script:mockInstance.RemoveInstance()
         }
 
         Should -Invoke -CommandName Remove-WSManInstance -Exactly -Times 1 -Scope It

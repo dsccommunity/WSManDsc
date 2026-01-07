@@ -239,7 +239,7 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance.Set()
+                $null = $script:mockInstance.Set()
 
                 $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 0
@@ -273,7 +273,7 @@ Describe 'WSManConfig\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance.Set()
+                $null = $script:mockInstance.Set()
 
                 $script:methodTestCallCount | Should -Be 1
                 $script:methodModifyCallCount | Should -Be 1
