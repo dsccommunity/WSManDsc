@@ -306,6 +306,146 @@ Describe 'WSManConfigBase\GetCurrentState()' -Tag 'HiddenMember' {
             }
         }
 
+        Context 'When object is present in the current state and has ONLY Auth properties' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [WSManServiceConfig] @{
+                        IsSingleInstance                 = 'Yes'
+                        AuthBasic                        = $false
+                        AuthKerberos                     = $true
+                        AuthNegotiate                    = $true
+                        AuthCertificate                  = $true
+                        AuthCredSSP                      = $false
+                    }
+                }
+
+                Mock -CommandName Get-DscProperty -MockWith {
+                    @{
+                        AuthBasic                        = $false
+                        AuthKerberos                     = $true
+                        AuthNegotiate                    = $true
+                        AuthCertificate                  = $true
+                        AuthCredSSP                      = $false
+                    }
+                }
+
+                Mock -CommandName Get-ChildItem -ParameterFilter { $Path -eq 'WSMan:\localhost\Service' } -MockWith {
+                    @(
+                        [PSCustomObject] @{
+                            Name          = 'MaxConnections'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 500
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'MaxConcurrentOperationsPerUser'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 50
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'EnumerationTimeoutMS'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 1000
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'MaxPacketRetrievalTimeSeconds'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 1
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'AllowUnencrypted'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'False'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'EnableCompatibilityHttpListener'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'False'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'EnableCompatibilityHttpsListener'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'False'
+                        }
+                    )
+                }
+
+                Mock -CommandName Get-ChildItem -ParameterFilter { $Path -eq 'WSMan:\localhost\Service\Auth' } -MockWith {
+                    @(
+                        [PSCustomObject] @{
+                            Name          = 'Basic'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'false'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'Kerberos'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'true'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'Negotiate'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'true'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'Certificate'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'true'
+                        }
+                        [PSCustomObject] @{
+                            Name          = 'CredSSP'
+                            SourceOfValue = $null
+                            Type          = 'System.String'
+                            Value         = 'false'
+                        }
+                    )
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.GetCurrentState(
+                        @{
+                            IsSingleInstance = 'Yes'
+                        }
+                    )
+
+                    $currentState.AuthBasic | Should -BeFalse
+                    $currentState.AuthKerberos | Should -BeTrue
+                    $currentState.AuthNegotiate | Should -BeTrue
+                    $currentState.AuthCertificate | Should -BeTrue
+                    $currentState.AuthCredSSP | Should -BeFalse
+
+                    $currentState.IsSingleInstance | Should -BeNullOrEmpty
+                    $currentState.MaxConnections | Should -BeNullOrEmpty
+                    $currentState.MaxConcurrentOperationsPerUser | Should -BeNullOrEmpty
+                    $currentState.EnumerationTimeoutMS | Should -BeNullOrEmpty
+                    $currentState.MaxPacketRetrievalTimeSeconds | Should -BeNullOrEmpty
+                    $currentState.AllowUnencrypted | Should -BeNullOrEmpty
+                    $currentState.EnableCompatibilityHttpListener | Should -BeNullOrEmpty
+                    $currentState.EnableCompatibilityHttpsListener | Should -BeNullOrEmpty
+                }
+
+                Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-ChildItem -ParameterFilter { $Path -eq 'WSMan:\localhost\Service' } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-ChildItem -ParameterFilter { $Path -eq 'WSMan:\localhost\Service\Auth' } -Exactly -Times 1 -Scope It
+            }
+        }
+
         Context 'When object is present in the current state and has NO Auth properties' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
