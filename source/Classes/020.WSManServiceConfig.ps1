@@ -40,7 +40,7 @@
         Allows the WinRM service to use Credential Security Support Provider (CredSSP) authentication.
 
     .PARAMETER AuthCbtHardeningLevel
-        Allows the client computer to request unencrypted traffic.
+        Specifies the hardening level for Channel Binding Tokens (CBT) used in authentication.
 
     .PARAMETER EnableCompatibilityHttpListener
         Specifies whether the compatibility HTTP listener is enabled.
