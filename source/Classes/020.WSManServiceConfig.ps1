@@ -49,7 +49,7 @@
         Specifies whether the compatibility HTTPS listener is enabled.
 #>
 
-[DscResource()]
+[DscResource(RunAsCredential = 'Optional')]
 class WSManServiceConfig : WSManConfigBase
 {
     [DscProperty()]
