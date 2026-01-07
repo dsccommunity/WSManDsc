@@ -21,6 +21,7 @@ class WSManConfigBase : ResourceBase
     $Reasons
 
     hidden [System.String] $ResourceURI
+    hidden [System.Boolean] $HasAuthContainer = $false
 
     WSManConfigBase () : base ($PSScriptRoot)
     {
@@ -38,16 +39,35 @@ class WSManConfigBase : ResourceBase
         # Get the properties that have a value. Assert has checked at least one property is set.
         $props = $this | Get-DscProperty -Attribute @('Optional') -HasValue
 
-        $uri = ('WSMan:\{0}' -f $this.ResourceURI)
+        $uri = 'WSMan:\{0}' -f $this.ResourceURI
 
         # Get the desired state, only check the properties that are set as some will be set to a default value.
-        $currentState = Get-ChildItem -Path $uri | Where-Object { $_.Name -in $props.Keys }
+        $currentState = [System.Collections.Generic.List[System.Object]]::new()
+        $currentState.AddRange(@(Get-ChildItem -Path $uri).Where({ $_.Name -in $props.Keys -and $_.Type -ne 'Container' }))
+
+        if ($this.HasAuthContainer)
+        {
+            $childProperties = @(Get-ChildItem -Path ('{0}\Auth' -f $uri))
+            $mappedProperties = $this.MapFromAuthContainer($childProperties).Where({ $_.Name -in $props.Keys })
+            if ($mappedProperties)
+            {
+                $currentState.AddRange($mappedProperties)
+            }
+        }
 
         foreach ($property in $currentState)
         {
-            $state.($property.Name) = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
+            $targetType = $this.($property.Name).GetType()
+            if ($targetType -eq [System.Boolean])
+            {
+                # Parse string "true"/"false" correctly (case-insensitive)
+                $state[$property.Name] = [System.Convert]::ToBoolean($property.Value)
+                continue
+            }
+
+            $state[$property.Name] = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
                 $property.Value,
-                $this.($property.Name).GetType().FullName
+                $targetType
             )
         }
 
@@ -60,9 +80,29 @@ class WSManConfigBase : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        foreach ($property in $properties.Keys)
+        $baseUri = 'WSMan:\{0}' -f $this.ResourceURI
+
+        foreach ($property in $properties.GetEnumerator())
         {
-            Set-Item -Path ('WSMan:\{0}\{1}' -f $this.ResourceURI, $property) -Value $properties.$property -Force
+            if ($property.Name.StartsWith('Auth'))
+            {
+                $property.Name = $property.Name -replace '^Auth', ''
+                Set-Item -Path ('{0}\Auth\{1}' -f $baseUri, $property.Name) -Value $property.Value -Force
+                continue
+            }
+
+            Set-Item -Path ('{0}\{1}' -f $baseUri, $property.Name) -Value $property.Value -Force
         }
+    }
+
+    hidden [System.Object[]] MapFromAuthContainer([System.Object[]] $properties)
+    {
+        foreach ($property in $properties)
+        {
+            # No need to add auth to the beginning.
+            $property.Name = 'Auth{0}' -f $property.Name
+        }
+
+        return $properties
     }
 }
