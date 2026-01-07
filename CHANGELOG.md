@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DSC_WSManServiceConfig`
   - Removed Export-ModuleMember.
   - Updated variable scope in integration test.
+  - Converted to class-based resource.
 - `azure-pipelines.yml`
   - Remove windows 2019 image add windows 2025 fixes [#112](https://github.com/dsccommunity/WSManDsc/issues/112).
 - `RequiredModules`
