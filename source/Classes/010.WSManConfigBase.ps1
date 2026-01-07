@@ -96,7 +96,7 @@ class WSManConfigBase : ResourceBase
     {
         foreach ($property in $properties)
         {
-            # No need to add auth to the beginning.
+            # Need to add auth to the beginning.
             $property.Name = 'Auth{0}' -f $property.Name
         }
 
