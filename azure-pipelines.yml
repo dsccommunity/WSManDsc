@@ -146,7 +146,6 @@ stages:
             displayName: 'Download Test Artifact'
             inputs:
               buildType: 'current'
-              artifactName: $(testArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
 
           - task: PowerShell@2
