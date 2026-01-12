@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Extracted private functions to individual files.
   - BREAKING: Renamed parameter `DN` to `BaseDN` - fixes [Issue #89](https://github.com/dsccommunity/WSManDsc/issues/89).
   - Update tests to pass using v2 base class.
+  - Fix `It` block and v4 syntax.
 - `DSC_WSManConfig`
   - Removed Export-ModuleMember.
   - Converted to class-based resource.
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated variable scope in integration test.
 - `azure-pipelines.yml`
   - Remove windows 2019 image add windows 2025 fixes [#112](https://github.com/dsccommunity/WSManDsc/issues/112).
+  - Use matrix strategy for Unit and Integration pipeline declaration.
 - `RequiredModules`
   - Use preview `DscResource.Base`.
 
