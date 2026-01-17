@@ -43,12 +43,20 @@ class WSManConfigBase : ResourceBase
 
         # Get the desired state, only check the properties that are set as some will be set to a default value.
         $currentState = [System.Collections.Generic.List[System.Object]]::new()
-        $currentState.AddRange(@(Get-ChildItem -Path $uri).Where({ $_.Name -in $props.Keys -and $_.Type -ne 'Container' }))
+
+        $currentState.AddRange(
+            @(Get-ChildItem -Path $uri).Where(
+                { $_.Name -in $props.Keys -and $_.Type -ne 'Container' }
+            )
+        )
 
         if ($this.HasAuthContainer)
         {
             $childProperties = @(Get-ChildItem -Path ('{0}\Auth' -f $uri))
-            $mappedProperties = @($this.MapFromAuthContainer($childProperties).Where({ $_.Name -in $props.Keys }))
+            $mappedProperties = @($this.MapFromAuthContainer($childProperties).Where(
+                    { $_.Name -in $props.Keys }
+                ))
+
             $currentState.AddRange($mappedProperties)
         }
 
