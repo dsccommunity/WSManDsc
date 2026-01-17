@@ -47,7 +47,6 @@ BuildWorkflow:
 BuiltModuleSubdirectory: builtModule
 CopyPaths:
   - en-US
-  - DSCResources
 Encoding: UTF8
 Prefix: prefix.ps1
 VersionedOutputDirectory: true

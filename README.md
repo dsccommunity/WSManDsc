@@ -3,7 +3,7 @@
 [![Build Status](https://dev.azure.com/dsccommunity/WsManDsc/_apis/build/status/dsccommunity.WSManDsc?branchName=main)](https://dev.azure.com/dsccommunity/WsManDsc/_build/latest?definitionId=6&branchName=main)
 ![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/WSManDsc/6/main)
 [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/WSManDsc/6/main)](https://dsccommunity.visualstudio.com/WSManDsc/_test/analytics?definitionId=6&contextType=build)
-[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/WSManDsc?label=WSManDsc%20Preview)](https://www.powershellgallery.com/packages/WSManDsc/)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/v/WSManDsc?label=WSManDsc%20Preview&include_prereleases)](https://www.powershellgallery.com/packages/WSManDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/WSManDsc?label=WSManDsc)](https://www.powershellgallery.com/packages/WSManDsc/)
 [![codecov](https://codecov.io/gh/dsccommunity/WSManDsc/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/WSManDsc)
 
