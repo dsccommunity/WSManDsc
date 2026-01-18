@@ -134,6 +134,10 @@ Describe "$($script:dscResourceName)_Integration" {
         } # foreach
     }
 
+    AfterEach {
+        Wait-ForIdleLcm
+    }
+
     It 'Should compile without throwing' {
         {
             & "$($script:dscResourceName)_Config" `
