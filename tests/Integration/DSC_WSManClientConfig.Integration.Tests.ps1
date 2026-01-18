@@ -115,7 +115,7 @@ BeforeDiscovery {
         }
     )
 
-    $script:wsmanServiceConfigParameterList = $ParameterList.Where({ $_.IntTest } )
+    $script:wsmanClientConfigParameterList = $ParameterList.Where({ $_.IntTest } )
 }
 
 BeforeAll {
@@ -131,7 +131,7 @@ BeforeAll {
     # Backup the existing settings
     $currentWsManServiceConfig = @{}
 
-    foreach ($parameter in $wsmanServiceConfigParameterList)
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
@@ -149,7 +149,7 @@ BeforeAll {
     } # if
 
     # Set the Service Config to default settings
-    foreach ($parameter in $wsmanServiceConfigParameterList)
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
@@ -161,7 +161,7 @@ BeforeAll {
 
 AfterAll {
     # Clean up by restoring all parameters
-    foreach ($parameter in $wsmanServiceConfigParameterList)
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
@@ -184,7 +184,7 @@ Describe "$($script:dscResourceName)_Integration" {
                 }
             )
         }
-        foreach ($parameter in $wsmanServiceConfigParameterList)
+        foreach ($parameter in $wsmanClientConfigParameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
@@ -221,7 +221,7 @@ Describe "$($script:dscResourceName)_Integration" {
         { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
     }
 
-    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanServiceConfigParameterList {
+    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanClientConfigParameterList {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $Path
