@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
         The localized resource strings in English (en-US) for the
-        resource WSManConfig module. This file should only contain
+        resource WSManConfig. This file should only contain
         localized strings for private functions, public command, and
         classes (that are not a DSC resource).
 #>
