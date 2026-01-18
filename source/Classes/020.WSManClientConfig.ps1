@@ -52,7 +52,7 @@ class WSManClientConfig : WSManConfigBase
     $AllowUnencrypted
 
     [DscProperty()]
-    [System.String[]]
+    [System.String]
     $TrustedHosts
 
     [DscProperty()]

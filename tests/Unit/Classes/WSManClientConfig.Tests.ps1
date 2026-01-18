@@ -89,7 +89,7 @@ Describe 'WSManClientConfig\Get()' -Tag 'Get' {
                     NetworkDelayms   = 5000
                     URLPrefix        = 'wsmclient'
                     AllowUnencrypted = $false
-                    # TrustedHosts     = @()
+                    TrustedHosts     = ''
                     AuthBasic        = $false
                     AuthDigest       = $false
                     AuthCertificate  = $true
@@ -112,7 +112,7 @@ Describe 'WSManClientConfig\Get()' -Tag 'Get' {
                             NetworkDelayms   = [System.UInt32] 5000
                             URLPrefix        = 'wsmclient'
                             AllowUnencrypted = $false
-                            TrustedHosts     = $null
+                            TrustedHosts     = ''
                             AuthBasic        = $false
                             AuthDigest       = $false
                             AuthCertificate  = $true
@@ -233,7 +233,7 @@ Describe 'WSManClientConfig\Set()' -Tag 'Set' {
                 NetworkDelayms   = 5000
                 URLPrefix        = 'wsmclient'
                 AllowUnencrypted = $false
-                # TrustedHosts     = @()
+                TrustedHosts     = ''
                 AuthBasic        = $false
                 AuthDigest       = $false
                 AuthCertificate  = $true
@@ -328,7 +328,7 @@ Describe 'WSManClientConfig\Test()' -Tag 'Test' {
                 NetworkDelayms   = 5000
                 URLPrefix        = 'wsmclient'
                 AllowUnencrypted = $false
-                # TrustedHosts     = @()
+                TrustedHosts     = ''
                 AuthBasic        = $false
                 AuthDigest       = $false
                 AuthCertificate  = $true
@@ -442,7 +442,7 @@ Describe 'WSManClientConfig\AssertProperties()' -Tag 'AssertProperties' {
                     URLPrefix        = 'wsmclient'
                     NetworkDelayms   = 5000
                     AllowUnencrypted = $false
-                    TrustedHosts     = @()
+                    TrustedHosts     = ''
                     AuthBasic        = $false
                     AuthDigest       = $false
                     AuthCertificate  = $true
@@ -453,7 +453,7 @@ Describe 'WSManClientConfig\AssertProperties()' -Tag 'AssertProperties' {
                 @{
                     NetworkDelayms   = 5000
                     AllowUnencrypted = $false
-                    TrustedHosts     = @()
+                    TrustedHosts     = ''
                     AuthBasic        = $false
                     AuthDigest       = $false
                     AuthCertificate  = $true
@@ -462,7 +462,7 @@ Describe 'WSManClientConfig\AssertProperties()' -Tag 'AssertProperties' {
                     AuthCredSSP      = $false
                 }
                 @{
-                    TrustedHosts     = @()
+                    TrustedHosts     = ''
                     AuthBasic       = $false
                     AuthDigest      = $false
                     AuthCertificate = $true
