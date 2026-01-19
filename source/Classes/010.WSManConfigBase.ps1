@@ -70,6 +70,12 @@ class WSManConfigBase : ResourceBase
                 continue
             }
 
+            if ($targetType -eq [System.String[]])
+            {
+                $state[$property.Name] = $property.Value -split ','
+                continue
+            }
+
             $state[$property.Name] = [System.Management.Automation.LanguagePrimitives]::ConvertTo(
                 $property.Value,
                 $targetType
@@ -89,14 +95,19 @@ class WSManConfigBase : ResourceBase
 
         foreach ($property in $properties.GetEnumerator())
         {
+            $uri = $baseUri
             if ($property.Name.StartsWith('Auth'))
             {
                 $property.Name = $property.Name -replace '^Auth', ''
-                Set-Item -Path ('{0}\Auth\{1}' -f $baseUri, $property.Name) -Value $property.Value -Force
-                continue
+                $uri = ('{0}\Auth' -f $baseUri)
             }
 
-            Set-Item -Path ('{0}\{1}' -f $baseUri, $property.Name) -Value $property.Value -Force
+            if ($property.Value -is [System.String[]])
+            {
+                $property.Value = $property.Value -join ','
+            }
+
+            Set-Item -Path ('{0}\{1}' -f $uri, $property.Name) -Value $property.Value -Force
         }
     }
 
