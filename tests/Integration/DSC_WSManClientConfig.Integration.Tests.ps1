@@ -62,7 +62,7 @@ BeforeDiscovery {
             Path    = 'TrustedHosts'
             Type    = 'String[]'
             Default = ''
-            TestVal = @('testserver1.contoso.com','testserver2.contoso.com')
+            TestVal = 'testserver1.contoso.com','testserver2.contoso.com'
             IntTest = $true
         },
         @{
@@ -129,14 +129,14 @@ BeforeAll {
         -TestType 'Integration'
 
     # Backup the existing settings
-    $currentWsManServiceConfig = @{}
+    $currentWsManClientConfig = @{}
 
     foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $parameter.Path
-        $currentWsManServiceConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+        $currentWsManClientConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
     } # foreach
 
     # Make sure WS-Man is enabled
@@ -166,7 +166,7 @@ AfterAll {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $parameter.Path
-        Set-Item -Path $parameterPath -Value $currentWsManServiceConfig.$($parameter.Name) -Force
+        Set-Item -Path $parameterPath -Value $currentWsManClientConfig.$($parameter.Name) -Force
     } # foreach
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
