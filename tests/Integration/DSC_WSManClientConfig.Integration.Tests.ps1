@@ -60,9 +60,9 @@ BeforeDiscovery {
         @{
             Name    = 'TrustedHosts'
             Path    = 'TrustedHosts'
-            Type    = 'String'
-            Default = ''
-            TestVal = 'testserver1.contoso.com,testserver2.contoso.com'
+            Type    = 'String[]'
+            Default = @()
+            TestVal = @('testserver1.contoso.com','testserver2.contoso.com')
             IntTest = $true
         },
         @{
