@@ -62,7 +62,7 @@ BeforeDiscovery {
             Path    = 'TrustedHosts'
             Type    = 'String[]'
             Default = ''
-            TestVal = 'testserver1.contoso.com','testserver2.contoso.com'
+            TestVal = @('testserver1.contoso.com','testserver2.contoso.com')
             IntTest = $true
         },
         @{
@@ -225,6 +225,10 @@ Describe "$($script:dscResourceName)_Integration" {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $Path
+        if ($Type -eq 'String[]')
+        {
+            $TestVal = $TestVal -join ','
+        }
 
         (Get-Item -Path $parameterPath).Value | Should -Be $TestVal
     }
