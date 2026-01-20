@@ -225,6 +225,7 @@ Describe "$($script:dscResourceName)_Integration" {
         $parameterPath = Join-Path `
             -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $Path
+
         if ($Type -eq 'String[]')
         {
             $TestVal = $TestVal -join ','
