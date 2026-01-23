@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Integration test for WSManConfig DSC resource.
+        Integration test for DSC_WSManClientConfig DSC resource.
 
     .NOTES
 #>
@@ -30,38 +30,97 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
-    $script:dscResourceName = 'DSC_WSManConfig'
+    $dscResourceName = 'DSC_WSManClientConfig'
 
     $ParameterList = @(
         @{
-            Name    = 'MaxEnvelopeSizekb'
-            Path    = 'MaxEnvelopeSizekb'
-            Type    = 'Uint32'
-            Default = 500
-            TestVal = 501
+            Name    = 'NetworkDelayms'
+            Path    = 'NetworkDelayms'
+            Type    = 'UInt32'
+            Default = 5000
+            TestVal = 5001
+            IntTest = $true
         },
         @{
-            Name    = 'MaxTimeoutms'
-            Path    = 'MaxTimeoutms'
-            Type    = 'Uint32'
-            Default = 60000
-            TestVal = 60001
+            Name    = 'URLPrefix'
+            Path    = 'URLPrefix'
+            Type    = 'String'
+            Default = 'wsman'
+            TestVal = 'wsmanTest'
+            IntTest = $true
         },
         @{
-            Name    = 'MaxBatchItems'
-            Path    = 'MaxBatchItems'
-            Type    = 'Uint32'
-            Default = 32000
-            TestVal = 32001
+            Name    = 'AllowUnencrypted'
+            Path    = 'AllowUnencrypted'
+            Type    = 'Boolean'
+            Default = $false
+            TestVal = $true
+            IntTest = $true
+        },
+        @{
+            Name    = 'TrustedHosts'
+            Path    = 'TrustedHosts'
+            Type    = 'String[]'
+            Default = ''
+            TestVal = @('testserver1.contoso.com','testserver2.contoso.com')
+            IntTest = $true
+        },
+        @{
+            Name    = 'AuthBasic'
+            Path    = 'Auth\Basic'
+            Type    = 'Boolean'
+            Default = $false
+            TestVal = $true
+            IntTest = $false
+        },
+        @{
+            Name    = 'AuthDigest'
+            Path    = 'Auth\Digest'
+            Type    = 'Boolean'
+            Default = $false
+            TestVal = $true
+            IntTest = $false
+        },
+        @{
+            Name    = 'AuthKerberos'
+            Path    = 'Auth\Kerberos'
+            Type    = 'Boolean'
+            Default = $true
+            TestVal = $false
+            IntTest = $false
+        },
+        @{
+            Name    = 'AuthNegotiate'
+            Path    = 'Auth\Negotiate'
+            Type    = 'Boolean'
+            Default = $true
+            TestVal = $false
+            IntTest = $false
+        },
+        @{
+            Name    = 'AuthCertificate'
+            Path    = 'Auth\Certificate'
+            Type    = 'Boolean'
+            Default = $false
+            TestVal = $true
+            IntTest = $true
+        },
+        @{
+            Name    = 'AuthCredSSP'
+            Path    = 'Auth\CredSSP'
+            Type    = 'Boolean'
+            Default = $false
+            TestVal = $true
+            IntTest = $true
         }
     )
 
-    $script:wsmanConfigParameterList = $ParameterList
+    $script:wsmanClientConfigParameterList = $ParameterList.Where({ $_.IntTest } )
 }
 
 BeforeAll {
     $script:dscModuleName = 'WSManDsc'
-    $script:dscResourceName = 'DSC_WSManConfig'
+    $script:dscResourceName = 'DSC_WSManClientConfig'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -69,18 +128,18 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
-    Backup the existing settings
-    $script:currentWsManConfig = @{}
+    # Backup the existing settings
+    $currentWsManClientConfig = @{}
 
-    foreach ($parameter in $wsmanConfigParameterList)
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $parameter.Path
-        $currentWsManConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
+        $currentWsManClientConfig.$($Parameter.Name) = (Get-Item -Path $parameterPath).Value
     } # foreach
 
-    # Make sure WS-Man is enabled (usually enabled via azure-pipelines)
+    # Make sure WS-Man is enabled
     if (-not (Get-PSProvider -PSProvider WSMan -ErrorAction SilentlyContinue))
     {
         $null = Enable-PSRemoting `
@@ -89,11 +148,11 @@ BeforeAll {
             -ErrorAction Stop
     } # if
 
-    # Set the Config to default settings
-    foreach ($parameter in $wsmanConfigParameterList)
+    # Set the Service Config to default settings
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $parameter.Path
 
         Set-Item -Path $parameterPath -Value $($parameter.Default) -Force
@@ -102,13 +161,12 @@ BeforeAll {
 
 AfterAll {
     # Clean up by restoring all parameters
-    foreach ($parameter in $wsmanConfigParameterList)
+    foreach ($parameter in $wsmanClientConfigParameterList)
     {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $parameter.Path
-
-        Set-Item -Path $parameterPath -Value $script:currentWsManConfig.$($parameter.Name) -Force
+        Set-Item -Path $parameterPath -Value $currentWsManClientConfig.$($parameter.Name) -Force
     } # foreach
 
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
@@ -126,7 +184,7 @@ Describe "$($script:dscResourceName)_Integration" {
                 }
             )
         }
-        foreach ($parameter in $wsmanConfigParameterList)
+        foreach ($parameter in $wsmanClientConfigParameterList)
         {
             $configData.AllNodes[0] += @{
                 $($parameter.Name) = $($parameter.TestVal)
@@ -163,11 +221,15 @@ Describe "$($script:dscResourceName)_Integration" {
         { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
     }
 
-    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanConfigParameterList {
-        # Get the Rule details
+    It 'Should have set the resource and all the parameters should match' -ForEach $wsmanClientConfigParameterList {
         $parameterPath = Join-Path `
-            -Path 'WSMan:\Localhost\' `
+            -Path 'WSMan:\Localhost\Client\' `
             -ChildPath $Path
+
+        if ($Type -eq 'String[]')
+        {
+            $TestVal = $TestVal -join ','
+        }
 
         (Get-Item -Path $parameterPath).Value | Should -Be $TestVal
     }

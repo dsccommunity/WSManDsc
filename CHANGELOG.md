@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `DscResource.Base` class.
 - `WSManConfigBase`
   - Base class for WSMan*Config Resources fixes [#44](https://github.com/dsccommunity/WSManDsc/issues/44).
+- `WSManClientConfig` resource. Fixes [#41](https://github.com/dsccommunity/WSManDsc/issues/41).
 
 ### Changed
 
